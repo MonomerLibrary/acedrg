@@ -164,17 +164,22 @@ if not os.path.isdir(sys.argv[1]):
 
 else:
     if not os.environ.has_key("LIBMOL_ROOT"):
-        print "Need to setup environment variable LIBMOL_ROOT first. "
+        print "Need to define the environment variable $LIBMOL_ROOT to the location where LIBMOL package is,  "
         print "e.g, export LIBMOL_ROOT=/xxxxx/xxxx/LIBMOL/ "
         print "or setenv LIBMOL_ROOT /xxxxx/xxxx/LIBMOL/ "
         sys.exit()
 
     #tExe = os.path.join("/Users/flong/NetBeansProjects/LIBMOL/dist/Debug/GNU-MacOSX/libmol")     # modify this later on
-    tExe = os.path.join(os.getenv("LIBMOL_ROOT"),"bin/libmol")
-    if not os.path.isfile(tExe):
-        print "Need to define the environment variable $LIBMOL_ROOT to the location where LIBMOL package is,  "
-        print "e.g, export LIBMOL_ROOT=/xxxxx/xxxx/LIBMOL/ "
-        print "or setenv LIBMOL_ROOT /xxxxx/xxxx/LIBMOL/ "
+    tExe1 = os.path.join(os.getenv("LIBMOL_ROOT"),"bin/libmol")
+    tExe2 = os.path.join(os.getenv("LIBMOL_ROOT"),"bin/acedrg")
+    if os.path.isfile(tExe1):
+        tExe = tExe1
+    elif os.path.isfile(tExe2):
+        tExe = tExe2
+    else:
+        print "executable 'acedrg' was not be found under %s"%os.path.join(os.getenv("LIBMOL_ROOT"),"bin")
+        print "Check if the environment variable $LIBMOL_ROOT is defined to the location where LIBMOL package is."
+        print "or the package is sucessfully compiled"
         sys.exit()
 
     if not os.path.isdir(sys.argv[2]):
