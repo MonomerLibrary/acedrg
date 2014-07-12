@@ -161,15 +161,6 @@ def listComp2(a_list, b_list):
     elif a_list[0] < b_list[0]:
         return -1
 
-def listComp3(a_list, b_list):
-
-    if a_list[0] > b_list[0]:
-        return 1
-    elif a_list[0] == b_list[0]:
-        return 0
-    elif a_list[0] < b_list[0]:
-        return -1
-
 
 def dictObjCmp(dict_a, dict_b):
     
