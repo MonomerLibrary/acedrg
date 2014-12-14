@@ -170,6 +170,15 @@ def listComp3(a_list, b_list):
     elif a_list[0] < b_list[0]:
         return -1
 
+def listCompDesc(a_list, b_list):
+
+    if a_list[0] > b_list[0]:
+        return -1
+    elif a_list[0] == b_list[0]:
+        return 0
+    elif a_list[0] < b_list[0]:
+        return 1
+
 
 def dictObjCmp(dict_a, dict_b):
     
@@ -312,6 +321,19 @@ def getSmallFamily(a_str):
         if len(c_rep):
             ch_list.append(c_rep)
         return  ch_list[0],  ch_list
+
+def getElementSymbolFromAtomCODClass(t_cod_class):
+
+    tElem = ""
+    tStrs = t_cod_class.strip().split("(")
+    if len(tStrs) >0:
+        tAtm = tStrs[0]
+        if tAtm.find("[") !=-1:
+            tElem = tAtm.strip().split("[")[0]
+        else: 
+            tElem = tAtm
+    return tElem
+
 
 def getRootAndNB(a_str):
 
