@@ -247,7 +247,7 @@ def getPopulationVar(t_list, t_mean):
     if len(t_list) > 0:
         for a_etr in t_list:
             t_sum +=(a_etr-t_mean)*(a_etr-t_mean)
-            t_var     = math.sqrt(t_sum/len(t_list)) 
+        t_var     = math.sqrt(t_sum/len(t_list)) 
     
     return t_var
 
@@ -258,7 +258,7 @@ def getSampleVar(t_list, t_mean):
     if len(t_list) > 1:
         for a_etr in t_list:
             t_sum +=(a_etr-t_mean)*(a_etr-t_mean)
-            t_var     = math.sqrt(t_sum/(len(t_list)-1)) 
+        t_var     = math.sqrt(t_sum/(len(t_list)-1)) 
     
     return t_var
     
