@@ -170,6 +170,44 @@ def listComp3(a_list, b_list):
     elif a_list[0] < b_list[0]:
         return -1
 
+def listComp4(a_list, b_list):
+
+    if a_list[0] > b_list[0]:
+        return 1
+    elif a_list[0] < b_list[0]:
+        return -1
+
+    if len(a_list[1]) < len(b_list[1]):
+        return 1
+    elif len(a_list[1]) > len(b_list[1]):
+        return -1
+
+    if a_list[1] > b_list[1]:
+        return 1
+    elif a_list[1] == b_list[1]:
+        return 0
+    elif a_list[1] < b_list[1]:
+        return -1
+
+def listComp5(a_list, b_list):
+
+    if a_list[0] > b_list[0]:
+        return 1
+    elif a_list[0] < b_list[0]:
+        return -1
+
+    if len(a_list[1]) > len(b_list[1]):
+        return 1
+    elif len(a_list[1]) < len(b_list[1]):
+        return -1
+
+    if a_list[1] > b_list[1]:
+        return 1
+    elif a_list[1] == b_list[1]:
+        return 0
+    elif a_list[1] < b_list[1]:
+        return -1
+
 def listCompDesc(a_list, b_list):
 
     if a_list[0] > b_list[0]:
@@ -186,6 +224,8 @@ def dictObjCmp(dict_a, dict_b):
     bKey = [len(dict_b["cod_type"]), dict_b["cod_type"]]
 
     return cmp(aKey, bKey)
+
+
 
 def getMax(t_list):
     
@@ -262,7 +302,6 @@ def getSampleVar(t_list, t_mean):
     
     return t_var
     
-
 # The following several functions are used 
 # for extract information of atoms, neighbour atoms
 
@@ -322,6 +361,7 @@ def getSmallFamily(a_str):
             ch_list.append(c_rep)
         return  ch_list[0],  ch_list
 
+
 def getElementSymbolFromAtomCODClass(t_cod_class):
 
     tElem = ""
@@ -334,6 +374,12 @@ def getElementSymbolFromAtomCODClass(t_cod_class):
             tElem = tAtm
     return tElem
 
+def getPrimeAtom(a_str):
+ 
+    ats = a_str.strip().split("(") 
+    a_root = ats[0].strip()
+  
+    return a_root
 
 def getRootAndNB(a_str):
 
@@ -399,6 +445,19 @@ def getAtomSet(a_str):
         if len(c_rep):
             ch_list.append(c_rep)
         return ch_list
+
+def check3NBMetal(a_str):
+
+    
+    hasM = False
+    strG = a_str.strip().split(",")
+    if len(strG):
+        for a3NB in strG:
+            aElem = a3NB.strip().split("|")[-1].strip().split("<")[0]
+            if not isOrganic(aElem):
+                hasM = True
+                break
+    return hasM
 
 
 # Chemistry related:
