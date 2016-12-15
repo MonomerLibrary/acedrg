@@ -681,3 +681,26 @@ def outTempPDB(t_name, t_geo_name, t_atoms):
                   str_i = str(i)
                   
               t_file.close()
+
+def countNumQJobs(t_limit, kW, tQAllJobsName):
+
+    aReturn = True
+    #os.system("qsummary > %s "%tQAllJobsName)
+    try:
+        fQJobLog = open(tQAllJobsName, "r")
+    except IOError :
+        print "%s can not be opened for reading "%JobsAll.log
+        sys.exit(1)
+    else :
+        allLs = fQJobLog.readlines()
+        fQJobLog.close()
+        for aL in allLs:
+            if aL.find(kW) !=-1:
+                strs = aL.strip().split()
+                if len(strs) ==3 and strs[1].isdigit():
+                    nQ = int(strs[1])
+                    if nQ > t_limit:
+                        aReturn = False
+                        break
+    return aReturn    
+                    
