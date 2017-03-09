@@ -108,6 +108,17 @@ def delMolsInCif(in_file_name, out_kept_name, out_deleted_name, crit_dict, num_c
             out_file.close()
             out_file2.close()
 
+def keepPremStr(tStr):
+   
+    aP = "\'"
+    tmpStr = ""
+    for aC in tStr:
+        if aC.find(aP) !=-1:
+            tmpStr +=aP
+        else:
+            tmpStr +=aC
+    return tmpStr
+            
 def allUpper(in_file_name, out_file_name):
 
     try :
@@ -180,6 +191,25 @@ def listComp4(a_list, b_list):
     if len(a_list[1]) < len(b_list[1]):
         return 1
     elif len(a_list[1]) > len(b_list[1]):
+        return -1
+
+    if a_list[1] > b_list[1]:
+        return 1
+    elif a_list[1] == b_list[1]:
+        return 0
+    elif a_list[1] < b_list[1]:
+        return -1
+
+def listComp4_2(a_list, b_list):
+
+    if a_list[0] > b_list[0]:
+        return 1
+    elif a_list[0] < b_list[0]:
+        return -1
+
+    if len(a_list[1]) > len(b_list[1]):
+        return 1
+    elif len(a_list[1]) < len(b_list[1]):
         return -1
 
     if a_list[1] > b_list[1]:
@@ -651,3 +681,26 @@ def outTempPDB(t_name, t_geo_name, t_atoms):
                   str_i = str(i)
                   
               t_file.close()
+
+def countNumQJobs(t_limit, kW, tQAllJobsName):
+
+    aReturn = True
+    #os.system("qsummary > %s "%tQAllJobsName)
+    try:
+        fQJobLog = open(tQAllJobsName, "r")
+    except IOError :
+        print "%s can not be opened for reading "%JobsAll.log
+        sys.exit(1)
+    else :
+        allLs = fQJobLog.readlines()
+        fQJobLog.close()
+        for aL in allLs:
+            if aL.find(kW) !=-1:
+                strs = aL.strip().split()
+                if len(strs) ==3 and strs[1].isdigit():
+                    nQ = int(strs[1])
+                    if nQ > t_limit:
+                        aReturn = False
+                        break
+    return aReturn    
+                    
