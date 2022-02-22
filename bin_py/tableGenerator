@@ -103,19 +103,19 @@ def  getBondsAndAngles(aInFileName, tACs, tBOs, tANs):
                  """
                  # check only when this function is first used
                  print "All bonds: " 
-                 for elem1 in sorted(tBOs["org"].iterkeys()):
-                     for elem2 in sorted(tBOs["org"][elem1].iterkeys()):
-                         for class1 in sorted(tBOs["org"][elem1][elem2].iterkeys()):
-                             for class2 in sorted(tBOs["org"][elem1][elem2][class1].iterkeys()):
+                 for elem1 in sorted(tBOs["org"]):
+                     for elem2 in sorted(tBOs["org"][elem1]):
+                         for class1 in sorted(tBOs["org"][elem1][elem2]):
+                             for class2 in sorted(tBOs["org"][elem1][elem2][class1]):
                                  for aTup in tBOs["org"][elem1][elem2][class1][class2]:
                                      print "%s       %s     %s    %s      %s      %s  "%(aTup[0], elem1, elem2, class1, class2, aTup[1])     
                  print "All angles: "
-                 for elem_cen in sorted(tANs["org"].iterkeys()):
-                     for elem1 in sorted(tANs["org"][elem_cen].iterkeys()):
-                         for elem2 in sorted(tANs["org"][elem_cen][elem1].iterkeys()):
-                             for class_cen in sorted(tANs["org"][elem_cen][elem1][elem2].iterkeys()):
-                                 for class1 in sorted(tANs["org"][elem_cen][elem1][elem2][class_cen].iterkeys()):
-                                     for class2 in sorted(tANs["org"][elem_cen][elem1][elem2][class_cen][class1].iterkeys()):
+                 for elem_cen in sorted(tANs["org"]):
+                     for elem1 in sorted(tANs["org"][elem_cen]):
+                         for elem2 in sorted(tANs["org"][elem_cen][elem1]):
+                             for class_cen in sorted(tANs["org"][elem_cen][elem1][elem2]):
+                                 for class1 in sorted(tANs["org"][elem_cen][elem1][elem2][class_cen]):
+                                     for class2 in sorted(tANs["org"][elem_cen][elem1][elem2][class_cen][class1]):
                                          for aTup in tANs["org"][elem_cen][elem1][elem2][class_cen][class1][class2]:
                                              print "%s     %s     %s    %s     %s     %s    %s      %s" \
                                                    %(aTup[0], elem_cen, elem1, elem2, class_cen, class1, class2, aTup[1])
@@ -228,8 +228,8 @@ else:
     except IOError :
         print "%s can not be opened for reading "%orgAllAtomClassFiles
         sys.exit(1)
-    for elemA in sorted(allCodAtomClasses["org"].iterkeys()):
-        for classA in sorted(allCodAtomClasses["org"][elemA].iterkeys()):
+    for elemA in sorted(allCodAtomClasses["org"]):
+        for classA in sorted(allCodAtomClasses["org"][elemA]):
             orgAllAtomClassFile.write("%12d    %s\n"%(allCodAtomClasses["org"][elemA][classA],classA))
     orgAllAtomClassFile.close()
 
@@ -240,8 +240,8 @@ else:
     except IOError :
         print "%s can not be opened for reading "%nonOrgAllAtomClassFiles
         sys.exit(1)
-    for elemA in sorted(allCodAtomClasses["nonOrg"].iterkeys()):
-        for classA in sorted(allCodAtomClasses["nonOrg"][elemA].iterkeys()):
+    for elemA in sorted(allCodAtomClasses["nonOrg"]):
+        for classA in sorted(allCodAtomClasses["nonOrg"][elemA]):
             nonOrgAllAtomClassFile.write("%12d    %s\n"%(allCodAtomClasses["nonOrg"][elemA][classA],classA))
 
     # 2 output all bonds    
@@ -252,10 +252,10 @@ else:
         print "%s can not be opened for reading "%orgBondFileName
         sys.exit(1)
     
-    for elem1 in sorted(allBonds["org"].iterkeys()):
-        for elem2 in sorted(allBonds["org"][elem1].iterkeys()):
-            for class1 in sorted(allBonds["org"][elem1][elem2].iterkeys()):
-                for class2 in sorted(allBonds["org"][elem1][elem2][class1].iterkeys()):
+    for elem1 in sorted(allBonds["org"]):
+        for elem2 in sorted(allBonds["org"][elem1]):
+            for class1 in sorted(allBonds["org"][elem1][elem2]):
+                for class2 in sorted(allBonds["org"][elem1][elem2][class1]):
                     for aTup in allBonds["org"][elem1][elem2][class1][class2]:
                         orgBondFile.write("%s       %s     %s    %s      %s      %s\n"%(aTup[0], elem1, elem2, class1, class2, aTup[1])) 
     orgBondFile.close()
@@ -276,12 +276,12 @@ else:
         print "%s can not be opened for reading "%orgAngleFileName
         sys.exit(1)
 
-    for elem_cen in sorted(allAngles["org"].iterkeys()):
-        for elem1 in sorted(allAngles["org"][elem_cen].iterkeys()):
-            for elem2 in sorted(allAngles["org"][elem_cen][elem1].iterkeys()):
-                for class_cen in sorted(allAngles["org"][elem_cen][elem1][elem2].iterkeys()):
-                    for class1 in sorted(allAngles["org"][elem_cen][elem1][elem2][class_cen].iterkeys()):
-                        for class2 in sorted(allAngles["org"][elem_cen][elem1][elem2][class_cen][class1].iterkeys()):
+    for elem_cen in sorted(allAngles["org"]):
+        for elem1 in sorted(allAngles["org"][elem_cen]):
+            for elem2 in sorted(allAngles["org"][elem_cen][elem1]):
+                for class_cen in sorted(allAngles["org"][elem_cen][elem1][elem2]):
+                    for class1 in sorted(allAngles["org"][elem_cen][elem1][elem2][class_cen]):
+                        for class2 in sorted(allAngles["org"][elem_cen][elem1][elem2][class_cen][class1]):
                             for aTup in allAngles["org"][elem_cen][elem1][elem2][class_cen][class1][class2]:
                                 orgAngleFile.write("%s     %s     %s    %s     %s     %s    %s      %s\n" \
                                       %(aTup[0], elem_cen, elem1, elem2, class_cen, class1, class2, aTup[1]))

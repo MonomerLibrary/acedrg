@@ -663,7 +663,7 @@ def outTempPDB(t_name, t_geo_name, t_atoms):
               t_file.write("%s\n"%("CRYST1  100.000  100.000  100.000  90.00  90.00  90.00 P 1".ljust(80)))
               i=1
               str_i = str(i)
-              for a_key in sorted(t_atoms.iterkeys()):
+              for a_key in sorted(t_atoms):
                   a_atom= t_atoms[a_key]
                   if i==1:
                       id = "M"
