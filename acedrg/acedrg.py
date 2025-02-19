@@ -1,4 +1,4 @@
-#!/usr/bin/env ccp4-python
+#!/usr/bin/env python
 # Python script
 #
 #
@@ -188,6 +188,7 @@ class Acedrg(CExeCode ):
 
         self.acedrg    = os.path.abspath(sys.argv[0])
         self.acedrgDir = os.path.dirname(os.path.dirname(self.acedrg))
+        print("acedrgDir ", self.acedrgDir)
         #self.acedrg    = ""
         #print "files ", glob.glob(sys.exec_prefix + "/*")
         #self.acedrgDir = sys.exec_prefix
@@ -801,9 +802,9 @@ class Acedrg(CExeCode ):
                     else:
                         print("%s does not exist, check your installation of CCP4 "%tAcedrgTables)
                         sys.exit()
-                else:
-                    print("You need to install CCP4 suite")
-                    sys.exit()
+                #else:
+                #    print("You need to install CCP4 suite")
+                #    sys.exit()
         else:
             if os.path.isdir(t_inputOptionsP.acedrgTables):
                 self.acedrgTables = t_inputOptionsP.acedrgTables
