@@ -216,9 +216,8 @@ class metalMode(CExeCode):
         print("number of all atoms is ", len(tAtoms))
         print("number of metal atoms is ", len(self.metalAtoms))
         print("number of org atoms is ", len(self.remainAtoms))
-        #for aA in tAtoms:
-        #    print(aA.keys())
-        
+        for aA in tAtoms:
+            print(aA['_chem_comp_atom.atom_id'], " of ", aA['_chem_comp_atom.type_symbol'])
         
         atmConnsMap = {} 
     
@@ -787,7 +786,8 @@ class metalMode(CExeCode):
                     posX = float(aAtom['_chem_comp_atom.model_Cartn_x'])
                     posY = float(aAtom['_chem_comp_atom.model_Cartn_y'])
                     posZ = float(aAtom['_chem_comp_atom.model_Cartn_z'])
-                elif '_chem_comp_atom.x' in aAtom.keys():
+                elif '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
+                    print("here")
                     posX = float(aAtom['_chem_comp_atom.x'])
                     posY = float(aAtom['_chem_comp_atom.y'])
                     posZ = float(aAtom['_chem_comp_atom.z'])
@@ -807,7 +807,7 @@ class metalMode(CExeCode):
                     posX = float(aAtom['_chem_comp_atom.model_Cartn_x'])
                     posY = float(aAtom['_chem_comp_atom.model_Cartn_y'])
                     posZ = float(aAtom['_chem_comp_atom.model_Cartn_z'])
-                elif '_chem_comp_atom.x' in aAtom.keys():
+                elif '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
                     posX = float(aAtom['_chem_comp_atom.x'])
                     posY = float(aAtom['_chem_comp_atom.y'])
                     posZ = float(aAtom['_chem_comp_atom.z'])
@@ -966,7 +966,7 @@ class metalMode(CExeCode):
                     posX = float(aAtom['_chem_comp_atom.model_Cartn_x'])
                     posY = float(aAtom['_chem_comp_atom.model_Cartn_y'])
                     posZ = float(aAtom['_chem_comp_atom.model_Cartn_z'])
-                elif '_chem_comp_atom.x' in aAtom.keys():
+                elif '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
                     posX = float(aAtom['_chem_comp_atom.x'])
                     posY = float(aAtom['_chem_comp_atom.y'])
                     posZ = float(aAtom['_chem_comp_atom.z'])
@@ -1363,12 +1363,12 @@ class metalMode(CExeCode):
                         posY = float(aMA['_chem_comp_atom.pdbx_model_Cartn_y_ideal'])
                         posZ = float(aMA['_chem_comp_atom.pdbx_model_Cartn_z_ideal'])
             
-            aLine = "%s%s%s%s%s%10.2f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f\n"\
+            aLine = "%s%s%s%s%s%10.2f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f    %s\n"\
                     % (self.monomRoot.ljust(8), aMA['_chem_comp_atom.atom_id'].ljust(10),
                        aMA['_chem_comp_atom.atom_id'].ljust(10),
                        aMA['_chem_comp_atom.type_symbol'].ljust(6), 
                        aMA['_chem_comp_atom.type_symbol'].upper().ljust(6),
-                       float(aMA['_chem_comp_atom.charge']), posX, posY, posZ, posX, posY, posZ)
+                       float(aMA['_chem_comp_atom.charge']), posX, posY, posZ, posX, posY, posZ, "N")
             tLines.append(aLine)
             
     def writeNewBondCifLine(self, tLines):
@@ -1503,7 +1503,7 @@ class metalMode(CExeCode):
         if self.inCoordForChir:
                     self._cmdline += " --c1 "
         self._log_name  = tOutRoot + "_acedrg.log"
-        #print(self._cmdline)
+        print(self._cmdline)
         self.runExitCode = self.subExecute()
     
     def runRefmac(self, tInCif, tInPdb, tOutRoot):
@@ -1531,9 +1531,9 @@ class metalMode(CExeCode):
         
         if self.workMode == 1:
             if os.path.isfile(self.inMmCifName) :
-               print("inName : ", self.inMmCifName)
+               
                self.fileConv.mmCifReader(self.inMmCifName)
-               print("Number of atoms in the cif file ", len(self.fileConv.atoms))
+               
                
                if len(self.fileConv.atoms) > 0:
                
@@ -1541,7 +1541,7 @@ class metalMode(CExeCode):
                        self.setMonoRoot(self.fileConv.dataDescriptor)
                    else:
                        self.monomRoot = "LIG"
-                   print("Mon-root is ", self.monomRoot)
+                   
                    
                    self.getNewMolWithoutMetal2(self.fileConv.atoms, 
                                                self.fileConv.bonds,

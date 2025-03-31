@@ -3941,6 +3941,31 @@ namespace LIBMOL
         return tS1;
     }
 
+    void CodClassify::getAtomTypesFromATab()
+    {
+        std::string fA = libmolTabDir  + "/allAtomTypesFromMolsCoded.list";
+
+        std::ifstream codAtomTypeFile(fA.c_str());
+        if (codAtomTypeFile.is_open())
+        {
+            std::string tRecord="";
+            while(!codAtomTypeFile.eof())
+            {
+                std::getline(codAtomTypeFile, tRecord);
+                tRecord = TrimSpaces(tRecord);
+                std::vector<std::string> tBuf;
+                StrTokenize(tRecord, tBuf);
+                if ((int)tBuf.size() ==2)
+                {
+                    allCodedAtomTypes[tBuf[0]] = tBuf[1];
+                }
+            }
+            codAtomTypeFile.close();
+        }
+        std::cout << "Number of atom-type is " << allCodedAtomTypes.size()
+                  << std::endl;
+    }
+
     void CodClassify::detectPlaneGroups()
     {
 
@@ -8899,11 +8924,13 @@ namespace LIBMOL
     void CodClassify::getCCP4BondAndAngles()
     {
         // Currently CCP4 suite is the only requited thing
-        char * pClibdMon = std::getenv("CLIBD_MON");
-        if (pClibdMon !=NULL)
+        // char * pClibdMon = std::getenv("CLIBD_MON");
+        //if (pClibdMon !=NULL)
+        if (libmolTabDir!="")
         {
-            std::string enerFName(pClibdMon);
-            enerFName.append("ener_lib.cif");
+            //std::string enerFName(pClibdMon);
+            std::string enerFName(libmolTabDir);
+            enerFName.append("/ener_lib.cif");
             std::ifstream   enerF(enerFName.c_str());
             int nBond = 0;
             int nAng  = 0;

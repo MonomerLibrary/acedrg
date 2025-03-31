@@ -9543,7 +9543,7 @@ namespace LIBMOL
         {
             if (iAt->isMetal)
             {
-                int sumCh =0;
+                double sumCh =0;
                 std::cout << "Metal Atom " << iAt->id
                           << " initial charge : " << iAt->charge << std::endl;
                 std::cout << " sumCh " << sumCh << std::endl;
@@ -9552,9 +9552,21 @@ namespace LIBMOL
                 {
                     if (!tAtoms[*iNB].isMetal)
                     {
+                        double addC  =0.0;
                         std::cout << "NB atom : " << tAtoms[*iNB].id << std::endl;
-                        sumCh +=tAtoms[*iNB].charge;
-                        std::cout << " sumCh " << sumCh << std::endl;
+                        if (tAtoms[*iNB].connMAtoms.size()> 1 )
+                        {
+                            addC =  tAtoms[*iNB].charge/tAtoms[*iNB].connMAtoms.size();
+                        }
+                        else
+                        {
+                            addC = tAtoms[*iNB].charge;
+                        }
+                        std::cout << "It conn to " << tAtoms[*iNB].connMAtoms.size() << " metal atoms" << std::endl;
+                        std::cout << "add Charge is " << addC << std::endl;
+                        sumCh += addC; 
+                        // sumCh +=tAtoms[*iNB].charge;
+                        std::cout << "here sumCh " << sumCh << std::endl;
                     }
 
                 }

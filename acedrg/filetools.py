@@ -19,6 +19,8 @@ import os,os.path,sys
 import time
 import math
 
+from gemmi import cif
+
 
 from . utility  import countPrime
 from . utility  import setBoolDict
@@ -28,7 +30,7 @@ from . utility  import aLineToAlist2
 
 class FileTransformer(object) :
 
-    def __init__(self):
+    def __init__(self, tInMtConnFile=None):
 
         self.dataDescriptor  = {} 
         self.strDescriptors  = {} 
@@ -117,7 +119,39 @@ class FileTransformer(object) :
         self.PdbForMols       = {}
 
         self.hasCCP4Type      = False
+        
+        self.metConn          = {}
+        
+        if tInMtConnFile:
+            self.setMetConnList(tInMtConnFile)
 
+    def setMetConnList(self, tInMtConnFile):
+        
+        if os.path.isfile(tInMtConnFile):
+            try:
+                fM=open(tInMtConnFile, "r")
+            except IOError :
+                print("%s does not exist"%tInMtConnFile)
+            else:
+                allM = fM.readlines()
+                fM.close()
+                for aL in allM:
+                    strs = aL.strip().split()
+                    if len(strs)==3:
+                        if not strs[1] in self.metConn:
+                            self.metConn[strs[1]] = []
+                        self.metConn[strs[1]].append(strs[2])
+                        
+    def mmCifReaderGemmi(self, tInCifName):
+        """Replacement of the older mmCifReader"""
+        
+        if os.path.isfile(tInCifName):
+            aInCif = cif.read_file(tInCifName)
+            numBl = len(aInCif)
+            if numBl > 0:
+                pass 
+        
+        
     def mmCifReader(self, tFileName):
         """Read a detailed mmicif file to get basic information"""
 
@@ -249,6 +283,9 @@ class FileTransformer(object) :
             #    for aK in self.dataDescriptor.keys():
             #        print("Key : ", aK)
             #        print("values ", self.dataDescriptor[aK])
+            print("Number of atoms ", len(self.atoms))
+            for aA in self.atoms:
+                print(aA['_chem_comp_atom.atom_id'], " of ", aA['_chem_comp_atom.type_symbol'])
             
             """
             idKey = "_chem_comp_atom.atom_id"
@@ -261,9 +298,6 @@ class FileTransformer(object) :
                         print ("label : ", aKey, " Value : ", aAtom[aKey])
                     print ("===============================")
             """
-            
-            
-    
     def TmpChemCheck(self):
 
         """ 
@@ -623,6 +657,8 @@ class FileTransformer(object) :
             tHAtoms = []
             for aAtom in self.atoms:
                 #print(aAtom.keys())
+                if not "_chem_comp_atom.pdbx_leaving_atom_flag" in aAtom:
+                    aAtom["_chem_comp_atom.pdbx_leaving_atom_flag"] = "N"
                 if aAtom["_chem_comp_atom.type_symbol"] !="H" and aAtom["_chem_comp_atom.type_symbol"] !="D":
                     tAtoms.append(aAtom)
                 else:
@@ -1243,11 +1279,11 @@ class FileTransformer(object) :
                     self.nameMapingCifMol["H_alt"][nAtm] = aAtom["_chem_comp_atom.alt_atom_id"]
                 else:
                     self.nameMapingCifMol["H_alt"][nAtm] = aAtom["_chem_comp_atom.atom_id"]
-                #self.nameMapingCifMol["H"][nAtm] = aAtom["_chem_comp_atom.atom_id"]
-                #print("NameMap ", nAtm, " : ", self.nameMapingCifMol["H"][nAtm])
-                #print("NameMap ", aAtom["_chem_comp_atom.atom_id"])
+                self.nameMapingCifMol["H"][nAtm] = aAtom["_chem_comp_atom.atom_id"]
+                print("NameMap ", nAtm, " : ", self.nameMapingCifMol["H"][nAtm])
+                print("NameMap ", aAtom["_chem_comp_atom.atom_id"])
                 nAtm +=1
-
+            
 
             # Set up atom seq match for bond section
             mapIdNum = {}
@@ -1490,7 +1526,7 @@ class FileTransformer(object) :
             lA  = False
             lK2 = False
             for aL in origCifLs:
-                if aL.find("_chem_comp_atom.pdbx_model_Cartn_z_ideal") !=-1:
+                if aL.find("_chem_comp_atom.pdbx_leaving_atom_flag") !=-1:
                     lK  = False
                     lA  = True
                     lK2 = False
@@ -1524,13 +1560,13 @@ class FileTransformer(object) :
             cifNewLs = []
             for aLA in cifLs["atoms"]:
                 strs = aLA.strip().split()
-                if len(strs)==12:
+                if len(strs)==13:
                     aName =strs[1]
-                    atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s\n"\
+                    atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"\
                             %(strs[0].ljust(8), strs[1].ljust(8), strs[2].ljust(8),
                               strs[3].ljust(6), strs[4].ljust(6), strs[5].ljust(6),
                               atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12),
-                              atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12))
+                              atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12), strs[12])
                     cifNewLs.append(atmL)
             
             try:
@@ -1788,9 +1824,64 @@ class FileTransformer(object) :
                     l0  = True
         if aTS != "":
             tList.append(aTS.strip())   
-        
-
+    
     def aLineToAlist2(self, tL, tList):
+
+            aTS = ""
+            l1  = False
+            l2  = False 
+            for aS in tL:
+                if aS ==" ":
+                    if not l1 and not l2 and len(aTS)!=0:
+                        tList.append(aTS.strip())
+                        aTS = ""
+                        l1 = False
+                        l2 = False
+                    #elif l1 and not l2 and len(aTS) !=0:
+                    #    print("2: ", aTS)
+                    #    tList.append(aTS.strip())
+                    #    aTS = ""
+                    #    l1 = False
+                    #    l2 = False
+                    elif l2 :
+                        aTS = aTS + aS
+                    elif l1 :
+                        aTS = aTS + aS
+                elif aS.find("\"") !=-1:
+                    if l2:
+                        aTS = "\"" + aTS + "\""
+                        tList.append(aTS.strip())
+                        aTS = ""
+                        l1 = False
+                        l2 = False
+                    elif l1:
+                        aTS = aTS + aS
+                    else:
+                        l2 = True
+                        l1 = False
+                elif aS.find("\'") !=-1:
+                    if l1:
+                        #if not l2:
+                        aTS = "\'" + aTS + "\'"
+                        tList.append(aTS)
+                        aTS = ""
+                        l1  = False
+                        l2  = False
+                    elif l2:
+                        aTS = aTS + aS
+                    else:
+                        l2 = False
+                        l1 = True
+                else:
+                    aTS = aTS + aS
+
+            if aTS != "":
+                tList.append(aTS.strip())
+            #print("Line = ", tL)
+            #print("List = ", tList)
+
+
+    def aLineToAlist3(self, tL, tList):
        
             aTS = ""
             l0  = False
@@ -1841,7 +1932,9 @@ class FileTransformer(object) :
                     aTS = aTS + aS
                     
             if aTS != "":
-                tList.append(aTS.strip())    
+                tList.append(aTS.strip()) 
+            print("Line = ", tL)
+            print("List = ", tList)
             
             
     def mol2Reader(self, tFileName):

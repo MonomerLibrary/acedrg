@@ -223,7 +223,10 @@ class Acedrg(CExeCode ):
         print("input RDKit: number of initial conformers ", self.rdKit.numInitConformers)
         #print "input RDKit: number of output conformers ", self.rdKit.numConformers
 
-        self.fileConv         = FileTransformer()   
+        if os.path.isfile(self.inMtConnFile):
+            self.fileConv         = FileTransformer(self.inMtConnFile)
+        else:
+            self.fileConv         = FileTransformer()   
             
         self.chemCheck        = ChemCheck() 
         
@@ -1982,7 +1985,7 @@ class Acedrg(CExeCode ):
             inCifNamesRoot =[]
             #for idxConf in range(nConf): 
             idxC = 1
-            #print "Number of selct conformers ", self.rdKit.selecConformerIds
+            #print("Number of selct conformers ", self.rdKit.selecConformerIds)
             for idxConf in self.rdKit.selecConformerIds : 
                 aCifRoot  = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
                 aConfCif = os.path.join(self.scrDir, aCifRoot + "_init.cif")
@@ -2096,6 +2099,7 @@ class Acedrg(CExeCode ):
             else:
                 self.outRstCifName = tRoot +  ".cif"
             
+            print("tCifInName ", tCifInName)
             print("tRoot ", tRoot)
             print("outName ", self.outRstCifName)
             cifCont = {}
@@ -2103,7 +2107,6 @@ class Acedrg(CExeCode ):
             cifCont['bulk']   = []
             cifCont['others'] =[]
             monoId = ""
-
             if self.monomRoot.find("LIG") ==-1:
                 #if len(self.monomRoot) >=3:
                 #    monoId = self.monomRoot[:3]

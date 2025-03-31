@@ -67,7 +67,7 @@ namespace LIBMOL
         elements["C"]["atomNum"] = 6;
         elements["C"]["val"]     = 4;
         elemProps["C"]["vdw"]    = 1.70;
-        elemProps["C"]["cova"]   = 0.76;       //0.85;    // 0.76;
+        elemProps["C"]["cova"]   = 0.88;                //0.76;       //0.85;    // 0.76;
         elemProps["C"]["ionM-"]   = 0.30;
 
 
