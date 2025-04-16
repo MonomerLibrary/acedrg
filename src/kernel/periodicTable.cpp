@@ -327,7 +327,7 @@ namespace LIBMOL
         //elements["Ra"]["vdw"]      = 2.15;
         //elements["Ra"]["cova"]     = 1.90;
         elemProps["Ra"]["vdw"]     = 2.15;
-        elemProps["Ra"]["cova"]    = 1.90;
+        elemProps["Ra"]["cova"]    = 1.75;       //1.90;
         elemProps["Ra"]["ionM+"]    = 1.62;
 
 
@@ -434,7 +434,7 @@ namespace LIBMOL
         //elements["Ta"]["vdw"]       = 1.45;
         //elements["Ta"]["cova"]      = 1.43;
         elemProps["Ta"]["vdw"]      = 1.45;
-        elemProps["Ta"]["cova"]     = 1.70;
+        elemProps["Ta"]["cova"]     = 1.50;  // 1.70;
         elemProps["Ta"]["ionM+"]   = 0.78;
         //elemProps["Ta4+"]["cova"]   = 0.82;
         //elemProps["Ta5+"]["cova"]   = 0.78;

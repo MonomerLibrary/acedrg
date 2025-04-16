@@ -1298,6 +1298,40 @@ namespace LIBMOL
 
     }
 
+    void CodClassify::reDoAtomCodClassNames(int dLev)
+    {
+        for (std::vector<RingDict>::iterator iR=allRingsV.begin();
+                iR !=allRingsV.end(); iR++)
+        {
+            iR->isAromatic = iR->isAromaticP;
+        }
+        ringTools aRingTool;
+        aRingTool.setAtomsRingRepreS(allAtoms, allRingsV);
+
+        for (int i=0; i < (int)allAtoms.size(); i++)
+        {
+            allAtoms[i].codClass = "";
+            setAtomCodClassNameNew2(allAtoms[i], allAtoms[i], dLev);
+        }
+
+        for (std::vector<AtomDict>::iterator iAt=allAtoms.begin();
+               iAt !=  allAtoms.end(); iAt++)
+        {
+            setSpecial3NBSymb2(iAt);
+        }
+
+        setAtomsNBSymb2();
+
+        std::cout << "CheckHere" << std::endl;
+        for (std::vector<AtomDict>::iterator iA=allAtoms.begin();
+               iA !=allAtoms.end(); iA++)
+        {
+            std::cout << "atom " << iA->id << " has type "
+                      << iA->codClass << std::endl;
+        }
+
+    }
+
     void CodClassify::getSmallFamily(std::string tInStr, NB1stFam& aNBFam)
     {
         std::vector<std::string> ch_list;

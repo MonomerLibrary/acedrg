@@ -3298,7 +3298,7 @@ class AcedrgRDKit(object):
         self.getAllFuncGroupAtoms(tMol)
         if len(self.funcGroups):
             for aFuncG in list(self.funcGroups.keys()):
-                #print("check ", aFuncG)
+                print("check ", aFuncG)
                 if aFuncG.find("CARBOXY-AMINO-TERS") != -1:
                     #print("Doing ", aFuncG)
                     self.setFormalChargeC_A_T(
@@ -3392,7 +3392,6 @@ class AcedrgRDKit(object):
                     # print self.funcGroups[aFuncG]
                     self.setFormalChargeC_T(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
-        
         
     def setFormalChargeC_T(self, tMol, tFunG, tAtomIdxs, tPH):
 

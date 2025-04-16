@@ -9276,7 +9276,7 @@ namespace LIBMOL
                 {
 
                     std::string aAR;
-                    if (iR->isAromatic)
+                    if (iR->isAromaticP)
                     {
                         aAR="YES";
                     }

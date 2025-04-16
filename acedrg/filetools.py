@@ -87,6 +87,8 @@ class FileTransformer(object) :
                             "_chem_comp.name", "_chem_comp.group",    \
                             "_chem_comp.number_atoms_all", "_chem_comp.number_atoms_nh", \
                             "_chem_comp.desc_level"]
+        
+        self.leaAtmMap   = {}
  
         self.rdkitSmiles  = {}
 
@@ -656,9 +658,11 @@ class FileTransformer(object) :
             tAtoms = []
             tHAtoms = []
             for aAtom in self.atoms:
-                #print(aAtom.keys())
+                #print(aAtom)
                 if not "_chem_comp_atom.pdbx_leaving_atom_flag" in aAtom:
                     aAtom["_chem_comp_atom.pdbx_leaving_atom_flag"] = "N"
+                if "_chem_comp_atom.atom_id" in aAtom and "_chem_comp_atom.pdbx_leaving_atom_flag" in aAtom:
+                    self.leaAtmMap[aAtom["_chem_comp_atom.atom_id"]] = aAtom["_chem_comp_atom.pdbx_leaving_atom_flag"]
                 if aAtom["_chem_comp_atom.type_symbol"] !="H" and aAtom["_chem_comp_atom.type_symbol"] !="D":
                     tAtoms.append(aAtom)
                 else:
@@ -728,7 +732,6 @@ class FileTransformer(object) :
                     for i in range(len(colIdx)):
                         aStr +="%s"%aChiral[colIdx[i]].ljust(8)
                     #print aStr
-        
         
         #if tProp =="strDescriptor":
         #    if len(self.strDescriptors["props"]):

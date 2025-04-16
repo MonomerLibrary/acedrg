@@ -341,6 +341,9 @@ namespace LIBMOL
         void outRingSecNew2(std::string & tAtmCodStr, AtomDict & tAtom);
         std::string outRingSecStr(AtomDict &tAtom);
 
+
+        void reDoAtomCodClassNames(int dLev);
+
         void getAtomTypesFromATab();
 
 

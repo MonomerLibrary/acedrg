@@ -66,7 +66,7 @@ class metalMode(CExeCode):
         check
         """
         
-    def execute(self, tAtoms, tBonds, tMonomRoot, tOutRoot, tFileConv, tChem, tVersionInfo):
+    def execute(self, tAtoms, tBonds, tMonomRoot, tOutRoot, tFileConv, tChem, tProcParas, tVersionInfo):
         
         aRet = ""
         self.monomRoot = tMonomRoot
@@ -89,7 +89,7 @@ class metalMode(CExeCode):
             print("Stage 2 ")
             print("acedrg is running")
             outTmpRootName = self.outRoot + "_tmp"
-            self.runAcedrg(tmpMmcifName, outTmpRootName)
+            self.runAcedrg(tmpMmcifName, outTmpRootName, tProcParas)
             outTmpCifName  =  outTmpRootName + ".cif"
             
             
@@ -142,7 +142,7 @@ class metalMode(CExeCode):
             print("Stage 2 ")
             print("acedrg is running")
             outTmpRootName = self.outRoot + "_tmp"
-            self.runAcedrg(tmpMmcifName, outTmpRootName)
+            self.runAcedrg(tmpMmcifName, outTmpRootName, tProcParas)
             outTmpCifName  =  outTmpRootName + ".cif"
             if os.path.isfile(outTmpCifName):
                 aRet = outTmpCifName
@@ -1484,7 +1484,7 @@ class metalMode(CExeCode):
             
     
     
-    def runAcedrg(self, tInCif, tOutRoot):
+    def runAcedrg(self, tInCif, tOutRoot, tProcParas):
         
         if not os.path.isdir(tOutRoot+"_TMP"):
             os.mkdir(tOutRoot+"_TMP")
@@ -1500,6 +1500,9 @@ class metalMode(CExeCode):
         else:
             self._cmdline   = "%s -c %s  -r %s -o %s --mtList %s  -j %d"%(self.exeAcedrg, tInCif, 
                                                                             self.monomRoot, tOutRoot, aMtConnFileName, self.initConfs)
+
+        if "noProtonation" in tProcParas:
+            self._cmdline +=" -K  "
         if self.inCoordForChir:
                     self._cmdline += " --c1 "
         self._log_name  = tOutRoot + "_acedrg.log"
@@ -1521,98 +1524,6 @@ class metalMode(CExeCode):
         self.runExitCode = self.subExecute()
         
    
-    
-
-        
-    
-    def executeOld(self):
-        
-        print("workMode is ", self.workMode)
-        
-        if self.workMode == 1:
-            if os.path.isfile(self.inMmCifName) :
-               
-               self.fileConv.mmCifReader(self.inMmCifName)
-               
-               
-               if len(self.fileConv.atoms) > 0:
-               
-                   if len(self.fileConv.dataDescriptor):
-                       self.setMonoRoot(self.fileConv.dataDescriptor)
-                   else:
-                       self.monomRoot = "LIG"
-                   
-                   
-                   self.getNewMolWithoutMetal2(self.fileConv.atoms, 
-                                               self.fileConv.bonds,
-                                               self.outRstCifName)
-                   
-                   
-                   tmpMmcifName = self.monomRoot + "_tmpIn.cif"
-                   
-                   self.setCCP4MonDataDescritor()
-                   self.outInitModifiedCif(tmpMmcifName)
-                   
-                   if os.path.isfile(tmpMmcifName):
-                       print("acedrg is running")
-                       
-                       outTmpRootName = self.outRoot + "_tmp"
-                       self.runAcedrg(tmpMmcifName, outTmpRootName)
-                       
-                       outTmpCifName  =  outTmpRootName + ".cif"
-                       outTmpPDBName  =  outTmpRootName + ".pdb"
-                       
-                       print("Stage 1 ")
-                       for aA in self.metalAtoms:
-                           print("Metal atom ", aA['_chem_comp_atom.atom_id'], 
-                                 " carries ", aA['_chem_comp_atom.charge'], 
-                                 " formal charge ")
-                       if os.path.isfile(outTmpCifName) and os.path.isfile(outTmpPDBName):
-                           
-                           outTmp2RootName = self.outRoot   + "_tmp2"
-                           outTmp2CifName  = outTmp2RootName + ".cif"
-                           outTmp2PDBName  = outTmp2RootName + ".pdb"
-                           
-                           #self.modiCifAndPdb(outTmpCifName, outTmpPDBName, 
-                           #                   outTmp2CifName, outTmp2PDBName)
-                           self.modiCifAndPdb2(outTmpCifName, outTmpPDBName, 
-                                              outTmp2CifName, outTmp2PDBName)
-                           
-                           print("Stage 3 ")
-                           for aA in self.metalAtoms:
-                               print("Metal atom ", aA['_chem_comp_atom.atom_id'], 
-                                     " carries ", aA['_chem_comp_atom.charge'], 
-                                     " formal charge ")
-                           
-                           if os.path.isfile(outTmp2CifName) and os.path.isfile(outTmp2PDBName):
-                               print ("Refmac is running")
-                               outFinRootName = self.outRoot   + "_final"
-                               
-                               self.runRefmac(outTmp2CifName, outTmp2PDBName, outFinRootName)
-                               #os.system("cp %s %s"%(outTmp2CifName, outFinRootName+".cif"))
-                               print("The final pdb is ", outFinRootName+".pdb") 
-                               for aA in self.metalAtoms:
-                                   print("Metal atom ", aA['_chem_comp_atom.atom_id'], 
-                                         " carries ", aA['_chem_comp_atom.charge'], 
-                                         " formal charge ")
-                                         
-                               
-        
-        elif self.workMode == 2:
-            if os.path.isfile(self.inSmiName) :
-                print("input file is %s"%self.inSmiName)
-                self.initMols('smi', self.inSmiName, self.mols)
-                idxMol = 0
-                self.metalAtoms={}
-                self.metalConnAtoms={}
-                for aMol in self.mols:
-                    self.metalAtoms[idxMol]      = []
-                    self.metalConnAtoms[idxMol]  = []
-                    self.modiMol(aMol, self.metalAtoms[idxMol],  self.metalConnAtoms[idxMol],
-                            self.organicSec, self.defaultBo)
-                    
-                    
-               
 
 #def main():
 #    hemTObj = hemT(sys.argv[1:])

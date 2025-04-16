@@ -177,7 +177,7 @@ class Acedrg(CExeCode ):
         self.lowSigForBonds     = 0.01
         self.upperSigForAngles  = 3.0
         self.lowSigForAngles    = 1.5
-        
+
         self.inMtConnFile       = ""
 
         self.allBondsAndAngles["atomClasses"] = {}
@@ -288,7 +288,7 @@ class Acedrg(CExeCode ):
                                     action="store", type="string", help="Input MMCIF File containing coordinates and bonds")
         
         self.inputParser.add_option("--c0", dest="inCoordMmCifName", metavar="FILE", 
-                                    action="store", type="string", help="Input MMCIF File within which the coordinates will be output. Internal use only")
+                                    action="store", type="string", help="Input MMCIF File within which the coordinates will be output.")
                                     
         self.inputParser.add_option("--c1", dest="inCoordForChir", 
                                     action="store_true",  default=False,
@@ -1082,7 +1082,7 @@ class Acedrg(CExeCode ):
             self.inParamFile = t_inputOptionsP.inParamFile 
             print("Input paramet file is ", self.inParamFile)
             self.setSigmaBounds()
-
+        
 
         if t_inputOptionsP.noProtonation:
             self.inputPara["noProtonation"]     = t_inputOptionsP.noProtonation
@@ -3117,7 +3117,8 @@ class Acedrg(CExeCode ):
                                         self.fileConv.nameMapingCifMol, self.fileConv.inputCharge)
 
     def usingCoordsInCif(self, tFinInCif, tRoot):
-        
+       
+        print("tFinInCif ", tFinInCif) 
         fC1 = FileTransformer()
         fC1.mmCifReader(self.inCoordMmCifName)
         
@@ -3133,16 +3134,18 @@ class Acedrg(CExeCode ):
             fC2.replaceAtomCoords(a3B, fC1.atoms, aFinalOutN)
         else:
             shutil.copy(tFinInCif,aFinalOutN)
+       
         if len(fC1.atoms) != len(fC2.atoms) or not fC1.mmCifHasCoords:
             aRoot=os.path.basename(self.outRoot)
             self.runServalcat(aRoot, aFinalOutN)
             aSOutName = os.path.join(self.scrDir, aRoot + "_updated.cif")
             if os.path.isfile(aSOutName):
-                finalOutName = self.outRoot + ".cif"
-                self.cleanSFile(aSOutName, finalOutName)
+                #finalOutName = self.outRoot + ".cif"
+                self.cleanSFile(aSOutName, aFinalOutN)
+       
         
         aFinalPdbN = self.baseRoot +  ".pdb"
-        if os.path.isfile(finalOutName) and len(self.monomRoot) <=3:
+        if os.path.isfile(aFinalOutN) and len(self.monomRoot) <=3:
             self.runGemmiCif2Pdb(aFinalOutN, aFinalPdbN)
                 
     def execute(self):
@@ -3641,7 +3644,7 @@ class Acedrg(CExeCode ):
                 if self.fileConv.atoms != self.initMetalAtoms:
                     
                     aFinInCif = self.metalMode.execute(self.fileConv.atoms, self.fileConv.bonds, self.monomRoot,\
-                                                   self.outRoot, self.fileConv, self.chemCheck, self.versionInfo)
+                                                   self.outRoot, self.fileConv, self.chemCheck, self.inputPara, self.versionInfo)
                     
                     if len(self.fileConv.bonds)==1:
                          print("The finalfile is ", aFinInCif)
@@ -3850,8 +3853,12 @@ class Acedrg(CExeCode ):
             for iMol in range(len(self.rdKit.molecules)):
                 self.inMmCifName =  os.path.join(self.scrDir, self.baseRoot + "_mol_" + str(iMol) + ".cif")
                 self.initMmcifMolMap[iMol] = self.inMmCifName
+                if len(self.fileConv.leaAtmMap):
+                    self.addAtmMap(self.rdKit.molecules[iMol], self.fileConv.leaAtmMap)
+                
                 self.rdKit.MolToSimplifiedMmcif(self.rdKit.molecules[iMol], self.inMmCifName, self.chemCheck, self.monomRoot, self.fileConv.chiralPre,\
                                                 self.fileConv.chiralBoth)
+                
                 if os.path.isfile(self.inMmCifName):
                     if not self.chemCheck.isOrganic(self.inMmCifName, self.workMode):
                         print("The input system contains metal or other heavier element")
@@ -4123,7 +4130,15 @@ class Acedrg(CExeCode ):
 
         print("Error: check log file at %s"%self._log_name)
     
-
+    def addAtmMap(self, tRdKitMol, tLeavAtmMap):
+        
+        for aAtm in tRdKitMol.GetAtoms():
+            aId = aAtm.GetProp("Name")
+            if aId in tLeavAtmMap:
+                aAtm.SetProp("_chem_comp_atom.pdbx_leaving_atom_flag", tLeavAtmMap[aId])
+            else:
+                aAtm.SetProp("_chem_comp_atom.pdbx_leaving_atom_flag", "N")
+            #print("atom %s has leaving tag %s"%(aId, aAtm.GetProp("_chem_comp_atom.pdbx_leaving_atom_flag")))
             
 # Other supplement functions
 
