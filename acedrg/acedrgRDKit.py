@@ -82,6 +82,7 @@ class AcedrgRDKit(object):
         self.conformerEngMap = {}
         self.numSelectForRefConfs = 1
         self.selecConformerIds = []
+        self.noRdKitConfs  = False
         self.maConn      = {}
         
         self.atomPDPCMap = {}
@@ -108,6 +109,7 @@ class AcedrgRDKit(object):
         
         self.inputCoordMap = {}
         self.chirBothList  = {}
+        
 
     def setProcPara(self, tProcessParaSet):
 
@@ -154,7 +156,12 @@ class AcedrgRDKit(object):
         if "inCoordForChir" in tProcessParaSet:
             self.useCoordsForChir = True    
         
-
+        
+        if "noRdKitConfs" in tProcessParaSet:
+            self.noRdKitConfs = True
+        
+        
+        
     def setRepSign(self):
 
         # TEMP function, select the deleted chemical eleement among "F, CL, BR, I, AT",
@@ -1792,7 +1799,6 @@ class AcedrgRDKit(object):
         #  Setup conformers for the molecules
         if self.useExistCoords:
             if self.numInitConformers <=10:
-                
                 confIds = AllChem.EmbedMultipleConfs(
                 tMol, self.numInitConformers, maxAttempts=0, randomSeed=-1, clearConfs=False)
             else:
@@ -1922,7 +1928,6 @@ class AcedrgRDKit(object):
             sys.exit(1)
 
     def generateMultiComformersByRDKit(self, tMol):
-
         retConfIds = AllChem.EmbedMultipleConfs(
             tMol, self.numInitConformers, maxAttempts=0, randomSeed=-1, clearConfs=True)
         if len(retConfIds) == 0:
@@ -2184,11 +2189,11 @@ class AcedrgRDKit(object):
         #    self.reAssignChirals(aMol)
         allAtoms = aMol.GetAtoms()
         #print("number of atom now ", len(allAtoms))
-        for aA in  allAtoms:
-            print("Atom : ", aA.GetProp("Name"))
-            print("Charge : ", aA.GetFormalCharge())  
-        
-        if not self.noConformers:
+        #for aA in  allAtoms:
+        #    print("Atom : ", aA.GetProp("Name"))
+        #    print("Charge : ", aA.GetFormalCharge())  
+        print(self.noRdKitConfs)
+        if not self.noConformers and not self.noRdKitConfs:
             for aAtom in allAtoms:
                 aIdx = aAtom.GetIdx()
                 tChemCheck.checkChiralCenters(aMol, aIdx)
@@ -2198,12 +2203,11 @@ class AcedrgRDKit(object):
             #print("self.useExistCoords2 ", self.useExistCoords2)
             #print("self.useExistCoords ", self.useExistCoords)
             if not self.useExistCoords2:
+                print("Here")
                 self.setInitConformersOneMol(aMol)
             else:
                 confId = aMol.GetConformer()
                 self.selecConformerIds.append(confId)
-            nConf = aMol.GetNumConformers()
-            
         
             if len(aMol.GetConformers()) != 0:
 
@@ -2214,7 +2218,11 @@ class AcedrgRDKit(object):
             else:
                 print(
                      "RDKit failed to produce any conformers. Acedrg needs at least one conformer ")
-                print("Acedrg stops ") 
+                print("Acedrg stops ")
+        
+        
+        #elif self.noRdKitConfs:
+        #    pass
                 
         tCurMols = []
         if tMode == 0:
@@ -2228,10 +2236,11 @@ class AcedrgRDKit(object):
             tCurMols = self.moleculesB
 
         # Check
-        for aMol in tCurMols:
-            rdmolops.AssignStereochemistry(
+        if not self.noRdKitConfs:
+            for aMol in tCurMols:
+                rdmolops.AssignStereochemistry(
                 aMol, cleanIt=False, force=False, flagPossibleStereoCenters=True)
-            #self.showInfoAboutAtomsAndBonds(aMol, 3)
+                #self.showInfoAboutAtomsAndBonds(aMol, 3)
             
         
         
@@ -2526,7 +2535,9 @@ class AcedrgRDKit(object):
             aMmCif.write("data_comp_%s\n" % tMonoName)
             aMmCif.write("#\n")
 
-            aConformer = tMol.GetConformer(tIdxConform)
+            if not self.noRdKitConfs:
+                aConformer = tMol.GetConformer(tIdxConform)
+                
             rdmolops.AssignAtomChiralTagsFromStructure(
                 tMol, confId=tIdxConform)
 
@@ -2543,11 +2554,24 @@ class AcedrgRDKit(object):
             aMmCif.write("_chem_comp_atom.z\n")
             aMmCif.write("_chem_comp_atom.pdbx_leaving_atom_flag\n")
             #nTetraChi = 0
+           
             for aAtom in allAtoms:
                 if not aAtom.HasProp("_chem_comp_atom.pdbx_leaving_atom_flag"):
                     aAtom.SetProp("_chem_comp_atom.pdbx_leaving_atom_flag", "N")
                 lev = aAtom.GetProp("_chem_comp_atom.pdbx_leaving_atom_flag")
-                pos = aConformer.GetAtomPosition(aAtom.GetIdx())
+                x = 0.0
+                y = 0.0
+                z = 0.0
+                if not self.noRdKitConfs:
+                    pos = aConformer.GetAtomPosition(aAtom.GetIdx())
+                    x   = pos.x
+                    y   = pos.y
+                    z   = pos.z
+                else:
+                    x   = random.uniform(-2.0, 2.0)
+                    y   = random.uniform(-2.0, 2.0)
+                    z   = random.uniform(-2.0, 2.0)
+                
                 #aChi = aAtom.GetChiralTag()
                 # if aChi != rdchem.ChiralType.CHI_UNSPECIFIED:
                 #print("xxxx Atom ", aAtom.GetProp("Name"))
@@ -2563,7 +2587,7 @@ class AcedrgRDKit(object):
                     aAltName = aName
                 aMmCif.write("%s         %s      %s      %s     %s     %3.2f   %5.4f    %5.4f     %5.4f      %s\n"
                              % (tMonoName, aName, aAltName, aAtom.GetSymbol(),
-                                aAtom.GetSymbol(), float(aAtom.GetFormalCharge()), pos.x, pos.y, pos.z,  lev))
+                                aAtom.GetSymbol(), float(aAtom.GetFormalCharge()), x, y, z,  lev))
             # Bond section
             aMmCif.write("#\n")
             aMmCif.write("_chem_comp_bond.comp_id\n")
@@ -2602,7 +2626,11 @@ class AcedrgRDKit(object):
                 #                     %(tMonoName, name1, name2,  bType, \
                 #                       isAro, bLen, dBlen))
                 # else:
-                bLen = rdMolTransforms.GetBondLength(aConformer, idx1, idx2)
+                bLen = 1.50
+                if not self.noRdKitConfs:
+                    bLen = rdMolTransforms.GetBondLength(aConformer, idx1, idx2)
+                else:
+                    bLen = random.uniform(1.0, 2.0)
                 dBlen = 0.20
                 aMmCif.write("%s       %s       %s       %s      %s     %5.4f     %5.4f\n"
                              % (tMonoName, name1, name2,  bType,
@@ -2613,7 +2641,6 @@ class AcedrgRDKit(object):
             elif self.useCoordsForChir:
                 self.outChiralSectionInCoords(delAtomIdxs, tMol, aMmCif, tChemCheck)
             aMmCif.close()
-            
             
     def MolToSimplifiedMmcifNoComf(self, tMol, tMmcifName, tChemCheck, tMonoName="LIG", tChiDes=None, tGroupName="non-polymer"):
         

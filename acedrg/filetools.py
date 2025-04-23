@@ -18,9 +18,12 @@ from builtins import object
 import os,os.path,sys
 import time
 import math
+import random 
 
 from gemmi import cif
 
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 from . utility  import countPrime
 from . utility  import setBoolDict
@@ -1586,7 +1589,84 @@ class FileTransformer(object) :
                     aOutCif.write(aL) 
                 aOutCif.close()
                 
+    def setAInitConfForMonCifNoRdkitConf(self, tInCifName, tOutCifName, tMol):
+        
+        try:
+            aInCif = open(tInCifName, "r")
+        except IOError:
+            print("%s  can not be open for reading "%tInCifName)
+            sys.exit()
+        else:
             
+            origCifLs = aInCif.readlines()
+            aInCif.close()
+            
+            cifLs ={}
+            cifLs["part1"] = []
+            cifLs["atoms"] = []
+            cifLs["part2"] = []
+            
+            lK  = True
+            lA  = False
+            lK2 = False
+            for aL in origCifLs:
+                if aL.find("_chem_comp_atom.pdbx_leaving_atom_flag") !=-1:
+                    lK  = False
+                    lA  = True
+                    lK2 = False
+                    cifLs["part1"].append(aL)
+                elif lA and aL.find("loop_") !=-1:
+                    lA  = False
+                    lK  = False
+                    lK2 = True
+                    cifLs["part2"].append(aL)
+                elif lK:
+                    cifLs["part1"].append(aL)
+                elif lA:
+                    cifLs["atoms"].append(aL)
+                elif lK2:
+                    cifLs["part2"].append(aL)
+            a2DMol = AllChem.Compute2DCoords(tMol) 
+            aConf  =  tMol.GetConformer(a2DMol) 
+            atoms  =  tMol.GetAtoms()
+            atomPOS ={}
+            for aAtom in atoms:
+                idxA  = aAtom.GetIdx() 
+                name  = aAtom.GetProp("Name").strip() 
+                pos = aConf.GetAtomPosition(idxA)
+                posX ="%8.3f"%pos.x
+                posY ="%8.3f"%pos.y
+                posZ ="%8.3f"%random.uniform(-1.0, 1.0)
+                atomPOS[name] = []
+                atomPOS[name].append(posX)
+                atomPOS[name].append(posY)
+                atomPOS[name].append(posZ)
+            cifNewLs = []
+            for aLA in cifLs["atoms"]:
+                strs = aLA.strip().split()
+                if len(strs)==13:
+                    aName =strs[1]
+                    atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"\
+                            %(strs[0].ljust(8), strs[1].ljust(8), strs[2].ljust(8),
+                              strs[3].ljust(6), strs[4].ljust(6), strs[5].ljust(6),
+                              atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12),
+                              atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12), strs[12])
+                    cifNewLs.append(atmL)
+            
+            try:
+                aOutCif = open(tOutCifName, "w")
+            except IOError:
+                print("%s  can not be open for writing "%tOutCifName)
+                sys.exit()
+            else:
+                for aL in cifLs["part1"]:
+                    aOutCif.write(aL)
+                for aL in cifNewLs:
+                    aOutCif.write(aL) 
+                for aL in cifLs["part2"]:
+                    aOutCif.write(aL) 
+                aOutCif.close()
+               
 
     def MolToPDBFile(self, tOutFileName, idxMol, tMol, tDataDiscriptor=None, tMonoRoot="LIG", idxConf=0, tDelSign="", tUsingCoords=False):
 

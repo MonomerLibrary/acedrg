@@ -140,6 +140,7 @@ class Acedrg(CExeCode ):
         self.numConformers    = 1
         self.useCifCoords     = False
         self.noConformers     = False
+        self.noRdKitConfs     = False
 
         self.inputPara        = {}
         self.inputPara["PH"]  = [False, 0.0]
@@ -312,6 +313,9 @@ class Acedrg(CExeCode ):
         self.inputParser.add_option("-i",  "--smi", dest="inSmiName", metavar="FILE", 
                                     action="store", type="string", 
                                     help="Input  File containing a SMILE string")
+        self.inputParser.add_option("--i2", dest="noRdKitConfs", 
+                                    action="store_true", default=False, 
+                                    help="A alternative initial conformer geometrical generator for SMILES strings, using it only when normal -i option fail")
 
         self.inputParser.add_option("-j",  "--numInitConf", dest="numInitConformers", 
                                     action="store", type="int", 
@@ -1022,7 +1026,7 @@ class Acedrg(CExeCode ):
                 
         if t_inputOptionsP.inCoordForChir:
             self.inCoordForChir = t_inputOptionsP.inCoordForChir
-
+ 
         self.scrDir = self.outRoot + "_TMP"
         if not os.path.isdir(self.scrDir):
             os.mkdir(self.scrDir)
@@ -1083,7 +1087,7 @@ class Acedrg(CExeCode ):
             print("Input paramet file is ", self.inParamFile)
             self.setSigmaBounds()
         
-
+       
         if t_inputOptionsP.noProtonation:
             self.inputPara["noProtonation"]     = t_inputOptionsP.noProtonation
 
@@ -1108,6 +1112,13 @@ class Acedrg(CExeCode ):
         
         if self.inCoordForChir:
             self.inputPara["inCoordForChir"] = self.inCoordForChir 
+
+        if t_inputOptionsP.noRdKitConfs:
+        
+            self.noRdKitConfs = t_inputOptionsP.noRdKitConfs
+            self.inputPara["noRdKitConfs"] = self.noRdKitConfs
+        
+        
         
 
     def setSigmaBounds(self):
@@ -1970,9 +1981,11 @@ class Acedrg(CExeCode ):
         #tmpStr = ""
         #if self.numConformers == 1:
         #    tmpStr = "_tmp"
-        nConf = self.rdKit.molecules[tIdxMol].GetNumConformers()
-        print("Number of intial conformers for the molecule  ", nConf)
-
+        if not self.noRdKitConfs:
+            nConf = self.rdKit.molecules[tIdxMol].GetNumConformers()
+            print("Number of intial conformers for the molecule  ", nConf)
+        else:
+            nConf = 10      # Test, change to other input parameters
         aLibCifIn = self.outRstCifName
         if nConf==1:
             self.runGeoOpt(self.monomRoot, aLibCifIn)
@@ -1983,31 +1996,41 @@ class Acedrg(CExeCode ):
                 self.runGemmiCif2Pdb(self.outRstCifName, aOutRstPdb)
         else:
             inCifNamesRoot =[]
-            #for idxConf in range(nConf): 
-            idxC = 1
-            #print("Number of selct conformers ", self.rdKit.selecConformerIds)
-            for idxConf in self.rdKit.selecConformerIds : 
-                aCifRoot  = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
-                aConfCif = os.path.join(self.scrDir, aCifRoot + "_init.cif")
-                #print("Cif root ", aCifRoot)
-                self.fileConv.setAInitConfForMonCif(aLibCifIn, aConfCif, self.rdKit.molecules[tIdxMol], idxConf)
-                if os.path.isfile(aConfCif):
-                    inCifNamesRoot.append(aCifRoot)
-                idxC+=1    
-                #tPdbRoot = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
-                #aConfPdb = os.path.join(self.scrDir, tPdbRoot + "_init.pdb")
-                #print "PDB root ", tPdbRoot
-                #print(aConfPdb)
-                # print("idxConf=", idxConf)
-                #self.fileConv.MolToPDBFile(aConfPdb, tIdxMol, self.rdKit.molecules[tIdxMol], self.fileConv.dataDescriptor,self.monomRoot, idxConf,  self.rdKit.repSign, self.rdKit.useExistCoords2)
-                #if os.path.isfile(aConfPdb):
-                #    inPdbNamesRoot.append(tPdbRoot)
+            if not self.noRdKitConfs:
+                idxC = 1
+                #print("Number of selct conformers ", self.rdKit.selecConformerIds)
+                for idxConf in self.rdKit.selecConformerIds : 
+                    aCifRoot  = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
+                    aConfCif = os.path.join(self.scrDir, aCifRoot + "_init.cif")
+                    #print("Cif root ", aCifRoot)
+                    self.fileConv.setAInitConfForMonCif(aLibCifIn, aConfCif, self.rdKit.molecules[tIdxMol], idxConf)
+                    if os.path.isfile(aConfCif):
+                        inCifNamesRoot.append(aCifRoot)
+                    idxC+=1    
+                    #tPdbRoot = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
+                    #aConfPdb = os.path.join(self.scrDir, tPdbRoot + "_init.pdb")
+                    #print "PDB root ", tPdbRoot
+                    #print(aConfPdb)
+                    # print("idxConf=", idxConf)
+                    #self.fileConv.MolToPDBFile(aConfPdb, tIdxMol, self.rdKit.molecules[tIdxMol], self.fileConv.dataDescriptor,self.monomRoot, idxConf,  self.rdKit.repSign, self.rdKit.useExistCoords2)
+                    #if os.path.isfile(aConfPdb):
+                    #    inPdbNamesRoot.append(tPdbRoot)
             
             
-                self.runGeoOpt(aCifRoot, aConfCif) 
-                if  self.runExitCode :
-                    print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
-                
+                    self.runGeoOpt(aCifRoot, aConfCif) 
+                    if  self.runExitCode :
+                        print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
+            else:
+                for idxConf in range(20):
+                    aCifRoot  = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxConf)
+                    aConfCif = os.path.join(self.scrDir, aCifRoot + "_init.cif")
+                    self.fileConv.setAInitConfForMonCifNoRdkitConf(aLibCifIn, aConfCif, self.rdKit.molecules[tIdxMol])
+                    if os.path.isfile(aConfCif):
+                        inCifNamesRoot.append(aCifRoot)
+                    self.runGeoOpt(aCifRoot, aConfCif) 
+                    if  self.runExitCode :
+                        print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
+        
             if len(self.refmacMinFValueList) > 0 :
                 #self.refmacMinFValueList.sort(listComp2)
                 self.refmacMinFValueList=sorted(self.refmacMinFValueList, key=cmp_to_key(listComp2))
@@ -3784,12 +3807,12 @@ class Acedrg(CExeCode ):
                     self.rdKit.initMols("smi", self.inSmiName, self.monomRoot, self.chemCheck, self.inputPara["PH"], self.numConformers)
                     if len(self.rdKit.monoName) !=0:
                         self.monomRoot = self.rdKit.monoName
+            
                 else:
                     interMedCifName = os.path.join(self.scrDir, self.baseRoot + "_initTransMol.cif")
                     self.rdKit.setSimpleCifFromOneMol("smi", self.inSmiName, interMedCifName, self.monomRoot, self.chemCheck)
                     self.workMode =1211
-                    
-                    
+                     
             
          
         if self.workMode == 13 or self.workMode == 131 or self.workMode==53:
