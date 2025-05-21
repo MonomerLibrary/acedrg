@@ -288,9 +288,9 @@ class FileTransformer(object) :
             #    for aK in self.dataDescriptor.keys():
             #        print("Key : ", aK)
             #        print("values ", self.dataDescriptor[aK])
-            print("Number of atoms ", len(self.atoms))
-            for aA in self.atoms:
-                print(aA['_chem_comp_atom.atom_id'], " of ", aA['_chem_comp_atom.type_symbol'])
+            #print("Number of atoms ", len(self.atoms))
+            #for aA in self.atoms:
+            #    print(aA['_chem_comp_atom.atom_id'], " of ", aA['_chem_comp_atom.type_symbol'])
             
             """
             idKey = "_chem_comp_atom.atom_id"
@@ -1286,8 +1286,8 @@ class FileTransformer(object) :
                 else:
                     self.nameMapingCifMol["H_alt"][nAtm] = aAtom["_chem_comp_atom.atom_id"]
                 self.nameMapingCifMol["H"][nAtm] = aAtom["_chem_comp_atom.atom_id"]
-                print("NameMap ", nAtm, " : ", self.nameMapingCifMol["H"][nAtm])
-                print("NameMap ", aAtom["_chem_comp_atom.atom_id"])
+                #print("NameMap ", nAtm, " : ", self.nameMapingCifMol["H"][nAtm])
+                #print("NameMap ", aAtom["_chem_comp_atom.atom_id"])
                 nAtm +=1
             
 
@@ -1439,8 +1439,8 @@ class FileTransformer(object) :
             if len(chargeAtomList) != 0:
                 aL = "M CHG  %d "%len(chargeAtomList)
                 for aPair in chargeAtomList:
-                    print("atom serial number (mol format)  ", aPair[0], ", its new id ", self.atoms[aPair[0]-1]["_chem_comp_atom.atom_id"])
-                    print("Charge ", aPair[1])
+                    #print("atom serial number (mol format)  ", aPair[0], ", its new id ", self.atoms[aPair[0]-1]["_chem_comp_atom.atom_id"])
+                    #print("Charge ", aPair[1])
                     aL += " %d  %d "%(aPair[0], aPair[1])
                 tOutFile.write(aL + "\n")          
    
@@ -2705,6 +2705,216 @@ class Ccp4MmCifObj (dict) :
                aReturn = aBond
                break
         return aReturn
+
+def outputOneMolInACif(tCif,  tMol) :
+    
+    if "atoms" in tMol :
+        
+        outputHeadSecInOneMol(tCif, tMol)
+        outputAtomsInOneMol(tCif, tMol)
+        outputBondsInOneMol(tCif, tMol)
+        
+        
+
+def outputHeadSecInOneMol(tCif,  tMol):
+    
+    if "atoms" in tMol:
+        
+        sNAtms   = str(len(tMol["atoms"]))
+        tCif.write("data_comp_%s\n"%tMol["fileIdx"])
+        tCif.write("_chem_comp.pdbx_type        HETAIN\n")
+        tCif.write("loop_\n")
+        tCif.write("_chem_comp.id\n")
+        tCif.write("_chem_comp.three_letter_code")
+        tCif.write("_chem_comp.name\n")
+        tCif.write("_chem_comp.group\n")
+        tCif.write("_chem_comp.number_atoms_all\n")
+        aL = "%s%s%s%s%s\n"%("LIG".ljust(6), "LIG".ljust(6), 
+                             tMol["fileIdx"].ljust(len(tMol["fileIdx"])+3), "NON-POLYMER".ljust(15),
+                             sNAtms.ljust(len(sNAtms)+3))
+        tCif.write(aL)
+        
+def outputAtomsInOneMol(tCif, tMol):
+    
+    tCif.write("loop_\n")
+    
+    tCif.write("_chem_comp_atom.comp_id\n")
+    tCif.write("_chem_comp_atom.atom_id\n")
+    tCif.write("_chem_comp_atom.type_symbol\n")
+    tCif.write("_chem_comp_atom.model_Cartn_x\n")
+    tCif.write("_chem_comp_atom.model_Cartn_y\n")
+    tCif.write("_chem_comp_atom.model_Cartn_z\n")
+
+    
+    for aA in tMol["atoms"]:
+        
+        aCId = "LIG".ljust(6)
+        aId = aA["_chem_comp_atom.atom_id"]
+        if len(aId) < 4:
+            aId = aId.ljust(6)
+        else: 
+            aId = aId.ljust(len(aId)+3)
+          
+        
+        aElm = aA["_chem_comp_atom.type_symbol"].ljust(4)
+        if "_chem_comp_atom.model_Cartn_x" in aA:
+            aX   = aA["_chem_comp_atom.model_Cartn_x"]
+            aY   = aA["_chem_comp_atom.model_Cartn_y"]
+            aZ   = aA["_chem_comp_atom.model_Cartn_z"]
+        elif "chem_comp_atom.x" in aA:
+            aX   = aA["_chem_comp_atom.x"]
+            aY   = aA["_chem_comp_atom.y"]
+            aZ   = aA["_chem_comp_atom.z"] 
+        aX   = aX.ljust(len(aX)+3)
+        aY   = aY.ljust(len(aY)+3)
+        aZ   = aZ.ljust(len(aZ)+3)
+        
+        
+        aL = "%s%s%s%s%s%s\n"%(aCId, aId, aElm, aX, aY, aZ)
+        
+        tCif.write(aL)
+        
+        
+        
+def outputBondsInOneMol(tCif, tMol):
+    
+    tCif.write("loop_\n")
+    
+    tCif.write("_chem_comp_bond.comp_id\n")
+    tCif.write("_chem_comp_bond.atom_id_1\n")
+    tCif.write("_chem_comp_bond.atom_id_2\n")
+    tCif.write("_chem_comp_bond.value_order\n")
+    
+    aCId = "LIG".ljust(6) 
+    for aB in tMol["bonds"]:
+        aId1 = aB["_chem_comp_bond.atom_id_1"]
+        aId1 = aId1.ljust(len(aId1)+3)
+        
+        aId2 = aB["_chem_comp_bond.atom_id_2"]
+        aId2 = aId2.ljust(len(aId2)+3)
+        if not "_chem_comp_bond.value_order" in aB:
+            aB["_chem_comp_bond.value_order"] = "SINGLE"
+        aOr  = aB["_chem_comp_bond.value_order"].ljust(10)
+        
+        aL   = "%s%s%s%s\n"%(aCId, aId1, aId2, aOr)
+        tCif.write(aL)
+    
+        
+def fromACrysToMolCifsGemmi(tInCifFN, tFileIdx, tMols):
+    if os.path.isfile(tInCifFN):
+        aInCif = cif.read_file(tInCifFN)
+        numBl = len(aInCif) 
+        
+        if numBl > 0:
+            #print("Those blocks are ")
+            for aBloc in aInCif:
+                if aBloc.name.find("comp_list")==-1 and aBloc.name.find("all_mols")==-1:
+                    aMol = {}
+                    aMol["fileIdx"] = tFileIdx 
+                    #print(aBloc.name)
+                    for aItem in aBloc:
+                        if aItem.loop is not None: 
+                            if aItem.loop.tags[0].find("_chem_comp_atom.") !=-1:
+                                aMol["atoms"] = []
+                                setAPropInAMol(aItem, aMol["atoms"])
+                                #print("number of atom is ", len(aMol["atoms"]))
+                            
+                            elif aItem.loop.tags[0].find("_chem_comp_bond.") !=-1:
+                                aMol["bonds"] = []
+                                setAPropInAMol(aItem, aMol["bonds"])
+                                #print("number of bonds is ", len(aMol["bonds"]))
+                            elif aItem.loop.tags[0].find("_chem_comp_angle.") !=-1:
+                                aMol["angles"] = []
+                                setAPropInAMol(aItem, aMol["angles"])  
+                                #print("number of angles  is ", len(aMol["angles"]))
+                            elif aItem.loop.tags[0].find("_chem_comp_ring.") !=-1:
+                                #print(aItem.loop.tags[0])
+                                aMol["rings"] = {}
+                                aMol["ringAtoms"] = []
+                                setAPropInAMol(aItem, aMol["ringAtoms"])
+                                
+                                for aRA in aMol["ringAtoms"]:
+                                    if "_chem_comp_ring.ring_serial_number" in aRA:
+                                        if not aRA["_chem_comp_ring.ring_serial_number"] in aMol["rings"]:
+                                            rIdx = aRA["_chem_comp_ring.ring_serial_number"]
+                                            #print(rIdx)
+                                            aMol["rings"][rIdx] = []
+                                        aMol["rings"][rIdx].append(aRA)
+                                    elif "_chem_comp_ring.ring_id" in aRA:
+                                        if not aRA["_chem_comp_ring.ring_id"] in aMol["rings"]:
+                                            rIdx = aRA["_chem_comp_ring.ring_id"].strip().split("_")[-1]
+                                            aRA["_chem_comp_ring.ring_serial_number"] = rIdx
+                                            #print(rIdx)
+                                            aMol["rings"][rIdx] = []
+                                        aMol["rings"][rIdx].append(aRA)    
+                                    
+                                
+                                #print("number of rings is ", len(aMol["rings"]))
+                    if "bonds" in aMol and len(aMol["bonds"]) > 0:
+                        setAtomConn(aMol["atoms"], aMol["bonds"])
+                    if "rings" in aMol and len(aMol["rings"]) > 0:
+                        setAtomRingConn(aMol["atoms"], aMol["rings"])
+                    tMols.append(aMol)  
+
+def setAPropInAMol(tItem, tProps):
+    
+    nTs = len(tItem.loop.tags)
+    nVs = len(tItem.loop.values) 
+    if math.fmod(nVs, nTs) ==0:
+        #print("Number of columns =", nTs)
+        #print("Number of values =", nVs)
+        rIdx  = 0
+        vIdx = rIdx*nTs 
+        while vIdx < nVs:
+            aProp= {}
+            for aTag in tItem.loop.tags:
+                aProp[aTag] = tItem.loop.values[vIdx]
+                vIdx +=1 
+            
+            tProps.append(aProp)
+            
+            rIdx+=1
+            vIdx = rIdx*nTs
+
+def setAtomConn(tAtoms, tBonds):
+    
+    if "_chem_comp_bond.atom_serial_number_1" in tBonds[0]:
+        for aB in tBonds:
+            idxA1 = int(aB["_chem_comp_bond.atom_serial_number_1"])
+            idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
+            if not "_chem_comp_atom.atom_conn" in tAtoms[idxA1]:
+                tAtoms[idxA1]["_chem_comp_atom.atom_conn"] = []
+            tAtoms[idxA1]["_chem_comp_atom.atom_conn"].append(idxA2) 
+            if not "_chem_comp_atom.atom_conn" in tAtoms[idxA2]:
+                tAtoms[idxA2]["_chem_comp_atom.atom_conn"] = []
+            tAtoms[idxA2]["_chem_comp_atom.atom_conn"].append(idxA1)
+
+def setRingAtomSerialNumById(tAtoms, tRings):
+    
+    aIdSeriNumMap = {}
+    idxA = 0
+    for aAt in tAtoms:
+        aIdSeriNumMap[aAt["_chem_comp_atom.atom_id"]] = idxA
+        idxA+=1
+    
+    
+    for aR in tRings:
+        for aRA in tRings[aR]:
+            aRA["_chem_comp_ring.atom_serial_number"] = aIdSeriNumMap[aRA["_chem_comp_ring.atom_id"]]
     
 
+def setAtomRingConn(tAtoms, tRings):
+    
+    if len(tRings) > 0:
+        if not "_chem_comp_ring.atom_serial_number" in tRings["1"][0]:
+            setRingAtomSerialNumById(tAtoms, tRings)
 
+    for rIdx in tRings:
+        rOrd = len(tRings[rIdx])
+        for aA in tRings[rIdx]:
+            idxA = int(aA["_chem_comp_ring.atom_serial_number"])
+            if not "_chem_comp_atom.in_rings" in tAtoms[idxA]:
+                tAtoms[idxA]["_chem_comp_atom.in_rings"] = {}
+            if not rOrd in tAtoms[idxA]["_chem_comp_atom.in_rings"]:
+                tAtoms[idxA]["_chem_comp_atom.in_rings"][rOrd] = []
+            tAtoms[idxA]["_chem_comp_atom.in_rings"][rOrd].append(rIdx)

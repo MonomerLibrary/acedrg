@@ -25,6 +25,13 @@ from rdkit.Chem import rdmolfiles
 
 from . utility  import BondOrderS2N
 from . utility  import aLineToAlist
+from . utility  import getLinkedGroups2
+from . utility  import aMolToAGraph
+from . utility  import MatchTwoGraphs
+
+
+from . filetools import outputOneMolInACif
+from . filetools import fromACrysToMolCifsGemmi
 
 class ChemCheck(object):
 
@@ -93,14 +100,35 @@ class ChemCheck(object):
         self.orgVal["S"]     = [2, 4, 6]
         self.orgVal["SE"]    = [2]
         self.orgVal["SI"]    = [4]
-
-
+        
+        
+        self.maxVal          = {}
+        self.maxVal["AS"]    = 3
+        self.maxVal["AT"]    = 1
+        self.maxVal["B"]     = 4
+        self.maxVal["BR"]    = 1
+        self.maxVal["C"]     = 4
+        self.maxVal["CL"]    = 1
+        self.maxVal["F"]     = 1
+        self.maxVal["GE"]    = 4
+        self.maxVal["H"]     = 1
+        self.maxVal["D"]     = 1
+        self.maxVal["I"]     = 1
+        self.maxVal["N"]     = 5
+        self.maxVal["O"]     = 3
+        self.maxVal["P"]     = 5    # should be [5, 3]. Use one at the moment
+        self.maxVal["S"]     = 6
+        self.maxVal["SE"]    = 4
+        self.maxVal["SI"]    = 4
+        self.maxVal["OTHERS"]    = 1  # metal elemets 
 
         self.torsions        = []
         self.outChiSign      ={}
         self.tmpChiralSign   = {}
 
-
+        # for Carbone-related applications
+        self.CBGrapList      = {}
+        
     def isOrganicMol(self, tMol):
 
         pass
@@ -1564,5 +1592,442 @@ class ChemCheck(object):
         tDBo.append(tPair[1][1])
         tNAtms.append(tPair[0])
         #print("Bond order is ", tBonds[tPair[1][1]]["_chem_comp_bond.value_order"])
-
-
+    
+    
+    # A set of methods initially for Carbone molecules
+    
+    def addAtomSeri(self, tAtoms, tBonds):
+    
+        nIdx =0
+        atIdMap = {}
+        for aAt in tAtoms:
+            aAt["_chem_comp_atom.atom_serial_number"] = nIdx
+            aId = aAt["_chem_comp_atom.atom_id"] 
+            atIdMap[aId] = aAt["_chem_comp_atom.atom_serial_number"]
+            nIdx+=1
+    
+        for aB in tBonds:
+            aId1 = aB["_chem_comp_bond.atom_id_1"]
+            aId2 = aB["_chem_comp_bond.atom_id_2"]
+            if aId1 in atIdMap:
+                aB["_chem_comp_bond.atom_serial_number_1"] = atIdMap[aId1]
+            else:
+                print("Bug. can not find atom ", aId1)
+        
+            if aId2 in atIdMap:
+                aB["_chem_comp_bond.atom_serial_number_2"] = atIdMap[aId2]
+            else:
+                print("Bug. can not find atom ", aId2)
+    
+    def setAtomConn(self, tAtoms, tBonds):
+    
+        for aAt in tAtoms:
+            aAt["_chem_comp_atom.atom_conn"] = []
+    
+        if "_chem_comp_bond.atom_serial_number_1" in tBonds[0]:
+            for aB in tBonds:
+                               
+                idxA1 = int(aB["_chem_comp_bond.atom_serial_number_1"])
+                idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
+                tAtoms[idxA1]["_chem_comp_atom.atom_conn"].append(idxA2) 
+                tAtoms[idxA2]["_chem_comp_atom.atom_conn"].append(idxA1) 
+    
+    def checkCarbonMol(self, tAtoms, tBonds):
+        
+        aRet = False
+        
+        aElmMap = {}
+        aIdxMap  = {}
+        aIdx =0
+        for aAt in tAtoms:
+            aElmMap[aAt["_chem_comp_atom.atom_id"]] = aAt["_chem_comp_atom.type_symbol"]
+            aIdxMap[aAt["_chem_comp_atom.atom_id"]] = aIdx 
+            aIdx +=1
+            aAt["connB"] = []
+        
+        for aBo in tBonds:
+            id1 = aBo["_chem_comp_bond.atom_id_1"]
+            idx1 = aIdxMap[id1]
+            id2 = aBo["_chem_comp_bond.atom_id_2"]
+            idx2 = aIdxMap[id2]
+            if  aElmMap[id2] == "B":
+                 tAtoms[idx1]["connB"].append(idx2)
+            if  aElmMap[id1] == "B":
+                 tAtoms[idx2]["connB"].append(idx1)
+       
+        for aAt in tAtoms:
+            if len(aAt["connB"]) >=4:
+                aRet = True
+                break
+        
+        
+        return aRet
+    
+    def getNewConns(self, tAtoms, tBonds, tNewBonds, tNewConns, tBrokenConns):
+        
+        notBroken = ["H", "CL", "F", "I", "D", "BR", "AT"]
+        for aB in tBonds:
+            idxA1 = int(aB["_chem_comp_bond.atom_serial_number_1"])
+            id1   = tAtoms[idxA1]["_chem_comp_atom.atom_id"]
+            elem1 = tAtoms[idxA1]["_chem_comp_atom.type_symbol"].upper()
+            conn1 = len(tAtoms[idxA1]["_chem_comp_atom.atom_conn"])
+            val1  = 0
+            if elem1.upper() in self.maxVal:
+                val1 = self.maxVal[elem1]
+            else:
+                # metal elements
+                val1 = self.maxVal["OTHERS"]
+                
+            idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
+            id2   = tAtoms[idxA2]["_chem_comp_atom.atom_id"]
+            elem2 = tAtoms[idxA2]["_chem_comp_atom.type_symbol"].upper()
+            conn2 = len(tAtoms[idxA2]["_chem_comp_atom.atom_conn"])
+            val2  = 0
+            if elem2 in self.maxVal:
+                val2 = self.maxVal[elem2]
+            else:
+                # metal elements
+                val2 = self.maxVal["OTHERS"] 
+                
+            # break bonds if need
+            if len(tAtoms[idxA1]["connB"]) ==0 and  len(tAtoms[idxA2]["connB"])==0:
+                tNewBonds.append(aB) 
+            elif len(tAtoms[idxA1]["connB"])==0 and not elem1 in self.maxVal:
+                if  conn2 <= val2 :
+                     tNewBonds.append(aB)
+            elif not tAtoms[idxA2]["connB"] and not elem2 in self.maxVal:
+                if conn1 <= val1 :
+                    tNewBonds.append(aB)
+            elif conn1 > val1 :
+                if conn2 > val2:
+                    tNewBonds.append(aB)
+                else:
+                    if not elem2 in notBroken:
+                        #print("Bond between atom %s of elem %s and atom %s of elem %s is broken "%(id1, elem1, id2, elem2))
+                        tBrokenConns.append([idxA1, idxA2])
+                    else:
+                        tNewBonds.append(aB)
+            elif conn2 > val2 :    #and elem2 in tVals:
+                if conn1 > val1:
+                    tNewBonds.append(aB)
+                else:
+                    if not elem1 in notBroken:
+                        #print("Bond between atom %s of elem %s and atom %s of elem %s is broken "%(id1, elem1, id2, elem2))
+                        tBrokenConns.append([idxA1, idxA2])
+                    else:
+                        tNewBonds.append(aB)
+            else:   
+                 tNewBonds.append(aB)
+        
+        # Get new set of conn (id not idx) for new mols  
+        
+        for aB in tNewBonds:
+            idxA1 = int(aB["_chem_comp_bond.atom_serial_number_1"])
+            id1   =  tAtoms[idxA1]["_chem_comp_atom.atom_id"]
+            #print("a1 ", idxA1)
+            #print("id1 ", tAtoms[idxA1]["_chem_comp_atom.atom_id"])
+            idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
+            id2   = tAtoms[idxA2]["_chem_comp_atom.atom_id"]
+            #print("a2 ", idxA2)
+            #print("id2 ", tAtoms[idxA2]["_chem_comp_atom.atom_id"])
+            #print(tAtoms[idxA1]["_chem_comp_atom.atom_conn"])
+            if not id1 in tNewConns :
+                tNewConns[id1] = []
+            tNewConns[id1].append(id2) 
+            if not id2 in tNewConns:
+                tNewConns[id2] = []
+            tNewConns[id2].append(id1)
+            
+    
+    def addHAtomsToMols(self,  tAtoms, tMol, tBrokenBs):
+        # tAtoms and tBonds are original atoms > tMols["atoms"]
+        
+        tMol["tmpHAtoms"] = []
+        
+        aIdxPool = []
+        for aAt in tMol["atoms"]:
+            aIdxPool.append(aAt["_chem_comp_atom.atom_serial_number"])
+        tmpSeriNum = len(tAtoms)
+        # This method add tempo Hs to Temp mols from CB mols
+        for aPair in tBrokenBs:
+            if not aPair[0] in aIdxPool and  aPair[1] in aIdxPool:
+                #print("Bond between %s and %s is broken"%(tAtoms[aPair[0]]["_chem_comp_atom.atom_id"], tAtoms[aPair[1]]["_chem_comp_atom.atom_id"]))
+                self.addOneHAtom(aPair[0], aPair[1], tAtoms, tMol, tmpSeriNum)
+            elif not aPair[1] in aIdxPool and  aPair[0] in aIdxPool: 
+                self.addOneHAtom(aPair[1], aPair[0], tAtoms, tMol, tmpSeriNum)
+                
+    def addOneHAtom(self, tIdx1, tIdx2, tAtoms, tMol, tNumAts):
+        
+        aHAt ={}
+        
+        aHAt["_chem_comp_atom.atom_id"] = "H" + str(tNumAts+1)
+        aHAt["_chem_comp_atom.type_symbol"]   = "H"
+        aHAt["_chem_comp_atom.model_Cartn_x"] = tAtoms[tIdx1]["_chem_comp_atom.model_Cartn_x"] 
+        aHAt["_chem_comp_atom.model_Cartn_y"] = tAtoms[tIdx1]["_chem_comp_atom.model_Cartn_y"]
+        aHAt["_chem_comp_atom.model_Cartn_z"] = tAtoms[tIdx1]["_chem_comp_atom.model_Cartn_z"]   
+        
+        aHB = {}
+        aHB["_chem_comp_bond.atom_id_1"] = aHAt["_chem_comp_atom.atom_id"] 
+        aHB["_chem_comp_bond.atom_id_2"] = tAtoms[tIdx2]["_chem_comp_atom.atom_id"] 
+        aHB["_chem_comp_bond.value_order"] = "SINGLE"
+        
+        tMol["tmpHAtoms"].append(aHAt["_chem_comp_atom.atom_id"])
+        # Add H atom to atoms and bonds of the mol
+        tMol["atoms"].append(aHAt)
+        tMol["bonds"].append(aHB)
+        
+    def getNewMolsFromConns(self, tAtoms, tBonds, tBrokenBs, tOutDir, tRoot):
+        
+        aSetMols = []
+        
+        idxM = 1
+        for aKey in self.newLinkedGroups:
+            
+            aMol = {}
+            aMol["atoms"] = []
+            aMol["bonds"] = []
+            aMol["fileIdx"] = tRoot + "_" + str(idxM) 
+            idxM +=1
+            idxAtms = []
+            for aB in tBonds:
+                idx1 = aB["_chem_comp_bond.atom_serial_number_1"]
+                idx2 = aB["_chem_comp_bond.atom_serial_number_2"]
+                if idx1 in self.newLinkedGroups[aKey] and idx2 in self.newLinkedGroups[aKey]:
+                    aMol["bonds"].append(aB)
+                    if not idx1 in idxAtms:
+                        idxAtms.append(idx1)
+                        aMol["atoms"].append(tAtoms[idx1])
+                        
+                    if not idx2 in idxAtms:
+                        idxAtms.append(idx2)
+                        aMol["atoms"].append(tAtoms[idx2])
+            #print(idxAtms)
+            for aIdx in self.newLinkedGroups[aKey]:
+                if not aIdx in idxAtms:
+                    idxAtms.append(aIdx)
+                    aMol["atoms"].append(tAtoms[aIdx])
+                    
+            
+            if len(aMol["atoms"]) > 0 and len(aMol["bonds"]) > 0:
+                if self.checkCarbonMol(aMol["atoms"], aMol["bonds"]):
+                    aMol["isCBMol"] = True
+                else:
+                    aMol["isCBMol"] = False
+                
+                if not aMol["isCBMol"] : 
+                    self.addHAtomsToMols(tAtoms, aMol, tBrokenBs)
+                
+                aSetMols.append(aMol) 
+                
+                aCifName = os.path.join(tOutDir, aMol["fileIdx"] +".cif")
+                try:
+                    aCif = open(aCifName, "w")
+                except IOError :
+                    print("%s can not be opened for writing "%aCifName)
+                    sys.exit(1)
+                else:
+                    outputOneMolInACif(aCif, aMol)
+                    aCif.close()
+                    
+                        
+        return  aSetMols
+    
+    def splitOneCBMol(self, tMol):
+        
+        tMol["storedHs"] = []
+        tMol["storedHBs"] = []
+        tMol["remainAtoms"] = []
+        tMol["remainBonds"] = []
+        
+        hIdList = []
+    
+        
+        for aAt in tMol["atoms"]:
+            if aAt["_chem_comp_atom.type_symbol"] == "H":
+                tMol["storedHs"].append(aAt)
+                hIdList.append(aAt["_chem_comp_atom.atom_id"])
+            else:
+                tMol["remainAtoms"].append(aAt)
+                
+        # Modified atom idx in new mole but keep the record of old atom idx
+        idMap = {}
+        
+        for aIdx, aAt in enumerate(tMol["remainAtoms"]):
+            if "_chem_comp_atom.atom_serial_number" in aAt:
+                aAt["chem_comp_atom.atom_tmp_serial_number"]   = aAt["_chem_comp_atom.atom_serial_number"]
+            aAt["chem_comp_atom.atom_serial_number"]           = aIdx
+            aId = aAt["_chem_comp_atom.atom_id"] 
+            idMap[aId] = aIdx 
+            
+        for aB in tMol["bonds"]:
+            id1 = aB["_chem_comp_bond.atom_id_1"]
+            id2 = aB["_chem_comp_bond.atom_id_2"]
+            if "_chem_comp_bond.atom_serial_number_1" in aB:
+                aB["_chem_comp_bond.atom_tmp_serial_number_1"] = aB["_chem_comp_bond.atom_serial_number_1"]      
+            if "_chem_comp_bond.atom_serial_number_2" in aB:
+                aB["_chem_comp_bond.atom_tmp_serial_number_2"] = aB["_chem_comp_bond.atom_serial_number_2"]
+            if id1 in hIdList or id2 in hIdList:
+                tMol["storedHBs"].append(aB)
+            else:
+                aB["_chem_comp_bond.atom_serial_number_1"] = idMap[id1]
+                aB["_chem_comp_bond.atom_serial_number_2"] = idMap[id2]
+                tMol["remainBonds"].append(aB)
+             
+    def getClassIds(self, tMol):
+        
+        elmMap = {}
+        elmConnMap = {}
+        
+        
+        for aNIdx in tMol["CB_Graph"].nodes:    
+            aElm  = tMol["CB_Graph"].nodes[aNIdx]["_chem_comp_atom.type_symbol"]
+            if not aElm in elmMap:
+                elmMap[aElm] = []
+            elmMap[aElm].append(tMol["CB_Graph"].nodes[aNIdx]["_chem_comp_atom.atom_id"])
+            nConn = len(tMol["CB_Graph"].nodes[aNIdx]["_chem_comp_atom.atom_conn"]) 
+            if not aElm in elmConnMap:
+                elmConnMap[aElm] = {}
+            if not nConn in elmConnMap[aElm]:
+                elmConnMap[aElm][nConn] = []
+            elmConnMap[aElm][nConn].append(tMol["CB_Graph"].nodes[aNIdx]["_chem_comp_atom.atom_id"])
+        
+        classId0 = ""
+        classId1 = ""
+        
+        if "B" in elmMap:
+            classId0 +="[B" + str(len(elmMap["B"])) + "]"
+        if "C" in elmMap:
+            classId0 +="[C" + str(len(elmMap["C"])) + "]"
+        for aElm in sorted(elmMap.keys()):
+            if aElm !="B" and aElm !="C":
+                classId0 +="[" + aElm  + str(len(elmMap[aElm])) + "]"   
+             
+        if "B" in elmConnMap:
+            for aC in sorted(elmConnMap["B"].keys()):
+                classId1 += "[B" + str(aC) + "_" + str(len(elmConnMap["B"][aC])) + "]"
+        if "C" in elmConnMap:
+            for aC in sorted(elmConnMap["C"].keys()):
+                classId1 += "[C" + str(aC) + "_" + str(len(elmConnMap["C"][aC])) + "]"
+        for aElm in elmConnMap:
+            if aElm !="B" and aElm != "C":
+                for aC in sorted(elmConnMap[aElm].keys()):
+                    classId1 += "[" + aElm + str(aC) + "_" + str(len(elmConnMap[aElm][aC])) + "]"
+               
+        return classId0, classId1
+    
+    def serchGraphDB(self, tMol):
+        
+        aCId0, aCId1 = self.getClassIds(tMol)
+        print("The graph cid0 is %s and cid1 is %s "%(aCId0, aCId1))
+        if aCId0 in self.CBGrapList:
+            if aCId1 in self.CBGrapList[aCId0]:
+                for aFN in self.CBGrapList[aCId0][aCId1]:
+                    print("Match DB graph %s with target %s"%(aFN, tMol["CB_Graph"].graph["name"]))
+                    getMatched, matchedIdxs, aDB_G=self.graphMatchTwoMols(aFN, tMol)
+                    if getMatched :
+                        print("%s and %s is isomorphic"%(tMol["CB_Graph"].graph["name"], aFN))
+                        self.recoverAllAtomsAndBonds(tMol, aDB_G,  matchedIdxs)
+                        break
+                    #else:       
+                    #    print("%s and %s is not isomorphic"%(tMol["CB_Graph"].graph["name"], aFN))
+    
+    def recoverAllAtomsAndBonds(self, tMol, tDB_G, tIdxMap):
+        
+        self.reSetCoordsByIsomMatch(tMol, tDB_G, tIdxMap)
+    
+        
+    
+    def reSetCoordsByIsomMatch(self, tTargetMol, tG_DB, tMapIdxs):
+        
+        idMap = {}
+        idxA =0
+        for aAt in tTargetMol["atoms"]:
+            idMap[aAt["_chem_comp_atom.atom_id"]] = idxA
+            idxA+=1
+            
+        for idx1, idx2 in tMapIdxs:
+            id1 = tTargetMol["remainAtoms"][idx1]["_chem_comp_atom.atom_id"]
+            oriIdx = idMap[id1]
+            tTargetMol["atoms"][oriIdx]["_chem_comp_atom.model_Cartn_x"] = tG_DB.nodes[idx2]["_chem_comp_atom.model_Cartn_x"]
+            tTargetMol["atoms"][oriIdx]["_chem_comp_atom.model_Cartn_y"] = tG_DB.nodes[idx2]["_chem_comp_atom.model_Cartn_y"]
+            tTargetMol["atoms"][oriIdx]["_chem_comp_atom.model_Cartn_z"] = tG_DB.nodes[idx2]["_chem_comp_atom.model_Cartn_z"]
+        
+                    
+    def graphMatchTwoMols(self, tCif, tMol):
+        
+        lM = False
+        aIdxMap = {}
+        aCifName = os.path.join(self.acedrgTables, "CarboroneSamples", tCif + ".cif")
+        if os.path.isfile(aCifName):
+            tmpMols = []
+            fromACrysToMolCifsGemmi(aCifName, tCif, tmpMols)
+            self.addAtomSeri(tmpMols[0]["atoms"], tmpMols[0]["bonds"])
+            aGFromGB = aMolToAGraph(tmpMols[0]["atoms"], tmpMols[0]["bonds"], tCif)
+            lM, aIdxMap =  MatchTwoGraphs(tMol["CB_Graph"], aGFromGB)
+            
+            
+        return lM, aIdxMap , aGFromGB
+        
+                
+    def processOneCBMol(self, tMol):
+        
+        self.splitOneCBMol(tMol)
+        self.setAtomConn(tMol["remainAtoms"], tMol["remainBonds"])
+        tMol["CB_Graph"] = aMolToAGraph(tMol["remainAtoms"], tMol["remainBonds"], tMol["fileIdx"])
+        print(tMol["CB_Graph"])
+        self.serchGraphDB(tMol)
+        
+        
+        
+        
+    def getCB_Graph_DB(self, tTabDir):
+        
+        self.acedrgTables = tTabDir
+        
+        sampDir = os.path.join(self.acedrgTables, "CarboroneSamples")
+        if not os.path.isdir(sampDir):
+            print("Install bug : %s does not exist"%sampDir)
+            sys.exit()
+        graphListN = os.path.join(self.acedrgTables, "CarboroneSamples.list")
+        if not os.path.isfile(graphListN):
+            print("Install bug : %s does not exist"%sampDir)
+            sys.exit()
+        graphListF = open(graphListN, "r")
+        allLs      = graphListF.readlines()
+        graphListF.close()
+        for aL in allLs:
+            strs = aL.strip().split()
+            if len(strs)==3:
+                strs[0] = strs[0].strip()
+                strs[1] = strs[1].strip()
+                strs[2] = strs[2].strip()
+                if not strs[0] in self.CBGrapList:
+                    self.CBGrapList[strs[0]] = {}
+                if not  strs[1] in self.CBGrapList[strs[0]]:
+                    self.CBGrapList[strs[0]][strs[1]] = []
+                self.CBGrapList[strs[0]][strs[1]].append(strs[2]) 
+         
+                    
+    def getNewMols(self, tAtoms, tBonds, tOutDir, tRoot):
+        
+        newBonds = []
+        newConns = {}
+        
+        tmpBrokenBonds = []
+        
+        self.addAtomSeri(tAtoms, tBonds)
+        self.setAtomConn(tAtoms, tBonds)
+        self.getNewConns(tAtoms, tBonds, newBonds, newConns, tmpBrokenBonds)
+        
+        self.newLinkedGroups = getLinkedGroups2(tAtoms, newConns)
+        #print(self.newLinkedGroups)
+        self.aSetNewMols = self.getNewMolsFromConns(tAtoms, newBonds,tmpBrokenBonds,  tOutDir, tRoot)
+        
+        print("Numbber of Mols is ", len(self.aSetNewMols))
+        for aMol in self.aSetNewMols:
+            if aMol["isCBMol"]:
+                print(aMol["fileIdx"], " is a CB molecule")
+        
+        
+        
+      

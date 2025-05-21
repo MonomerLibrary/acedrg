@@ -1224,8 +1224,6 @@ class AcedrgRDKit(object):
                 idxE = -1
                 idxC = -1
                 aSetBonds = aAtom.GetBonds()
-                print("na=", na)
-                print("len(aSetBonds ", len(aSetBonds) )
                 if len(aSetBonds) == 1:
                     idxB = aSetBonds[0].GetBeginAtomIdx()
                     idxE = aSetBonds[0].GetEndAtomIdx()
@@ -1254,7 +1252,7 @@ class AcedrgRDKit(object):
             
             na+=1
             
-        print("Total number of H atoms is ", nh)
+        #print("Total number of H atoms is ", nh)
         
         # for aKey in HConns.keys():
         #    print "Atom ", aKey, " bonds to ", len(HConns[aKey]), " H atoms "
@@ -1832,7 +1830,7 @@ class AcedrgRDKit(object):
         nConf = tMol.GetNumConformers()
         #print("nConf=", nConf)
         if nConf:
-            print("Number of initial conformers requested", self.numInitConformers)
+            #print("Number of initial conformers requested", self.numInitConformers)
             #print("Number of number of opt step requested for each conformer ", self.numRDKitOptmSteps)
             #print("Number of new conformers ", len(confIds))
             #print("Number of initial conformers obtained", nConf)
@@ -2129,9 +2127,9 @@ class AcedrgRDKit(object):
         # print("fixed Name ", tMol.GetProp("fixedName"))
         if tMol.GetProp("fixedName") == "NO":
             if self.useExistCoords:
-                print("Previous ", len(tMol.GetAtoms()))
+                #print("Previous ", len(tMol.GetAtoms()))
                 aMol = Chem.AddHs(tMol, explicitOnly=False, addCoords=True)
-                print("After ", len(aMol.GetAtoms())) 
+                #print("After ", len(aMol.GetAtoms())) 
             else:
                 
                 aMol = Chem.AddHs(tMol)
@@ -2192,7 +2190,7 @@ class AcedrgRDKit(object):
         #for aA in  allAtoms:
         #    print("Atom : ", aA.GetProp("Name"))
         #    print("Charge : ", aA.GetFormalCharge())  
-        print(self.noRdKitConfs)
+        #print(self.noRdKitConfs)
         if not self.noConformers and not self.noRdKitConfs:
             for aAtom in allAtoms:
                 aIdx = aAtom.GetIdx()
@@ -2203,7 +2201,6 @@ class AcedrgRDKit(object):
             #print("self.useExistCoords2 ", self.useExistCoords2)
             #print("self.useExistCoords ", self.useExistCoords)
             if not self.useExistCoords2:
-                print("Here")
                 self.setInitConformersOneMol(aMol)
             else:
                 confId = aMol.GetConformer()
@@ -2213,8 +2210,6 @@ class AcedrgRDKit(object):
 
                 aSetTorsions = []
                 self.assignTorsions(aMol, aSetTorsions)
-
-                #print("Number of torsions in this molecule is ", len(aSetTorsions))
             else:
                 print(
                      "RDKit failed to produce any conformers. Acedrg needs at least one conformer ")
@@ -2241,9 +2236,6 @@ class AcedrgRDKit(object):
                 rdmolops.AssignStereochemistry(
                 aMol, cleanIt=False, force=False, flagPossibleStereoCenters=True)
                 #self.showInfoAboutAtomsAndBonds(aMol, 3)
-            
-        
-        
         
         
     def showInfoAboutAtomsAndBonds(self, tMol, tLev=0):

@@ -1157,20 +1157,20 @@ class metalMode(CExeCode):
             numP=len(self.simpP) +1 
             aDoneMA =[]
             for aMA in self.metalConnAtomsMap.keys():
-                #print("For metal atom ", aMA)
+                print("For metal atom ", aMA)
                 for aMN in self.metalConnAtomsMap[aMA]:
                     if self.checkExtraConns(aMA, aMN):
                         aSP = self.atmHybr[aMN]
                         aSetAtms = [] 
                         if aSP == 2:
                             aSetAtms.append(aMN)
-                        #print("conne atom ", aMN, " hybr ", aSP)
-                        #print("NB atom ", aMN, " has the following angles: ")
+                        print("conne atom ", aMN, " hybr ", aSP)
+                        print("NB atom ", aMN, " has the following angles: ")
                         #if aMN in self.atmNonHMap.keys():
                         #for aNN in self.nonMAtmConnsMap[aMN]:
                         for aNN in self.atomsAllConnMap[aMN]:
-                            if aNN !=aMA and not aNN in aDoneMA:
-                                #print("Angle among %s and %s and %s"%(aMA, aMN, aNN))
+                            if aNN !=aMA and not aNN in aDoneMA and not aNN in self.metalConnAtomsMap[aMA] and not aNN in self.metalConnAtomsMap:
+                                print("Angle among %s and %s and %s"%(aMA, aMN, aNN))
                                 self.setASpeAng(aMA, aMN, aNN, aSP, angSumMap)
                                 if not aNN in self.metalConnAtomsMap[aMA] and aSP == 2:
                                     aSetAtms.append(aNN)

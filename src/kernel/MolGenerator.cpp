@@ -412,7 +412,8 @@ namespace LIBMOL {
                     }
                     */
                     getOverallBondAndAnglesNew();
-                    // setBondOrderAndChargeInMols(allMolecules); // Temp disable for Carbo cases, put back afterward
+                    setBondOrderAndChargeInMols(allMolecules); // Temp disable for Carbo cases, put back afterward
+                    /*
                     for (unsigned i=0; i < allMolecules.size(); i++)
                     {
                          for (std::vector<BondDict>::iterator iBo= allMolecules[i].bonds.begin();
@@ -422,6 +423,7 @@ namespace LIBMOL {
                               iBo->order = "SINGLE";
                          }
                     }
+                    */
                     outTables(tOutName, allMolecules, aSetOfInfMols);
 
                 }

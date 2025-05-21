@@ -10299,10 +10299,10 @@ namespace LIBMOL
                 std::string longName =tMonoRootName.substr(0,3);
                 outTempF << "data_comp_" << longName << std::endl;
                 outTempF << "loop_" << std::endl
-                         << "_chem_comp_acedrg_atom.comp_id" << std::endl
-                         << "_chem_comp_acedrg_atom.type_symbol" << std::endl
-                         << "_chem_comp_acedrg_atom.atom_id" << std::endl
-                         << "_chem_comp_acedrg_atom.atom_type" << std::endl;
+                         << "_chem_comp_atom.comp_id" << std::endl
+                         << "_chem_comp_atom.type_symbol" << std::endl
+                         << "_chem_comp_atom.atom_id" << std::endl
+                         << "_chem_comp_atom.atom_type" << std::endl;
                 // outTempF << "ATOMS:" << std::endl;
                 //int nA=0;
                 //std::map<int, int> seriMap;
@@ -10349,9 +10349,9 @@ namespace LIBMOL
                 */
                 outTempF << "loop_" << std::endl
                 // outTempF << "CONNECTIONS:" << std::endl;
-                << "_chem_comp_acedrg_bond.comp_id" << std::endl
-                << "_chem_comp_acedrg_bond.atom_id_1" << std::endl
-                << "_chem_comp_acedrg_bond.atom_id_2" << std::endl;
+                << "_chem_comp_bond.comp_id" << std::endl
+                << "_chem_comp_bond.atom_id_1" << std::endl
+                << "_chem_comp_bond.atom_id_2" << std::endl;
                 for (std::vector<BondDict>::iterator iB=tBonds.begin();
                           iB !=tBonds.end(); iB++)
                 {
@@ -10364,10 +10364,10 @@ namespace LIBMOL
                 if (tRings.size() > 0)
                 {
                     outTempF << "loop_" << std::endl
-                    << "_chem_comp_acedrg_ring.comp_id" << std::endl
-                    << "_chem_comp_acedrg_ring.ring_id" << std::endl
-                    << "_chem_comp_acedrg_ring.atom_id" << std::endl
-                    << "_chem_comp_acedrg_ring.aromatic" << std::endl;
+                    << "_chem_comp_ring.comp_id" << std::endl
+                    << "_chem_comp_ring.ring_id" << std::endl
+                    << "_chem_comp_ring.atom_id" << std::endl
+                    << "_chem_comp_ring.aromatic" << std::endl;
                     // outTempF << "Ring Information: " << std::endl;
                     int  idxR = 1;
                     std::string aR = "RING_";

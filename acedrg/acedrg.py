@@ -1809,9 +1809,11 @@ class Acedrg(CExeCode ):
     def runGemmiCif2Pdb(self, tInCif, tOutPdb):
     
         if os.path.isfile(tInCif):
-            print("cif2pdb infile ", tInCif)
-            self._log_name       = os.path.join(self.scrDir, self.outRoot + "_gemmiCif2Pdb.log")
-            aTmpPdb              = os.path.join(self.scrDir, self.outRoot + "_gemmiCif2Pdb.pdb")
+            aRoot = os.path.basename(self.outRoot)
+            self._log_name       = os.path.join(self.scrDir, aRoot + "_gemmiCif2Pdb.log")
+            
+
+            aTmpPdb              = os.path.join(self.scrDir, aRoot + "_gemmiCif2Pdb.pdb")
             self._cmdline = self.gemmi
             self._cmdline += " convert  %s   %s \n"%(tInCif, aTmpPdb)
             self.subExecute() 
@@ -2122,9 +2124,9 @@ class Acedrg(CExeCode ):
             else:
                 self.outRstCifName = tRoot +  ".cif"
             
-            print("tCifInName ", tCifInName)
-            print("tRoot ", tRoot)
-            print("outName ", self.outRstCifName)
+            #print("tCifInName ", tCifInName)
+            #print("tRoot ", tRoot)
+            #print("outName ", self.outRstCifName)
             cifCont = {}
             cifCont['head']   = []
             cifCont['bulk']   = []
@@ -3378,6 +3380,8 @@ class Acedrg(CExeCode ):
                 #print("inName : ", self.inMmCifName)
                 self.fileConv.mmCifReader(self.inMmCifName)
                 print("Number of atoms in the cif file ", len(self.fileConv.atoms))
+                print("Number of bonds in the cif file ", len(self.fileConv.bonds))
+                
                 #for aA in self.fileConv.atoms:
                 #    print(aA["_chem_comp_atom.atom_id"])
                 #for aB in self.fileConv.bonds:
@@ -3414,8 +3418,9 @@ class Acedrg(CExeCode ):
                                 self.rdKit.chirBothList = self.fileConv.chirBothList
                 else:
                     self.lOrg = False    
-            
+        
             if  len(self.fileConv.atoms) > 1 and self.lOrg :
+                
                 if self.chemCheck.containAROMA(self.fileConv.bonds):
                     print("found aromatic bonds")
                     #self.chemCheck.addjustAtomsAndBonds(self.fileConv.atoms, 
@@ -3481,9 +3486,29 @@ class Acedrg(CExeCode ):
                         
                     #print("is this monomer a peptide ", self.isPEP)
                 if  len(self.fileConv.bonds) !=0 :   #and not self.isAA:
-                    
+                    if self.chemCheck.checkCarbonMol(self.fileConv.atoms, self.fileConv.bonds):
+                        print("Carbone molecules found")
+                        self.chemCheck.getCB_Graph_DB(self.acedrgTables)
+                        self.chemCheck.getNewMols(self.fileConv.atoms, self.fileConv.bonds, self.scrDir, self.monomRoot)
+                        # run the mols by different methods (CB mol or not)
+                        for aMol in self.chemCheck.aSetNewMols:
+                            if not aMol["isCBMol"]:
+                                print(aMol["fileIdx"], " IS NOT CB mol")
+                                aInCif = os.path.join(self.scrDir, aMol["fileIdx"] + ".cif")
+                                aOutRoot = self.scrDir + "/" + aMol["fileIdx"] + "_out"
+                                self._log_name        = os.path.join(self.scrDir, aMol["fileIdx"] + ".log")
+                                self._cmdline         = self.exeAcedrg 
+                                self._cmdline +=      " -c %s   -r %s -o %s -K "%(aInCif, "LIG", aOutRoot)
+                                #print(self._cmdline)
+                                print("Run mol : ", aMol["fileIdx"])
+                                #self.subExecute() 
+                            else:
+                                print(aMol["fileIdx"], " Is CB mol")
+                                self.chemCheck.processOneCBMol(aMol)                                  
+                            
+                        
                     # Option A: 
-                    if self.useExistCoords :
+                    elif self.useExistCoords :
                         aIniMolName = os.path.join(self.scrDir, self.baseRoot + "_initTransMol.mol")
                         self.fileConv.MmCifToMolFile(self.inMmCifName, aIniMolName, 2)
                         if os.path.isfile(aIniMolName) :
@@ -3492,10 +3517,10 @@ class Acedrg(CExeCode ):
                                 self.rdKit.chiralPre =[]
                                 for aChi in self.fileConv.chiralPre:
                                     self.rdKit.chiralPre.append(aChi) 
-                            
                             self.rdKit.initMols("mol", aIniMolName, self.monomRoot, \
                                                 self.chemCheck, self.inputPara["PH"], self.numConformers, 0,\
-                                                self.fileConv.nameMapingCifMol, self.fileConv.inputCharge, self.inMtConnFile) 
+                                                self.fileConv.nameMapingCifMol, self.fileConv.inputCharge, self.inMtConnFile)
+                        
                     elif "props" in self.fileConv.strDescriptors \
                        and "entries" in self.fileConv.strDescriptors:
 

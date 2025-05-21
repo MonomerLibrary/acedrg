@@ -21,6 +21,8 @@ import math
 import select
 import random
 
+import networkx as nx
+
 # Functions for numbers
 
 def isInt(t_string):
@@ -41,7 +43,7 @@ def isFloat(t_string):
 
     t_string = t_string.strip()
     try:
-        aInt = flaot(t_string)
+        aInt = float(t_string)
     except ValueError:
         aRet = False
 
@@ -465,6 +467,9 @@ def checkRepAtomTypes(tFileName, tS):
 
     return aRet
 
+
+# Equiv-class related algorithms
+
 def getLinkedGroups(tAtoms, tLinks, tMols):
     
     tGroups    = {}
@@ -498,3 +503,108 @@ def getLinkedGroups(tAtoms, tLinks, tMols):
         for aIdxA in tMols[aIdxM]:
             print("Atom : %s "%tAtoms[aIdxA]['_chem_comp_atom.atom_id'])
             
+def getLinkedGroups2(tAtoms, tLinks):
+    
+    tGroups    = {}
+    nAts       = len(tAtoms)
+    tGroups[0] = 0
+    for i in  range(1, nAts):
+        id_i = tAtoms[i]['_chem_comp_atom.atom_id']
+        tGroups[i] = i
+        for j in range(i):
+            id_j = tAtoms[j]['_chem_comp_atom.atom_id']
+            tGroups[j] = tGroups[tGroups[j]]
+            if id_j in tLinks[id_i]:
+                tGroups[tGroups[tGroups[j]]] = i
+    
+    for i in range(nAts):
+        tGroups[i] = tGroups[tGroups[i]];
+    
+    tMols = {}
+    
+    for iG in range(len(tGroups)):
+        idxM = tGroups[iG]
+        if not idxM in tMols:
+            tMols[idxM] = []
+        tMols[idxM].append(iG)
+
+    print("number of fragments is ", len(tMols))
+    aIdxF = 1
+    for aIdxM in tMols.keys():
+        print("Fragment ", aIdxF, " contains the following atoms: ")
+        aIdxF+=1
+        for aIdxA in tMols[aIdxM]:
+            print("Atom : %s "%tAtoms[aIdxA]['_chem_comp_atom.atom_id']) 
+    return tMols    
+
+# Graph-related algorithms 
+
+def aMolToAGraph(tAtoms, tBonds, tFileId):
+    
+    weightMap = {}
+    # Using periodic tables 
+    weightMap["B"] = 2
+    weightMap["C"] = 3
+    weightMap["N"] = 4
+    weightMap["O"] = 5
+    weightMap["S"] = 6
+    weightMap["SE"]= 7
+    weightMap["P"] = 8
+    weightMap["AS"] = 9
+    weightMap["SI"] = 9
+    weightMap["GA"] = 9
+    weightMap["GI"] = 9
+    weightMap["IN"] = 9
+    weightMap["OTHER"] =1
+    
+    
+    
+    aG = nx.Graph(name=tFileId)
+    # Add atoms info to a node
+    for aIdx, aAt in enumerate(tAtoms):
+        
+        aG.add_node(aIdx)
+        
+        for aK in aAt.keys():
+            aG.nodes[aIdx][aK] = aAt[aK]
+            elem = aAt["_chem_comp_atom.type_symbol"].upper()
+            if not elem in weightMap:
+                aG.nodes[aIdx]["_chem_comp_atom.type_symbol"] = "FE"
+            
+    #print("=======================================")
+    #print("The node properties of the graph are : ")
+    #print(aG.nodes.data()) 
+    
+    for aB in tBonds:
+        idxA1 = int(aB["_chem_comp_bond.atom_serial_number_1"])
+        idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
+        elem1 = tAtoms[idxA1]["_chem_comp_atom.type_symbol"].upper()
+        elem2 = tAtoms[idxA2]["_chem_comp_atom.type_symbol"].upper()
+        aWeight = 0 
+        if elem1 in weightMap:
+            aWeight += weightMap[elem1]
+        else:
+            aWeight +=1
+        if elem2 in weightMap:
+            aWeight +=  weightMap[elem2]
+        else:
+            aWeight +=1    
+        
+        aG.add_edge(idxA1, idxA2, weight=aWeight)
+        for aK in aB.keys():
+            aG[idxA1][idxA2][aK] = aB[aK]
+    
+    #print("=======================================")
+    #print("The edge properties of the graph are : ")
+    #print(aG.edges.data())
+
+    return aG
+
+def MatchTwoGraphs(tG1, tG2):
+    
+    aGM = nx.algorithms.isomorphism.GraphMatcher(tG1, tG2, node_match= lambda n1,n2:n1['_chem_comp_atom.type_symbol']==n2['_chem_comp_atom.type_symbol'], edge_match= lambda e1,e2: e1['weight'] == e2['weight'])
+    
+    return aGM.is_isomorphic(), aGM.mapping.items()
+
+
+        
