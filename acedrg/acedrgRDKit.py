@@ -258,6 +258,8 @@ class AcedrgRDKit(object):
             self.smiMod += tNewStrs
         # print "New repUnit ", tRepStr
         # print "New Unit ", tNewStrs
+        
+    
 
     def initMols(self, tFileType, tFileName, tMonoRoot, tChemCheck, tPH, tNumConf, tMode=0, tNameMap=None, tChargeList=None, tMtList=None):
 
