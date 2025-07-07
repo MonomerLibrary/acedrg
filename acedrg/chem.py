@@ -1823,7 +1823,7 @@ class ChemCheck(object):
             #print("elem1=", elem1)
             #print("conn1=", conn1)
             #print("val1=", val1)
-                
+            #print("len(tAtoms[connB])=", len(tAtoms[idxA1]["connB"]))    
             idxA2 = int(aB["_chem_comp_bond.atom_serial_number_2"])
             id2   = tAtoms[idxA2]["_chem_comp_atom.atom_id"]
             elem2 = tAtoms[idxA2]["_chem_comp_atom.type_symbol"].upper()
@@ -1838,6 +1838,7 @@ class ChemCheck(object):
             #print("elem2=", elem2)
             #print("conn2=", conn2)
             #print("val2=", val2)
+            #print("len(tAtoms[connB])=", len(tAtoms[idxA2]["connB"]))
             # break bonds if need
             if len(tAtoms[idxA1]["connB"]) ==0 and  len(tAtoms[idxA2]["connB"])==0:
                 tNewBonds.append(aB) 
@@ -1850,7 +1851,7 @@ class ChemCheck(object):
             elif conn1 > val1 :
                 if conn2 > val2:
                     tNewBonds.append(aB)
-                elif conn2==val2 and len(tAtoms[idxA2]["connB"]) >2:
+                elif conn2==val2 and len(tAtoms[idxA2]["connB"]) >=2:
                     tNewBonds.append(aB)
                 else:
                     if not elem2 in notBroken:
@@ -1861,7 +1862,7 @@ class ChemCheck(object):
             elif conn2 > val2 :    #and elem2 in tVals:
                 if conn1 > val1:
                     tNewBonds.append(aB)
-                elif conn1==val1 and len(tAtoms[idxA1]["connB"]) >2:
+                elif conn1==val1 and len(tAtoms[idxA1]["connB"]) >=2:
                     
                     tNewBonds.append(aB)
                 else:
@@ -1892,8 +1893,6 @@ class ChemCheck(object):
             if not id2 in tNewConns:
                 tNewConns[id2] = []
             tNewConns[id2].append(id1)
-            
-            
         
     def addHAtomsToMols(self,  tAtoms, tMol, tBrokenBs):
         # H atoms and bonds here are replace the atoms at broken bonds
@@ -2527,7 +2526,7 @@ class ChemCheck(object):
         for aIdxB in self.tmpBrokenBonds:
             id1 = tAllAtoms[aIdxB[0]]["_chem_comp_atom.atom_id"]
             id2 = tAllAtoms[aIdxB[1]]["_chem_comp_atom.atom_id"]
-            print("Broken bond id1 ", id1, " id2 ", id2)
+            #print("Broken bond id1 ", id1, " id2 ", id2)
             
             if id1 in atomIdMapNonCB and id2 in atomIdMapCB:
                 self.TRNonCBMols(tNonCBMols, tCBMols, atomIdMapNonCB[id1], atomIdMapCB[id2], aIdxB[2], tAllBonds, extraBonds, extraAngs)
@@ -2580,12 +2579,12 @@ class ChemCheck(object):
         aLeng = 1.1
         for aAt in tCBMol["atoms"]:
             if aAt["_chem_comp_atom.type_symbol"] =="B" or aAt["_chem_comp_atom.type_symbol"] =="C":
-                print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
+                #print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
                 
                 if len(aAt["_chem_comp_atom.atom_conn"])==5 and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds:
-                    print("it needs a H")
-                    print("Its index is ", aAt["_chem_comp_atom.atom_serial_number"])
-                    print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
+                    #print("it needs a H")
+                    #print("Its index is ", aAt["_chem_comp_atom.atom_serial_number"])
+                    #print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
                     if not "angles" in tCBMol:
                         tCBMol["angles"] = []
                     tCurNumAtoms=self.addOneHAtomCoordsAndOneBondAndAllAngs(aAt, tCBMol, aLeng, tCurNumAtoms, tExcHs)
@@ -2763,7 +2762,9 @@ class ChemCheck(object):
         
         
         if idxCBM  !=-1 and idxNonCBM !=-1:
-            aLeng = 1.57         # Tempo for B element 
+            
+            # Tempo for B element
+            aLeng = 1.57  
             if tCBMols[idxCBM]["atoms"][idxCBA]["_chem_comp_atom.type_symbol"] == "C":
                 aLeng = 1.51     # Temp for CB 
             
@@ -2883,17 +2884,18 @@ class ChemCheck(object):
                 print("Should rotate %8.4f angle "%aPhi)
                 print("atom %s conn %d atoms. "%(idY1, len(tNonCBMols[idxNonCBM]["atoms"][idxNonCBA]["_chem_comp_atom.atom_conn"])))
                 vecN = -getPlaneNormal(aPosC, aPos1, aPos2)
-                a1   = getAUnitDirVec2P(aPosC, aPos1)
-                a2   = getAUnitDirVec2P(aPosC, aPos2)
-                print("n_a1=", np.dot(vecN, a1)) 
-                print("n_a2=", np.dot(vecN, a2))
-                print("a1_a2=", np.dot(a2, a1))
+                #a1   = getAUnitDirVec2P(aPosC, aPos1)
+                #a2   = getAUnitDirVec2P(aPosC, aPos2)
+                #print("n_a1=", np.dot(vecN, a1)) 
+                #print("n_a2=", np.dot(vecN, a2))
+                #print("a1_a2=", np.dot(a2, a1))
                 #print("vecN=",vecN)
                 #print("Its length ", np.linalg.norm(vecN))
                 
                 K   = np.array([[0.0, -vecN[2], vecN[1]],
                                 [vecN[2],  0.0, -vecN[0]],
                                 [-vecN[1], vecN[0], 0]])
+                
                 #print("K=", K)
                 
                 KSq = K@K
@@ -2919,8 +2921,8 @@ class ChemCheck(object):
                 
                 R = I + K*sPhi + KSq*(1-cPhi) 
                 
-                print("R=", R)
-                print("R_det=", np.linalg.det(R))
+                #print("R=", R)
+                #print("R_det=", np.linalg.det(R))
                 x = tNonCBMols[idxNonCBM]["atoms"][idxNonCBA]["_chem_comp_atom.model_Cartn_x"]
                 y = tNonCBMols[idxNonCBM]["atoms"][idxNonCBA]["_chem_comp_atom.model_Cartn_y"]
                 z = tNonCBMols[idxNonCBM]["atoms"][idxNonCBA]["_chem_comp_atom.model_Cartn_z"]
@@ -2930,8 +2932,8 @@ class ChemCheck(object):
                                        [aAt["_chem_comp_atom.model_Cartn_y"]-y],
                                        [aAt["_chem_comp_atom.model_Cartn_z"]-z]])
                         aNewCoords =np.matmul(R,aDef) + np.array([[x], [y], [z],])
-                        print("atom : ", aAt["_chem_comp_atom.atom_id"])
-                        print("aNewCoords=", aNewCoords)
+                        #print("atom : ", aAt["_chem_comp_atom.atom_id"])
+                        #print("aNewCoords=", aNewCoords)
                         aAt["_chem_comp_atom.model_Cartn_x"] = aNewCoords[0][0]
                         aAt["_chem_comp_atom.model_Cartn_y"] = aNewCoords[1][0]
                         aAt["_chem_comp_atom.model_Cartn_z"] = aNewCoords[2][0]

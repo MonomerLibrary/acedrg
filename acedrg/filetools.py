@@ -2717,13 +2717,14 @@ def outputOneMolInACif(tCif, tFileIdx, tMol) :
 
 def outputOneMolInACif2(tCif,  tFileIdx, tAtoms, tBonds, tAngs) :
     
+    addBondLengToBonds(tAtoms, tBonds)
         
     outputHeadSecInOneMol(tCif, tFileIdx, tAtoms)
     outputAtomsInOneMol(tCif, tFileIdx, tAtoms)
     outputBondsInOneMol(tCif, tFileIdx, tBonds)
     outputAngsInOneMol(tCif,tFileIdx, tAngs)
     tCif.close()      
-
+    
 def outputOneMolFullDictInACif(tCif, tFileIdx, tMol):
     
     outputHeadSecInOneMol(tCif, tFileIdx, tMol["atoms"])
@@ -2842,7 +2843,32 @@ def outputAtomsInOneMol(tCif, tFileIdx, tAtoms):
         
         tCif.write(aL)
         
+def addBondLengToBonds(tAtoms, tBonds):
+    
+    # Apply only to atoms in CB Mols
+    
+    idElmMap = {}
+    
+    for aAt in tAtoms:
+        aId  = aAt["_chem_comp_atom.atom_id"]
+        aElm = aAt["_chem_comp_atom.type_symbol"]
+        idElmMap[aId] = aElm 
+    
+    elms = ["B", "C"]
+    for aBo in tBonds:
+         
+        aId1 = aBo["_chem_comp_bond.atom_id_1"]
+        aElem1 = idElmMap[aId1] 
+        aId2 = aBo["_chem_comp_bond.atom_id_2"]
+        aElem2 = idElmMap[aId2]
         
+        if  not aElem1 in elms or not aElem2 in elms:
+            aBo["_chem_comp_bond.value_dist"] = 2.1 
+        else:
+            aBo["_chem_comp_bond.value_dist"] = 1.55
+                
+        
+            
         
 def outputBondsInOneMol(tCif, tFileIdx, tBonds):
     
@@ -2873,16 +2899,19 @@ def outputBondsInOneMol(tCif, tFileIdx, tBonds):
             aB["_chem_comp_bond.pdbx_aromatic_flag"] = "n"
         aAr = aB["_chem_comp_bond.pdbx_aromatic_flag"].ljust(4)
         
+        # the following is just place holder
+        
         if not "_chem_comp_bond.value_dist" in aB:
             aB["_chem_comp_bond.value_dist"] = 1.5
+            
         aLN = str(aB["_chem_comp_bond.value_dist"])
+       
         if len(aLN) > 5:
             aLN = aLN[:5]
         aLN = aLN.ljust(len(aLN)+3)
         
+        aB["_chem_comp_bond.value_dist_nucleus"] = aLN
         
-        if not "_chem_comp_bond.value_dist_nucleus" in aB:
-            aB["_chem_comp_bond.value_dist_nucleus"] = aLN
         aNL = str(aB["_chem_comp_bond.value_dist_nucleus"]) 
         if len(aNL) > 5:
             aNL = aNL[:5]
@@ -3203,3 +3232,49 @@ def setAtomRingConn(tAtoms, tRings):
             if not rOrd in tAtoms[idxA]["_chem_comp_atom.in_rings"]:
                 tAtoms[idxA]["_chem_comp_atom.in_rings"][rOrd] = []
             tAtoms[idxA]["_chem_comp_atom.in_rings"][rOrd].append(rIdx)
+            
+def reWriteAcedrgDescriptorSec(tInFN, tOutFN, tSetDis):
+    
+    try:
+        tInF = open(tInFN, "r")
+    except IOError:
+            print("Error :%s can not be open for reading "%tInFN)
+            sys.exit(1)
+    else:
+        allLs = tInF.readlines()
+        tInF.close()
+        
+        
+        tOutF = open(tOutFN, "w")
+          
+        
+        lOK = True
+        loopLs = []
+        aSL = ""
+        for aL in allLs:
+            if aL.find("data_") !=-1 or aL.find("loop_") !=-1:
+                if len(loopLs) > 1:
+                    for aLL in loopLs:
+                        tOutF.write(aLL)
+                loopLs = []
+                loopLs.append(aL)
+            elif aL.find("_acedrg_chem_comp_descriptor") !=-1:
+                pass 
+            elif aL.find("servalcat") !=-1:
+                aSL = aL
+            else:
+                loopLs.append(aL)
+            
+        if len(loopLs) > 1:
+            for aLL in loopLs:
+                tOutF.write(aLL)
+                
+        for aL in tSetDis:
+            tOutF.write(aL)
+        
+        tOutF.write(aSL)
+        
+        
+        
+        
+        

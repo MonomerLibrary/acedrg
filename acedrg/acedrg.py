@@ -55,6 +55,7 @@ from . filetools   import outputOneMolInACif
 from . filetools   import outputOneMolInACif2
 from . filetools   import fromCifTorMolGemmi
 from . filetools   import outputOneMolFullDictInACif
+from . filetools   import reWriteAcedrgDescriptorSec
 
 from . utility    import listComp
 from . utility    import listComp2
@@ -1790,7 +1791,7 @@ class Acedrg(CExeCode ):
                 self._log_name        = os.path.join(self.scrDir,  self.baseRoot + "_acedrg.log")
                 self._cmdline         = self.exeAcedrg
                 self._cmdline +=      " -c %s   -r %s -o %s -j 100 "%(tMol, self.monomRoot, self.baseRoot)
-                #print(self._cmdline)
+                print(self._cmdline)
                 self.subExecute()
                 
                  
@@ -3381,8 +3382,10 @@ class Acedrg(CExeCode ):
     def executeWithRDKit(self):
  
         self.printJobs()
+        
         #if self.useExistCoords or self.workMode==16 or self.workMode==161:
         #    print("One of output conformers will using input coordinates as the initial one")
+        
         print("workMode : ", self.workMode)
         
         
@@ -3437,6 +3440,7 @@ class Acedrg(CExeCode ):
             if self.containCBM: 
                 
                 print("Carbone molecules found")
+                self.setOutCifGlobSec()
                 self.chemCheck.getCB_Graph_DB(self.acedrgTables)
                 self.chemCheck.getNewMols(self.fileConv.atoms, self.fileConv.bonds, self.scrDir, self.monomRoot)
                 
@@ -3530,6 +3534,7 @@ class Acedrg(CExeCode ):
                         self.chemCheck.processOneCBMol(aMol)
                         aTmpCifN = os.path.join(self.scrDir, aMol["fileIdx"] + "_out.cif")
                         aTmpCif  = open(aTmpCifN, "w")
+                        print(aTmpCifN)
                         outputOneMolInACif2(aTmpCif, self.monomRoot, aMol["remainAtoms"], aMol["remainBonds"], aMol["remainAngs"])
                         aMol["tempCif"] = aTmpCifN
                         
@@ -3568,7 +3573,8 @@ class Acedrg(CExeCode ):
                                 self.runServalcat(aRoot, aInCifN)
                                 if os.path.isfile(aOutCifS):
                                     finOutCif = self.outRoot + ".cif"
-                                    shutil.copy(aOutCifS, finOutCif)
+                                    reWriteAcedrgDescriptorSec(aOutCifS, finOutCif, self.outCifGlobSect)
+                                    #shutil.copy(aOutCifS, finOutCif)
                                     print("The final output cif is %s"%finOutCif)
                                 else:
                                     print("File %s does not exist."%aOutCifS)
@@ -3591,7 +3597,8 @@ class Acedrg(CExeCode ):
                             self.runServalcat(aRoot2, aOutCifS1)
                             if os.path.isfile(aOutCifS2):
                                 finOutCif = self.outRoot + ".cif"
-                                shutil.copy(aOutCifS2, finOutCif)
+                                #shutil.copy(aOutCifS2, finOutCif)
+                                reWriteAcedrgDescriptorSec(aOutCifS2, finOutCif, self.outCifGlobSect)
                                 print("The final output cif is %s"%finOutCif)
                         else:
                             print("File %s does not exist."%aOutCifS)
@@ -3999,7 +4006,6 @@ class Acedrg(CExeCode ):
                     
                     #self.chemCheck.getNewMols(self.fileConv.atoms, self.fileConv.bonds, self.scrDir, self.monomRoot)
                     
-                    sys.exit()
                     
                 elif self.chemCheck.isOrganic(self.inSmiName, self.workMode):
                     self.rdKit.reSetSmi = True
@@ -4008,9 +4014,13 @@ class Acedrg(CExeCode ):
                         self.monomRoot = self.rdKit.monoName
             
                 else:
+                    
                     interMedCifName = os.path.join(self.scrDir, self.baseRoot + "_initTransMol.cif")
                     self.rdKit.setSimpleCifFromOneMol("smi", self.inSmiName, interMedCifName, self.monomRoot, self.chemCheck)
+                
+                    
                     self.workMode =1211
+                
                      
             
          
@@ -4040,11 +4050,11 @@ class Acedrg(CExeCode ):
                 DataStrTransferAtomsAndBonds(aTmpMol, DAtoms, DBonds, self.monomRoot)
                 self.containCBM = self.chemCheck.checkCarbonMol(DAtoms, DBonds)
                 
-                print(self.containCBM)
+                #print(self.containCBM)
             
             
                 if self.containCBM:
-                    
+                    self.setOutCifGlobSec()
                     aRMol2 = Chem.AddHs(aTmpMol)
                     DAtoms = []
                     DBonds = []
@@ -4193,7 +4203,8 @@ class Acedrg(CExeCode ):
                                 self.runServalcat(aRoot2, aOutCifS1)
                                 if os.path.isfile(aOutCifS2):
                                     finOutCif = self.outRoot + ".cif"
-                                    shutil.copy(aOutCifS2, finOutCif)
+                                    reWriteAcedrgDescriptorSec(aOutCifS2, finOutCif, self.outCifGlobSect)
+                                    #shutil.copy(aOutCifS2, finOutCif)
                                     print("The final output cif is %s"%finOutCif)
                             else:
                                 print("File %s does not exist."%aOutCifS)
@@ -4521,6 +4532,7 @@ class Acedrg(CExeCode ):
         
         if self.workMode ==1211:
             
+            print("interMedCifName=", interMedCifName)
             self.runAcedrg(interMedCifName, 0)
             
             print("=====================================================================")

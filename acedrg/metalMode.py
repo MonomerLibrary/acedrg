@@ -787,7 +787,6 @@ class metalMode(CExeCode):
                     posY = float(aAtom['_chem_comp_atom.model_Cartn_y'])
                     posZ = float(aAtom['_chem_comp_atom.model_Cartn_z'])
                 elif '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
-                    print("here")
                     posX = float(aAtom['_chem_comp_atom.x'])
                     posY = float(aAtom['_chem_comp_atom.y'])
                     posZ = float(aAtom['_chem_comp_atom.z'])
