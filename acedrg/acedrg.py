@@ -24,6 +24,7 @@ from optparse import OptionParser
 import math
 import json 
 
+import networkx as nx
 
 from functools  import cmp_to_key
 
@@ -67,7 +68,9 @@ from . utility    import splitLineSpa2
 from . utility    import aLineToAlist
 from . utility    import checkRepAtomTypes
 from . utility    import DataStrTransferAtomsAndBonds
-
+from . utility    import cutRings
+from . utility    import aMolToAGraph
+from . utility    import setTreeNodeOrder
 
 if os.name != 'nt':
     import fcntl
@@ -176,6 +179,8 @@ class Acedrg(CExeCode ):
 
         self.HMO              = False
         self.raS              = 0.5
+        
+        self.addTree          = False
         
         self.testMode         = False
 
@@ -422,6 +427,10 @@ class Acedrg(CExeCode ):
         self.inputParser.add_option("-w",  "--coordsOnly", dest="useCoordsOnly",  
                                     action="store_true",  default=False,
                                     help="Using the coordinates in the input file to generate bonds, angles etc in the dictionary files")
+        
+        self.inputParser.add_option(  "--withTree", dest="addTree",  
+                                    action="store_true",  default=False,
+                                    help="Add a molecule tree into the final output dictionary file")
 
         self.inputParser.add_option("-x",  "--pdb", dest="inPdbName", metavar="FILE", 
                                     action="store", type="string", 
@@ -1060,7 +1069,10 @@ class Acedrg(CExeCode ):
         if t_inputOptionsP.inMtConnFile:
             self.inMtConnFile = t_inputOptionsP.inMtConnFile
         
-    
+        if t_inputOptionsP.addTree:
+            self.addTree = t_inputOptionsP.addTree 
+            
+            
     def checkStdCif(self, tInCif):
         
         aRet = False
@@ -1338,7 +1350,7 @@ class Acedrg(CExeCode ):
             print(self._cmdline)
             
             self.runExitCode =os.system(self._cmdline + ">%s"%self._log_name)
-            #print(self.runExitCode)
+            print(self.runExitCode)
             #self.runExitCode = self.subExecute()
             
         if self.workMode in [21, 211] :
@@ -4538,9 +4550,182 @@ class Acedrg(CExeCode ):
             print("=====================================================================")
             print("|               Finished                                            |")
             print("=====================================================================")
+        if self.workMode ==1001:
+            print("inCif is ", self.inMmCifName)
+            self.addAMolTreeIntoACif(self.inMmCifName)
+            
+        if self.addTree :
+            print("Tree to be added")
+            aInCifN = self.outRoot + ".cif"
+            print("Tree infile is ", aInCifN)
+            self.addAMolTreeIntoACif(aInCifN)
+    
+    def addAMolTreeIntoACif(self, tInCifN):
+        
+        aTreeInCifHeader = ["loop_\n",
+                            "_chem_comp_tree.comp_id\n",
+                            "_chem_comp_tree.atom_id\n",
+                            "_chem_comp_tree.atom_back\n", 
+                            "_chem_comp_tree.atom_forward\n",
+                            "_chem_comp_tree.connect_type\n"]
+        
+        aSetMols = []
+        aFileIdx = self.outRoot 
+        print(tInCifN)
+        fromCifTorMolGemmi(tInCifN, aFileIdx, self.monomRoot, aSetMols)
+        
+        print("Number of molecules in the cif is ", len(aSetMols))
+        if len(aSetMols) > 0:
+            aSetBrokenIds = []
+            if "rings" in aSetMols[0]:
+                 cutRings(aSetMols[0], aSetBrokenIds)
+            self.chemCheck.addAtomSeri(aSetMols[0]["atoms"], aSetMols[0]["bonds"])
+            allGraphs = []
+            allGraphs.append(aMolToAGraph(aSetMols[0]["atoms"], aSetMols[0]["bonds"], aFileIdx))
+            #print("=======================================")
+            #print("The node properties of the graph are : ")
+            #print(allGraphs[0].nodes.data()) 
+            #print("The edge properties of the graph are : ")
+            #print(allGraphs[0].edges.data())
+            T = nx.minimum_spanning_tree(allGraphs[0])
+            #T1=sorted(T.edges(data=True))
+            #E = set(T.edges())  # optimization
+            #[e for e in allGraphs[0].edges() if e in E or reversed(e) in E]
+            #print(E)
+            
+            aTreeInCif = {}
+            for aA in aSetMols[0]["atoms"]:
+                id = aA["_chem_comp_atom.atom_id"]
+                aTreeInCif[id] = {}
+                aTreeInCif[id]["type_symbol"] = aA["_chem_comp_atom.type_symbol"]
+                aTreeInCif[id]["connect_type"] = "."
+                
+            nodeConns = {}    
+            idxS = 0
+            startId = ""
+            for u, v, d in T.edges(data=True):
+                print("u and v  ", [u, v]) 
+                id1 = allGraphs[0].nodes[u]["_chem_comp_atom.atom_id"]
+                id2 = allGraphs[0].nodes[v]["_chem_comp_atom.atom_id"]
+                print("From Nodes : Tree section between %s and %s"%(id1, id2))
+                #id1 = d["_chem_comp_bond.atom_id_1"]
+                #id2 = d["_chem_comp_bond.atom_id_2"]
+                
+                if idxS==0:
+                    startId = id1 
+                    aTreeInCif[id1]["connect_type"] = "START" 
+                    aTreeInCif[id1]["atom_back"] = "n/a"
+                    idxS+=1
+                
+                if not id1 in nodeConns:
+                    nodeConns[id1] = []
+                if not id2 in nodeConns:
+                    nodeConns[id2] = []
+                nodeConns[id1].append(id2)
+                nodeConns[id2].append(id1)
+                
+                """   
+                if not "atom_forward" in aTreeInCif[id1]:
+                    aTreeInCif[id1]["atom_forward"] = [] 
+                if not "atom_forward" in aTreeInCif[id2]:
+                    aTreeInCif[id2]["atom_forward"] = []
+                if "atom_back" in aTreeInCif[id2]:
+                    aTreeInCif[id2]["atom_forward"].append(id1)
+                    aTreeInCif[id1]["atom_back"] = id2
+                else:
+                    aTreeInCif[id1]["atom_forward"].append(id2)
+                    aTreeInCif[id2]["atom_back"] = id1
+                """
+                
+            print("Starting atom in the tree is %s"%startId)
             
         
+            aSList = []
+            setTreeNodeOrder(nodeConns, startId, aTreeInCif, aSList) 
+            endingId = ""
+            tmpCands = []
+            for aId in aTreeInCif:
+                #if not "atom_back" in aTreeInCif[aId] and aTreeInCif[aId] != "H" and not aId in aSetBrokenIds:
+                if aId == "C" and aId != startId:
+                    endingId =  aId
+                    aTreeInCif[aId]["connect_type"] = "END"
+                elif aTreeInCif[aId]["type_symbol"] !="H" and aId != startId:
+                    tmpCands.append(aId)
+            if endingId =="" and len(tmpCands) > 0:
+                endingId = tmpCands[0]
+                    
+            print("EndingId is ", endingId)
+            
+            # Check if all of nodes have a parent node
+            #for aId in aTreeInCif:
+            #    if not "atom_back" in aTreeInCif[aId]:
+            #        aTreeInCif[aId]["atom_back"] = "n/a"
+            #        aTreeInCif[id1]["connect_type"] = "START" 
+            
+               
+            #for aId in aTreeInCif:
+            #    print("Prop of ", aId)
+            #    print(aTreeInCif[aId])
+            
         
+            
+            # Form the output section
+            allOutLines = []
+            startForw = ""
+            if "CA" in nodeConns[startId] and not "atom_forward" in aTreeInCif[startId]:
+                startForw = "CA"
+                aTreeInCif[startId]["atom_forward"] = ["CA"]
+            else:
+                if "atom_forward" in aTreeInCif[startId]:
+                    for aId in aTreeInCif[startId]["atom_forward"]:
+                        if aTreeInCif[aId]["type_symbol"] != "H":
+                            startForw = aId
+                            break
+                else:
+                    print("A bug in set tree starting point")
+            #for aId in aTreeInCif:
+            #    print("Prop of ", aId)
+            #    print(aTreeInCif[aId])
+            aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), startId.ljust(8), "n/a".ljust(8), startForw.ljust(8), "START".ljust(6))
+            #print(aLine)
+            allOutLines.append(aLine)
+            
+            for aId in aTreeInCif:
+                #print(aId)
+                #print(aTreeInCif[aId])
+                if aId != startId and aId !=endingId:
+                    aIdForw = "."
+                    for aFId in aTreeInCif[aId]["atom_forward"]:
+                        # Take non-H first
+                        if aTreeInCif[aFId]["type_symbol"] != "H":
+                            aIdForw = aFId
+                            break
+                    # else take H if possible    
+                    if aIdForw =="" and len(aTreeInCif[aId]["atom_forward"]) >0:
+                        aIdForw = aTreeInCif[aId]["atom_forward"][0]
+                
+                    aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), aId.ljust(8), 
+                                            aTreeInCif[aId]["atom_back"].ljust(8), aIdForw.ljust(8), ".".ljust(6)) 
+                    #print(aLine)
+                    allOutLines.append(aLine)
+            aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), endingId.ljust(8), aTreeInCif[endingId ]["atom_back"].ljust(8), ".".ljust(8), "END".ljust(6))
+            #print(aLine)
+            allOutLines.append(aLine)
+            
+            
+            f = open(tInCifN, "a")
+            for aL in aTreeInCifHeader:
+                f.write(aL)
+            for aL in allOutLines:
+                f.write(aL)
+                
+            f.close()
+        
+            
+            
+            
+            
+            
     def SetNewMolWithoutMetal(self):
         
         pass 

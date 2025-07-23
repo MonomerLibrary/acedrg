@@ -822,7 +822,105 @@ def MatchTwoGraphs(tG1, tG2):
     return aGM.is_isomorphic(), aGM.mapping.items()
 
 
+def cutRings(tMol, tBrokenIds):    
+    
+    origBonds = []
+    for aB in tMol["bonds"]:
+        origBonds.append(aB)
+    tmpBonds = []
+    extRings =[]
+    selectedAtms    = []
+    selectedRingMap = {}
+    ringAtomMap     = {}
+    numRingMap      = {}
+    for aRIdx in tMol["rings"]:
+        for aRA in tMol["rings"][aRIdx]:
+            aId = aRA["_chem_comp_ring_atom.atom_id"]
+            if not aId in numRingMap:
+                numRingMap[aId] = []
+            numRingMap[aId].append(aRIdx)
+    for aRIdx in tMol["rings"]:
+        #print(aRIdx)
+        for aRA in tMol["rings"][aRIdx]:
+            aId = aRA["_chem_comp_ring_atom.atom_id"]
+            if not aRIdx in extRings and len(numRingMap[aId])==1:
+                extRings.append(aRIdx)
+                selectedAtms.append(aRA["_chem_comp_ring_atom.atom_id"])
+                print("%s is selected"%aRA["_chem_comp_ring_atom.atom_id"])
+                break                                    
+        if not aRIdx in ringAtomMap:
+            ringAtomMap[aRIdx] = []
+        for aRA in tMol["rings"][aRIdx]:
+            aId = aRA["_chem_comp_ring_atom.atom_id"]
+            selectedRingMap[aId] = aRIdx
+            ringAtomMap[aRIdx].append(aId)
+            
+            
+    #print(selectedAtms)
+    #print(selectedRingMap)
+    #print(numRingMap)
+    
+    extRings =[]
+    for aB in tMol["bonds"]:
+        id1 = aB["_chem_comp_bond.atom_id_1"]
+        id2 = aB["_chem_comp_bond.atom_id_2"]
+        #print("Check bond between %s and %s "%(id1, id2))
+        lInc = False
+        if id1 in selectedAtms and id1 in selectedRingMap and id1 in numRingMap:
+            if not selectedRingMap[id1] in extRings and not len(numRingMap[id1]) > 1:
+                if id2 in ringAtomMap[selectedRingMap[id1]]:
+                    lInc = True
+                    extRings.append(selectedRingMap[id1])
+        elif id2 in selectedAtms and id2 in selectedRingMap and id2 in numRingMap:
+            if not selectedRingMap[id2] in extRings and not len(numRingMap[id2]) > 1:
+                if id1 in ringAtomMap[selectedRingMap[id2]]:
+                    lInc = True
+                    extRings.append(selectedRingMap[id2])
+         
+        if not lInc:
+            tmpBonds.append(aB)
+        else:
+            print("Bond between %s and %s is broken"%(id1, id2))
+            if not id1 in tBrokenIds:
+                tBrokenIds.append(id1)
+            if not id2 in tBrokenIds:
+                tBrokenIds.append(id2)
+            
+    tMol["bonds"] = [] 
+    for aB in tmpBonds:
+        tMol["bonds"].append(aB)
+    
 
-
+def setTreeNodeOrder(tConn, tStartId, tTree, tStartList):
+    
+    if not tStartId in tStartList: 
+        tStartList.append(tStartId)
+    #print("tStartList =", tStartList)
+    if tStartId in tConn :
+        #print("Start id ", tStartId)
+        #print("Its children ")
+        #print(tConn[tStartId])
+    
+        for aId in tConn[tStartId] :
+            #print(aId, " is a ch of ", tStartId)
+            if not aId in tStartList:
+                #print(aId, " is assigned ")
+                tTree[aId]["atom_back"] = tStartId
+                if not "atom_forward" in tTree[aId]:
+                    tTree[aId]["atom_forward"] =[]
+                #print("its connection ", tConn[aId] )
+                if len(tConn[aId]) > 1 :
+                    for aNId in tConn[aId]:
+                        if aNId != tStartId:
+                            #print("Next Lev ", aNId)
+                            tTree[aId]["atom_forward"].append(aNId)
+                            setTreeNodeOrder(tConn, aId, tTree, tStartList)
+                else:
+                    pass
+                    #print("No start")
+                    #print("Back to ", aId, " next" )
+       
+        return             
+          
 
         

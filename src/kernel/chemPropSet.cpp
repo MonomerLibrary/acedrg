@@ -7305,6 +7305,7 @@ namespace LIBMOL
                     int numCs =0;
                     int numNC3 =0;
                     int numNC4 =0;
+                    int numDO  =0;
                     int idxNC4 = -1;
                     std::vector<int> idxAtms;
                     for (std::vector<AtomDict>::iterator iAt= tRings[idxRs[j]].atoms.begin();
@@ -7341,10 +7342,20 @@ namespace LIBMOL
                             }
                             //std::cout << " numNC3 " << numNC3 << std::endl;
                         }
+                        for (std::vector<int>::iterator iNB = iAt->connAtoms.begin();
+                             iNB != iAt->connAtoms.end(); iNB++)
+                        {
+                            int idxB=tAllAtmBondingMap[iAt->seriNum][*iNB];
+                            if (tBonds[idxB].orderN==2)
+                            {
+                                numDO++;
+                            }
+                        }
                     }
                     std::cout << "numCs=" << numCs << std::endl;
                     std::cout << "numNC3=" << numNC3 << std::endl;
                     std::cout << "numNC3=" << numNC3 << std::endl;
+                    std::cout << "numDO" << numDO << std::endl;
                     if (numCs==6 && numNC3==6)
                     {
                         if (std::find(tExcFRings.begin(), tExcFRings.end(), idxRs[j])==tExcFRings.end())
@@ -7371,7 +7382,7 @@ namespace LIBMOL
                             tExcFRings.push_back(idxRs[j]);
                         }
                     }
-                    else if (numCs==6)
+                    else if (numCs==6 and numDO==0)
                     {
                         if (!tRings[idxRs[j]].doneBO)
                         {
@@ -7521,7 +7532,7 @@ namespace LIBMOL
                                 std::vector<int>           & tDoneFAtoms,
                                 std::vector<int>           & tDoneBonds)
     {
-
+        std::cout << "setOneIsolateC6Ring" << std::endl;
         std::vector<int>    idxRiAtms;
         for (std::vector<AtomDict>::iterator iAt= tRing.atoms.begin();
              iAt != tRing.atoms.end(); iAt++)
@@ -9564,7 +9575,7 @@ namespace LIBMOL
                         }
                         std::cout << "It conn to " << tAtoms[*iNB].connMAtoms.size() << " metal atoms" << std::endl;
                         std::cout << "add Charge is " << addC << std::endl;
-                        sumCh += addC; 
+                        sumCh += addC;
                         // sumCh +=tAtoms[*iNB].charge;
                         std::cout << "here sumCh " << sumCh << std::endl;
                     }

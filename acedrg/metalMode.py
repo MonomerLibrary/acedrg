@@ -91,7 +91,7 @@ class metalMode(CExeCode):
             outTmpRootName = self.outRoot + "_tmp"
             self.runAcedrg(tmpMmcifName, outTmpRootName, tProcParas)
             outTmpCifName  =  outTmpRootName + ".cif"
-            
+            print("Here passed 2")
             
             #for aA in self.metalAtoms:
             #    print("Metal atom ", aA['_chem_comp_atom.atom_id'], 
@@ -103,7 +103,7 @@ class metalMode(CExeCode):
                 self.modiCif(outTmpCifName, outTmp2CifName)
                 if os.path.isfile(outTmp2CifName):
                     aRet = outTmp2CifName
-                    
+            print("Here passed 2")        
         elif nBonds==0:
             outInterMCifName = self.outRoot   + ".cif"
             self.outInterMCif(outInterMCifName, tAtoms, tBonds, tVersionInfo)

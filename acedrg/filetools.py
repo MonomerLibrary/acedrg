@@ -1318,9 +1318,14 @@ class FileTransformer(object) :
             idxAtom = 1
             for aAtom in self.atoms:
                 if self.mmCifHasCoords :
-                    x = "%7.4f"%float(aAtom["_chem_comp_atom.x"])
-                    y = "%7.4f"%float(aAtom["_chem_comp_atom.y"])
-                    z = "%7.4f"%float(aAtom["_chem_comp_atom.z"])
+                    if aAtom["_chem_comp_atom.x"].find("?") ==-1 and aAtom["_chem_comp_atom.y"].find("?") ==-1 and aAtom["_chem_comp_atom.z"].find("?")==-1:
+                        x = "%7.4f"%float(aAtom["_chem_comp_atom.x"])
+                        y = "%7.4f"%float(aAtom["_chem_comp_atom.y"])
+                        z = "%7.4f"%float(aAtom["_chem_comp_atom.z"])
+                    else:
+                        x = "0.0000"
+                        y = "0.0000"
+                        z = "0.0000"
                 else:
                     x = "0.0000"
                     y = "0.0000"
@@ -3103,9 +3108,10 @@ def fromCifTorMolGemmi(tInCifFN, tFileIdx, tMono, tMols):
         print("%s does not exist"%tInCifFN)
     else:
         numBl = len(aInCif) 
-        
+        print(numBl)
+        print(tMono)
         if numBl > 0:
-            #print("Those blocks are ")
+            print("Those blocks are ")
             for aBloc in aInCif:
                 aBName = "comp_" + tMono
                 if aBloc.name.find(aBName)!=-1:
@@ -3214,7 +3220,7 @@ def setRingAtomSerialNumById(tAtoms, tRings):
     
     for aR in tRings:
         for aRA in tRings[aR]:
-            aRA["_chem_comp_ring.atom_serial_number"] = aIdSeriNumMap[aRA["_chem_comp_ring.atom_id"]]
+            aRA["_chem_comp_ring.atom_serial_number"] = aIdSeriNumMap[aRA["_chem_comp_ring_atom.atom_id"]]
     
 
 def setAtomRingConn(tAtoms, tRings):
@@ -3275,6 +3281,12 @@ def reWriteAcedrgDescriptorSec(tInFN, tOutFN, tSetDis):
         tOutF.write(aSL)
         
         
+def setupAMolTreeInCif(tCifName, tTree):
+    
+    fromCifTorMolGemmi(tCifName)
         
+    
+
+       
         
         
