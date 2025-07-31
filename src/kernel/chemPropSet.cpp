@@ -7382,7 +7382,7 @@ namespace LIBMOL
                             tExcFRings.push_back(idxRs[j]);
                         }
                     }
-                    else if (numCs==6 and numDO==0)
+                    else if (numCs==6 && numDO==0)
                     {
                         if (!tRings[idxRs[j]].doneBO)
                         {
