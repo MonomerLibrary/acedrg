@@ -466,9 +466,18 @@ namespace LIBMOL
                 }
                  */
             }
-            //std::cout << "Atom " << iAt->id << " is initially set to sp "
-            //          << iAt->bondingIdx  << std::endl;
-            // std::cout << "its chiralIdx " << iAt->chiralIdx << std::endl;
+            else if (iAt->chemType.compare("BR")==0
+                     || iAt->chemType.compare("Br")==0)
+            {
+                if (t_len==3)
+                {
+                    iAt->chiralIdx  = 3;
+                    iAt->bondingIdx = 3;
+                }
+            }
+            std::cout << "Atom " << iAt->id << " is initially set to sp "
+                      << iAt->bondingIdx  << std::endl;
+            std::cout << "its bondingIdx " << iAt->bondingIdx << std::endl;
         }
 
 

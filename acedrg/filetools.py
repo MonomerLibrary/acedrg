@@ -2868,7 +2868,10 @@ def addBondLengToBonds(tAtoms, tBonds):
         aElem2 = idElmMap[aId2]
         
         if  not aElem1 in elms or not aElem2 in elms:
-            aBo["_chem_comp_bond.value_dist"] = 2.1 
+            if not  aElem1 =="H" and not aElem2 =="H":
+                aBo["_chem_comp_bond.value_dist"] = 2.1
+            else:
+                aBo["_chem_comp_bond.value_dist"] = 1.1   
         else:
             aBo["_chem_comp_bond.value_dist"] = 1.55
                 
