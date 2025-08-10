@@ -1518,6 +1518,8 @@ class FileTransformer(object) :
 
     def setAInitConfForMonCif(self, tInCifName, tOutCifName, tMol, tIdxConf):
         
+        
+        
         try:
             aInCif = open(tInCifName, "r")
         except IOError:
@@ -1557,9 +1559,12 @@ class FileTransformer(object) :
             aConf  =  tMol.GetConformer(tIdxConf) 
             atoms  =  tMol.GetAtoms()
             atomPOS ={}
+            atomNameList=[]
             for aAtom in atoms:
                 idxA  = aAtom.GetIdx() 
                 name  = aAtom.GetProp("Name").strip() 
+                atomNameList.append(name)
+                
                 pos = aConf.GetAtomPosition(idxA)
                 posX ="%8.3f"%pos.x
                 posY ="%8.3f"%pos.y
@@ -1573,6 +1578,12 @@ class FileTransformer(object) :
                 strs = aLA.strip().split()
                 if len(strs)==13:
                     aName =strs[1]
+                    
+                    if not aName in atomNameList and aName[0] =="\"" and aName[-1]=="\"":
+                       tName = aName[1:-1]
+                       if tName in atomNameList:
+                           aName = tName
+                    
                     atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"\
                             %(strs[0].ljust(8), strs[1].ljust(8), strs[2].ljust(8),
                               strs[3].ljust(6), strs[4].ljust(6), strs[5].ljust(6),
@@ -1651,6 +1662,7 @@ class FileTransformer(object) :
                 strs = aLA.strip().split()
                 if len(strs)==13:
                     aName =strs[1]
+                    
                     atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"\
                             %(strs[0].ljust(8), strs[1].ljust(8), strs[2].ljust(8),
                               strs[3].ljust(6), strs[4].ljust(6), strs[5].ljust(6),
