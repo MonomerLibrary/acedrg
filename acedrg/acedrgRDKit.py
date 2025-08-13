@@ -2065,6 +2065,10 @@ class AcedrgRDKit(object):
 
         Chem.SanitizeMol(tMol)
         Chem.Kekulize(tMol)
+        
+        
+            
+        
         # Check 
         for aAtom in tMol.GetAtoms():
             self.atomPDPCMap[aAtom.GetIdx()]={}

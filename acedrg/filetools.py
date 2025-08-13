@@ -355,7 +355,7 @@ class FileTransformer(object) :
             if len(speAtomIds):
                 for aId in speAtomIds:
                     if aId in atomVals:
-                        if atomVals[aId] > 6: 
+                        if atomVals[aId] > 7: 
                             print("Acedrg stops because RDKit does not accept the following: ")
                             print("%s  has total valence of %d "%(aId, atomVals[aId]))
                             sys.exit()        
