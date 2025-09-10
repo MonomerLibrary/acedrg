@@ -3362,7 +3362,7 @@ class AcedrgRDKit(object):
                     self.setFormalChargeNH_HIS(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("NH-PRO") != -1:
-                    #print("Doing ", aFuncG)
+                    print("Doing ", aFuncG)
                     self.setFormalChargeNH_PRO(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("NH-ARG") != -1:
@@ -3623,9 +3623,9 @@ class AcedrgRDKit(object):
                         #print("num of H ", tMol.GetAtomWithIdx(
                         #    aIdx).GetTotalNumHs())
                         #print("num of neighbor ", len(
-                        #    tMol.GetAtomWithIdx(aIdx).GetNeighbors()))
+                        #3333333333    tMol.GetAtomWithIdx(aIdx).GetNeighbors()))
                         if tMol.GetAtomWithIdx(aIdx).GetTotalValence() == 3 \
-                                and tMol.GetAtomWithIdx(aIdx).GetTotalNumHs() == 1 and not tMol.GetAtomWithIdx(aIdx).IsInRing():
+                                and tMol.GetAtomWithIdx(aIdx).GetTotalNumHs() == 1: # and not tMol.GetAtomWithIdx(aIdx).IsInRing():
                             tMol.GetAtomWithIdx(aIdx).SetFormalCharge(1)
                             tMol.GetAtomWithIdx(aIdx).UpdatePropertyCache()
                             #print("atom %s has a charge %d " % (tMol.GetAtomWithIdx(aIdx).GetProp("Name"),
