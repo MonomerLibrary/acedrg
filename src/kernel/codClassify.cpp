@@ -352,6 +352,7 @@ namespace LIBMOL
             allTorsions.push_back(*iTor);
         }
 
+
         for (std::vector<ChiralDict>::const_iterator iCh=tChirals.begin();
                 iCh !=tChirals.end(); iCh++)
         {
@@ -440,7 +441,7 @@ namespace LIBMOL
         {
             allTorsions.push_back(*iTor);
         }
-
+ 
         for (std::vector<ChiralDict>::const_iterator iCh=tChirals.begin();
                 iCh !=tChirals.end(); iCh++)
         {
@@ -838,6 +839,7 @@ namespace LIBMOL
             }
         }
 
+        */
 
         std::cout << "Torsion angles are : " << std::endl;
         for (std::vector<TorsionDict>::iterator iTor=allTorsions.begin();
@@ -849,7 +851,6 @@ namespace LIBMOL
                       << allAtoms[iTor->atoms[3]].id << ", value is: "
                       << iTor->value << std::endl;
         }
-        */
 
     }
 
@@ -15709,13 +15710,13 @@ namespace LIBMOL
         {
             if ((allAtoms[iTor->atoms[1]].bondingIdx !=1 && allAtoms[iTor->atoms[1]].bondingIdx !=1) && iTor->atoms.size() ==4)
             {
+               
                 int idxB = getBond(allBonds, iTor->atoms[1], iTor->atoms[2]);
                 if (idxB > -1)
                 {
-                    //std::cout << "Get bond of atom " << allAtoms[allBonds[idxB].atomsIdx[0]].id
-                    //          << " and " << allAtoms[allBonds[idxB].atomsIdx[1]].id << std::endl;
+                    std::cout << "Get bond of atom " << allAtoms[allBonds[idxB].atomsIdx[0]].id
+                              << " and " << allAtoms[allBonds[idxB].atomsIdx[1]].id << std::endl;
                     StrUpper(allBonds[idxB].order);
-                    // std::cout << "Bond order " << allBonds[idxB].order << std::endl;
                     // std::cout << "in the same ring " << allBonds[idxB].isInSameRing
                     //           << std::endl;
                     //if (!((allBonds[idxB].order.find("DOUB") !=std::string::npos
@@ -15729,12 +15730,16 @@ namespace LIBMOL
                         std::sort(tIdxB.begin(), tIdxB.end());
 
                         ID tLab = IntToStr(tIdxB[0]) + "_" + IntToStr(tIdxB[1]);
-
-                        //std::cout << "Bond of atoms " << allAtoms[iTor->atoms[1]].id
-                        //          << " and " << allAtoms[iTor->atoms[2]].id << std::endl;
-                        //std::cout << "torsion lab " << tLab << std::endl;
-                        //std::cout << "torsion " << iTor->seriNum
-                        //          << " is included " << std::endl;
+                        if (iTor->seriNum == 117)
+                        {
+                        std::cout << "Bond of atoms " << allAtoms[iTor->atoms[1]].id
+                                  << " and " << allAtoms[iTor->atoms[2]].id << std::endl;
+                        std::cout << "atom 1 seril " << iTor->atoms[1] << std::endl;
+                        std::cout << "atom 2 seril " << iTor->atoms[2] << std::endl;
+                        std::cout << "torsion lab " << tLab << std::endl;
+                        std::cout << "torsion " << iTor->seriNum
+                                  << " is included " << std::endl;
+                        }
                         TorsionSetOneBond[tLab].push_back(*iTor);
 
                     // }
@@ -15758,6 +15763,11 @@ namespace LIBMOL
             StrTokenize(iTorsB->first, idxs, '_');
             int idxN1 =StrToInt(idxs[0]);
             int idxN2 =StrToInt(idxs[1]);
+            std::cout << "selectOneTorFromOneBond " << iTorsB->first << std::endl;
+            if (iTorsB->first=="9_29")
+            {
+                 std::cout << "Now it is tor 9_29" << std::endl;
+            }
             selectOneTorFromOneBond(iTorsB->first, iTorsB->second);
             // The following codes taken out on 23/09/2024, basically
             // cancelled sp2-sp2 torsion angles from one per branch to one torsion per
@@ -15827,11 +15837,13 @@ namespace LIBMOL
             {
                 int idx1 = StrToInt(tLabs[0]);
                 int idx2 = StrToInt(tLabs[1]);
+                if  (tS=="9_29")
+                {
                 std::cout << "torsion lab " << tS << std::endl;
                 std::cout << "Select torsion angles for the bond of atoms "
                           << allAtoms[idx1].id << " and " << allAtoms[idx2].id
                           << std::endl;
-
+                }
                 //std::cout << "1. Number of torsions is " << tTors.size() << std::endl;
 
                 std::vector<int> idxR1, idxNonH1, idxH1, idxR2, idxNonH2, idxH2;
@@ -15907,7 +15919,8 @@ namespace LIBMOL
                         }
                     }
                 }
-
+                if  (tS=="9_29")
+                {
                 std::cout << "atom  " << allAtoms[idx1].id
                           << " connects to " << std::endl;
                 //std::cout << "ring atoms " << idxR1.size() << std::endl
@@ -15918,16 +15931,25 @@ namespace LIBMOL
                 std::cout << "ring atoms " << idxR2.size() << std::endl
                           << "non-H atoms (excluded above) " << idxNonH2.size() << std::endl
                           << "H atoms " << idxH2.size() << std::endl;
-
+                }
                 // Now select the torsion angles
                 // 1. atoms of Non-ring, non-H first
                 // std::cout << "2. Number of torsions is " << tTors.size() << std::endl;
                 if (idxNonH1.size() !=0 && idxNonH2.size() !=0)
                 {
-                    int tIdxT= getTorsion(allTorsions, idxNonH1[0], idx1, idx2, idxNonH2[0]);
-                    if (tIdxT !=-1 && allTorsions[tIdxT].atoms[0] != allTorsions[tIdxT].atoms[3])
-                    {
-                        miniTorsions.push_back(allTorsions[tIdxT]);
+                    std::cout << "input atom1 " << idxNonH1[0] << std::endl
+                             << "input atom1 " << idx1 << std::endl 
+                             << "input atom1 " << idx2 << std::endl
+                             << "input atom1 " << idxNonH2[0]  << std::endl;
+                    std::vector<TorsionDict> aTors = getTorsion1(allTorsions, idxNonH1[0], idx1, idx2, idxNonH2[0]);
+                    if (aTors.size() > 0 && aTors[0].atoms[0] !=aTors[0].atoms[3])
+                    {  
+                        std::cout << "xxxminiTorsions add " << allAtoms[idxNonH1[0]].id << ", "
+                                      << allAtoms[idx1].id << ", "
+                                      << allAtoms[idx2].id << ", and "
+                                      << allAtoms[idxNonH2[0]].id
+                                      << std::endl;
+                        miniTorsions.push_back(aTors[0]);
                         std::cout << "added 1 " << std::endl;
                         lDone = true;
                     }
@@ -16205,6 +16227,7 @@ namespace LIBMOL
 
 		        if (iTor->atoms.size()==4 && allAtoms[iTor->atoms[0]].id !=allAtoms[iTor->atoms[3]].id )
 		        {
+                    std::cout << "tmpTors " << std::endl;
                     std::cout << "atom 1 " << allAtoms[iTor->atoms[0]].id
 			              << " atom 2 " << allAtoms[iTor->atoms[1]].id
 			              << " atom 3 " << allAtoms[iTor->atoms[2]].id
@@ -16313,7 +16336,21 @@ namespace LIBMOL
         // setupTargetTorsions();
 
         fixTorIDs();
+        std::cout << "Check Tors pass " << std::endl;
 
+        for (std::vector<TorsionDict>::iterator iTor=allTorsions.begin();
+                iTor != allTorsions.end(); iTor++)
+        {
+            std::cout << "Torsion angle " << iTor->seriNum << std::endl;
+            std::cout << "Its atoms are : " << std::endl;
+            for (std::vector<int>::iterator iA=iTor->atoms.begin();
+                    iA !=iTor->atoms.end(); iA++)
+            {
+                std::cout << "atom seriN " << *iA << std::endl;
+                std::cout << "atom " << allAtoms[*iA].id << std::endl;
+            }
+ 
+        }
         setupMiniTorsions();
 
         // Chiral centers have been setup when atoms are read in from an

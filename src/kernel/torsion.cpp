@@ -306,14 +306,10 @@ namespace LIBMOL
                           int tAt1, int tAt2, int tAt3, int tAt4)
     {
         int tTor=-1;
-
+        int aTorIdx =0;
         for (std::vector<TorsionDict>::iterator iT=tTors.begin();
                 iT != tTors.end(); iT++)
         {
-            //std::cout << "Current :" << std::endl
-            //          << "atom1 " << iT->atoms[0] << "\t atom2 " << iT->atoms[1]
-            //          << "\t atom 3 " << iT->atoms[2] << "\t atom 4 "
-            //          << iT->atoms[3] << std::endl;
 
             //if(std::find(iT->atoms.begin(), iT->atoms.end(), tAt1) !=iT->atoms.end()
             //   && std::find(iT->atoms.begin(), iT->atoms.end(), tAt2) !=iT->atoms.end()
@@ -324,9 +320,17 @@ namespace LIBMOL
                  || (iT->atoms[0]==tAt4 && iT->atoms[1]==tAt3 && iT->atoms[2]==tAt2 && iT->atoms[3]==tAt1))
             {
                 tTor = iT->seriNum;
-                // std::cout << "Torsion seriNumb " << iT->seriNum << std::endl;
+                std::cout << "tors idx " << aTorIdx << std::endl;
+                std::cout << "xxxxTorsion seriNumb " << iT->seriNum << std::endl;
+                std::cout << "atom1 " << iT->atoms[0] << std::endl
+                          << " atom2 " << iT->atoms[1] << std::endl
+                          << "atom 3 " << iT->atoms[2] << std::endl
+                          << "atom 4 " 
+                          << iT->atoms[3] << std::endl;
                 break;
             }
+            aTorIdx++;
+            
 
         }
 
@@ -337,6 +341,36 @@ namespace LIBMOL
         }
 
         return tTor;
+    }
+
+    extern  std::vector<TorsionDict>  getTorsion1(std::vector<TorsionDict> & tTors,
+                          int tAt1, int tAt2, int tAt3, int tAt4)
+    {
+        std::vector<TorsionDict> aSetTors;
+        for (std::vector<TorsionDict>::iterator iT=tTors.begin();
+                iT != tTors.end(); iT++)
+        {
+
+            //if(std::find(iT->atoms.begin(), iT->atoms.end(), tAt1) !=iT->atoms.end()
+            //   && std::find(iT->atoms.begin(), iT->atoms.end(), tAt2) !=iT->atoms.end()
+            //   && std::find(iT->atoms.begin(), iT->atoms.end(), tAt3) !=iT->atoms.end()
+            //   && std::find(iT->atoms.begin(), iT->atoms.end(), tAt4) !=iT->atoms.end())
+            //{
+            if ((iT->atoms[0]==tAt1 && iT->atoms[1]==tAt2 && iT->atoms[2]==tAt3 && iT->atoms[3]==tAt4)
+                 || (iT->atoms[0]==tAt4 && iT->atoms[1]==tAt3 && iT->atoms[2]==tAt2 && iT->atoms[3]==tAt1))
+            {
+                aSetTors.push_back(*iT);
+                std::cout << "xxxxTorsion seriNumb " << iT->seriNum << std::endl;
+                std::cout << "atom1 " << iT->atoms[0] << std::endl
+                          << " atom2 " << iT->atoms[1] << std::endl
+                          << "atom 3 " << iT->atoms[2] << std::endl
+                          << "atom 4 "
+                          << iT->atoms[3] << std::endl;
+                break;
+            }
+        }
+
+        return aSetTors;
     }
 
 

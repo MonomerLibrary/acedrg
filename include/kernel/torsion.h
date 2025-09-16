@@ -166,6 +166,9 @@ namespace LIBMOL
     extern int getTorsion(std::vector<TorsionDict> & tTors,
                           int tAt1, int tAt2, int tAt3, int tAt4);
 
+    extern std::vector<TorsionDict>  getTorsion1(std::vector<TorsionDict> & tTors,
+                          int tAt1, int tAt2, int tAt3, int tAt4);
+
     // Get the value of the existing torsion based atom tree
     extern REAL getTorsion(std::vector<AtomDict> & tAtoms,
                            int iCur, int iNext, std::vector<int> tDoneSet);
