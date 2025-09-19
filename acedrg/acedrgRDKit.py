@@ -2819,10 +2819,12 @@ class AcedrgRDKit(object):
                 chiStrs = aChiral.strip().split()
                 if len(chiStrs) == 7:
                     chiCenAtmIds1.append(chiStrs[2])
+        
+        
         chiCenAtmIds2 = []
         for aAtom in allAtoms:
             aCT = aAtom.GetChiralTag()
-            if aCT != rdchem.ChiralType.CHI_UNSPECIFIED:
+            if aCT != rdchem.ChiralType.CHI_UNSPECIFIED and aCT !=rdchem.ChiralType.CHI_OCTAHEDRAL:
                 aId = aAtom.GetProp("Name")
                 if not aId in chiCenAtmIds1:
                     if aChiralSignMap[aId]["isChiraled"] and "finalChiVolSign" in aChiralSignMap[aId]:
@@ -2946,8 +2948,11 @@ class AcedrgRDKit(object):
             aMmCif.write("_chem_comp_chir.atom_id_3\n")
             aMmCif.write("_chem_comp_chir.volume_sign\n")
             
+            
             chiralIdx = 1
+            
             for aId in aChiralSignMap:
+                
                 if aChiralSignMap[aId]["isChiraled"] and "finalChiVolSign" in aChiralSignMap[aId]:
                     aCTName = "chir_" + str(chiralIdx)
                     aLine = "%s%s%s%s%s%s%s\n"\
