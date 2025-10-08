@@ -83,7 +83,7 @@ namespace LIBMOL
 
         int c, index;
         while ((c = getopt (numArg, ArgVars,
-"a:b:c:d:i:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:z:A:C:D:E:H:L:M:N:O:P:Q:R:S:T:U:W:X:Y:Z:1:2:3:4:"))
+"a:b:c:d:e:i:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:z:A:C:D:E:H:L:M:N:O:P:Q:R:S:T:U:W:X:Y:Z:1:2:3:4:"))
                != -1)
         {
             switch (c)
@@ -101,6 +101,11 @@ namespace LIBMOL
                     break;
                 case 'd':
                     IOEntries["CodBondFileName"] = optarg;
+                    break;
+                case 'e':
+                    IOEntries["usingRefCoords"] = optarg;
+                    std::cout << "Using ref coordinates or not (for coordination bonds) :  "
+                              << IOEntries["usingRefCoords"] << std::endl;
                     break;
                 case 'i':
                     IOEntries["inSmiName"] =  optarg;

@@ -1303,7 +1303,10 @@ class Acedrg(CExeCode ):
                 self._cmdline +=" -C yes "
             if self.modifiedPlanes:
                 self._cmdline += " -W yes "
-            #os.system(self._cmdline)
+            
+            
+            if self.useExistCoords:
+                self._cmdline +=" -e yes "
             #print(self._cmdline)
             self.runExitCode = self.subExecute()
         if self.workMode==113:
@@ -4282,12 +4285,17 @@ class Acedrg(CExeCode ):
                 self.rdKit.hasCCP4Type = self.fileConv.hasCCP4Type
             for iMol in range(len(self.rdKit.molecules)):
                 self.inMmCifName =  os.path.join(self.scrDir, self.baseRoot + "_mol_" + str(iMol) + ".cif")
+                
                 self.initMmcifMolMap[iMol] = self.inMmCifName
                 if len(self.fileConv.leaAtmMap):
                     self.addAtmMap(self.rdKit.molecules[iMol], self.fileConv.leaAtmMap)
                 
+                print("self.useExistCoords   = ", self.useExistCoords )
+                print("self.useExistCoords2   = ", self.useExistCoords2 )
+                
                 self.rdKit.MolToSimplifiedMmcif(self.rdKit.molecules[iMol], self.inMmCifName, self.chemCheck, self.monomRoot, self.fileConv.chiralPre,\
                                                 self.fileConv.chiralBoth)
+                self.rdKit.CheckAndOutCoordinationChirs(self.scrDir, self.rdKit.molecules[iMol])
                 
                 if os.path.isfile(self.inMmCifName):
                     if not self.chemCheck.isOrganic(self.inMmCifName, self.workMode):

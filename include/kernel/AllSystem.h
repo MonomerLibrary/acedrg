@@ -345,6 +345,7 @@ namespace LIBMOL
         bool                                     isPeptide;
         bool                                     withSugar;
         bool                                     lMdPls;
+        bool                                     lUsingRefCoords;              // for coordination bonds
 
         std::string                              libmolTabDir;
 

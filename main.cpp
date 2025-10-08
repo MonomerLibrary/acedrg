@@ -163,10 +163,14 @@ int main(int argc, char** argv) {
             {
                 aTargetSystem.isPeptide = true;
             }
+            if (AJob.IOEntries.find("usingRefCoords") !=  AJob.IOEntries.end())
+            {
+                aTargetSystem.lUsingRefCoords = true;
+            }
 
             if ( (int)aTargetSystem.allAtoms.size() > 0 && AJob.workMode != 11162)
             {
-
+                 std::cout << "lUsingRefCoords=" << aTargetSystem.lUsingRefCoords << std::endl;
                  aTargetSystem.setupAllTargetValuesFromCOD2(
                                 AJob.IOEntries["userOutName"].c_str(),
                                 AJob.IOEntries["monoRootName"],

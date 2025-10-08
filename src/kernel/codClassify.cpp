@@ -407,7 +407,8 @@ namespace LIBMOL
                              int                       nTM,
                              bool                      tMdPls)
                              :wSize(1000),
-                              lMdPls(tMdPls)
+                              lMdPls(tMdPls),
+                              lUsingRefCoords(false)
     {
         libmolTabDir = tLibmolTabDir;
         pPeriodictable = new PeriodicTable();
@@ -441,7 +442,7 @@ namespace LIBMOL
         {
             allTorsions.push_back(*iTor);
         }
- 
+
         for (std::vector<ChiralDict>::const_iterator iCh=tChirals.begin();
                 iCh !=tChirals.end(); iCh++)
         {
@@ -10676,6 +10677,8 @@ namespace LIBMOL
         std::cout << "1. Search for target angles started at " << std::ctime(&tStart);
 
         std::map<int, std::vector<AngleDict> > specialAngs;
+        std::map<int,
+                 std::vector<std::vector<AngleDict>::iterator> > coordAngs;
 
         for (std::vector<AngleDict>::iterator iA=allAngles.begin();
                 iA !=allAngles.end(); iA++)
@@ -10697,7 +10700,9 @@ namespace LIBMOL
             else if (!allAtoms[iA->atoms[1]].isMetal && !allAtoms[iA->atoms[2]].isMetal)
             {
                 //std::cout << "searchCodOrgAngles " << std::endl;
-                // searchCodOrgAngles(iA
+                // searchCodOrgAngles(iA)
+
+
                 bool lSpeAng = checkSpeAng(iA);
                 if (lSpeAng)
                 {
@@ -10725,28 +10730,7 @@ namespace LIBMOL
                     }
                     else
                     {
-                        std::vector<REAL>  aV1, aV2;
-                        for (unsigned i=0; i < allAtoms[iA->atoms[0]].coords.size(); i++)
-                        {
-                            aV1.push_back(allAtoms[iA->atoms[1]].coords[i]-allAtoms[iA->atoms[0]].coords[i]);
-                            aV2.push_back(allAtoms[iA->atoms[2]].coords[i]-allAtoms[iA->atoms[0]].coords[i]);
-                        }
-                        iA->value = getAngle2V(aV1, aV2)*PID180;
-                        if (iA->value <190.00 && iA->value > 170.00)
-                        {
-                            iA->value = 180.00;
-                        }
-                        else if (iA->value <100.00 && iA->value > 80.00)
-                        {
-                            iA->value = 90.00;
-                        }
-                        iA->sigValue = 3.0;
-                        std::cout << "Angle from coordinates: " << std::endl;
-                        std::cout << "center atom : " << allAtoms[iA->atoms[0]].id << std::endl;
-                        std::cout << "atom 1 : " << allAtoms[iA->atoms[1]].id << std::endl;
-                        std::cout << "atom 2 : " << allAtoms[iA->atoms[2]].id << std::endl;
-                        std::cout << "Angle value :" << iA->value << std::endl;
-                        std::cout << "sigma of angle value : " << iA->sigValue << std::endl;
+                        coordAngs[iA->atoms[0]].push_back(iA);
 
                     }
                 }
@@ -10770,6 +10754,15 @@ namespace LIBMOL
             setSpecialAngles(specialAngs);
         }
 
+        if (coordAngs.size())
+        {
+            for (std::map<int, std::vector<std::vector<AngleDict>::iterator> >::iterator
+                 iCA=coordAngs.begin(); iCA !=coordAngs.end(); iCA++)
+                 {
+                    setCoordAngs(iCA->first, iCA->second);
+                 }
+        }
+
         // Final check all constraints
         checkAngConstraints();
 
@@ -10782,7 +10775,137 @@ namespace LIBMOL
 
     }
 
+    void CodClassify::setCoordAngs(int tAtmIdx,
+                                   std::vector<std::vector<AngleDict>::iterator>  tAngs)
+    {
 
+        std::cout << "Set angles for atom " << allAtoms[tAtmIdx].id<< std::endl;
+        std::map <std::string, std::vector<int> > graphSymm;
+        // Get all connected atoms
+        int aMax =0;
+        std::string sMax = "";
+        for (std::vector<int>::iterator iCA=allAtoms[tAtmIdx].connAtoms.begin();
+             iCA !=allAtoms[tAtmIdx].connAtoms.end(); iCA++)
+        {
+            std::string tNBClass = allAtoms[*iCA].codClass;
+            graphSymm[tNBClass].push_back(*iCA);
+            if ((int)graphSymm[tNBClass].size() > aMax)
+            {
+                aMax = (int)graphSymm[tNBClass].size();
+                sMax = tNBClass;
+            }
+        }
+
+        if (allAtoms[tAtmIdx].connAtoms.size() ==6)
+        {
+
+
+            if (lUsingRefCoords)
+            {
+                std::cout << "Using reference coordinates to set angles" << std::endl;
+                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+                {
+                    std::vector<REAL>  aV1, aV2;
+                    for (unsigned i=0; i < allAtoms[(*iA)->atoms[0]].coords.size(); i++)
+                    {
+                        aV1.push_back(allAtoms[(*iA)->atoms[1]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
+                        aV2.push_back(allAtoms[(*iA)->atoms[2]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
+                    }
+                    (*iA)->value = getAngle2V(aV1, aV2)*PID180;
+                    if ((*iA)->value <190.00 && (*iA)->value > 170.00)
+                    {
+                        (*iA)->value = 180.00;
+                    }
+                    else if ((*iA)->value <100.00 && (*iA)->value > 80.00)
+                    {
+                        (*iA)->value = 90.00;
+                    }
+                    (*iA)->sigValue = 3.0;
+                }
+            }
+            else if (aMax > 4)
+            {
+                // Asumme it is Octahedral
+                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+                {
+                    if (( (*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[0] &&
+                         (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[1]) ||
+                        ( (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[0] &&
+                         (*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[1]) )
+                    {
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if ( ((*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[2] &&
+                              (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[3]) ||
+                                ( (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[2] &&
+                                (*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[3]) )
+                    {
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if ( ((*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[4] &&
+                              (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[5]) ||
+                                ( (*iA)->atoms[2] ==allAtoms[tAtmIdx].connAtoms[4] &&
+                                (*iA)->atoms[1] ==allAtoms[tAtmIdx].connAtoms[5]) )
+                    {
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else
+                    {
+                        (*iA)->value = 90.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                }
+            }
+            else if (aMax==4)
+            {
+                // Square bi-pyramidal
+                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+                {
+                    std::vector<int> tAtms;
+                    tAtms.push_back((*iA)->atoms[1]);
+                    tAtms.push_back((*iA)->atoms[2]);
+
+                    if (( (*iA)->atoms[1] == graphSymm[sMax][0]&&
+                         (*iA)->atoms[2]  == graphSymm[sMax][1]) ||
+                        ( (*iA)->atoms[2] ==graphSymm[sMax][0] &&
+                         (*iA)->atoms[1]  ==graphSymm[sMax][1]) )
+                    {
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (( (*iA)->atoms[1] == graphSymm[sMax][2]&&
+                         (*iA)->atoms[2]  == graphSymm[sMax][3]) ||
+                        ( (*iA)->atoms[2] ==graphSymm[sMax][2] &&
+                         (*iA)->atoms[1]  ==graphSymm[sMax][3]) )
+                    {
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() ||
+                             std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // One atom in the base plane
+                        (*iA)->value = 90.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else
+                    {
+                        // Both atoms are axial
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                }
+            }
+        }
+    }
     /*
     void CodClassify::searchCodAnglesUsingSqlite()
     {
@@ -15710,7 +15833,7 @@ namespace LIBMOL
         {
             if ((allAtoms[iTor->atoms[1]].bondingIdx !=1 && allAtoms[iTor->atoms[1]].bondingIdx !=1) && iTor->atoms.size() ==4)
             {
-               
+
                 int idxB = getBond(allBonds, iTor->atoms[1], iTor->atoms[2]);
                 if (idxB > -1)
                 {
@@ -15938,12 +16061,12 @@ namespace LIBMOL
                 if (idxNonH1.size() !=0 && idxNonH2.size() !=0)
                 {
                     std::cout << "input atom1 " << idxNonH1[0] << std::endl
-                             << "input atom1 " << idx1 << std::endl 
+                             << "input atom1 " << idx1 << std::endl
                              << "input atom1 " << idx2 << std::endl
                              << "input atom1 " << idxNonH2[0]  << std::endl;
                     std::vector<TorsionDict> aTors = getTorsion1(allTorsions, idxNonH1[0], idx1, idx2, idxNonH2[0]);
                     if (aTors.size() > 0 && aTors[0].atoms[0] !=aTors[0].atoms[3])
-                    {  
+                    {
                         std::cout << "xxxminiTorsions add " << allAtoms[idxNonH1[0]].id << ", "
                                       << allAtoms[idx1].id << ", "
                                       << allAtoms[idx2].id << ", and "
@@ -16349,7 +16472,7 @@ namespace LIBMOL
                 std::cout << "atom seriN " << *iA << std::endl;
                 std::cout << "atom " << allAtoms[*iA].id << std::endl;
             }
- 
+
         }
         setupMiniTorsions();
 

@@ -3540,7 +3540,7 @@ namespace LIBMOL
         }
 
         // std::cout << "Number of torsion angles is " << allTorsions.size() << std::endl;
-        
+
         std::cout << "All torsions have been setup " << std::endl;
 
         for (std::vector<TorsionDict>::iterator iTor=allTorsions.begin();
@@ -3554,7 +3554,7 @@ namespace LIBMOL
                 std::cout << "atom " << allAtoms[*iA].id << std::endl;
             }
         }
-        
+
     }
 
     void AllSystem::setAllTorsionsInOneRing(std::vector<int> & tBs,
@@ -5549,7 +5549,6 @@ namespace LIBMOL
                                tLibmolDir);
 
 
-
        aCodSystem.setupAllTargetValues();
 
 
@@ -5577,6 +5576,10 @@ namespace LIBMOL
                                 allTorsions, allChirals, allPlanes, allRings,
                                 tLibmolDir, 2, lMdPls);
 
+        if (lUsingRefCoords)
+        {
+            aCodSystem.lUsingRefCoords = true;
+        }
 
         aCodSystem.setupAllTargetValues2();
 

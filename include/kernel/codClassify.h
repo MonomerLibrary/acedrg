@@ -580,7 +580,8 @@ namespace LIBMOL
         void setSpecialAngles(std::map<int, std::vector<AngleDict> > & tAngs);
         void setOneSetBoronAngles(std::map<int, std::vector<AngleDict> >::iterator tAs);
         void setOneSetCarbonAngles(std::map<int, std::vector<AngleDict> >::iterator tAs);
-
+        // bond angles of the centere atoms with coordination bonds
+        void setCoordAngs(int tAtmIdx, std::vector<std::vector<AngleDict>::iterator>  tAngs);
         // Torsion angles related
         void setupMiniTorsions();
         void selectOneTorFromOneBond(ID  tS, std::vector<TorsionDict> & tTors);
@@ -632,6 +633,7 @@ namespace LIBMOL
         double                                   lowAngleSig;
 
         bool                                     lMdPls;
+        bool                                     lUsingRefCoords;
 
         PeriodicTable *                          pPeriodictable;
 
