@@ -71,6 +71,7 @@ from . utility    import DataStrTransferAtomsAndBonds
 from . utility    import cutRings
 from . utility    import aMolToAGraph
 from . utility    import setTreeNodeOrder
+from . utility    import setPTGraph
 
 if os.name != 'nt':
     import fcntl
@@ -138,7 +139,7 @@ class Acedrg(CExeCode ):
         #self.servalcat        = "/lmb/home/kyamashita/app/dials-upstream-3.10/build/bin/servalcat "
         
         if "CCP4" in os.environ:
-             self.metalCoord  = os.path.join(os.environ['CBIN'], "metalcoord")
+             self.metalCoord  = os.path.join(os.environ['CBIN'], "metalCoord")
         else:
             self.metalCoord       = "metalCoord "
         
@@ -2178,7 +2179,7 @@ class Acedrg(CExeCode ):
                 for aL in tDataDescriptor:
                     if aL[0].find("_")==-1:
                         aL2=self.getLastEnts(aL)
-                        aNewL = "%s%s%s"%(monoId.ljust(6),monoId.ljust(6), "    " +aL2)
+                        aNewL = "%s%s%s"%(monoId.ljust(10),monoId.ljust(10), "    " +aL2)
                         cifCont['head'].append(aNewL+"\n")   
                     else:
                         cifCont['head'].append(aL+"\n")
@@ -4558,9 +4559,9 @@ class Acedrg(CExeCode ):
             print("=====================================================================")
             print("|               Finished                                            |")
             print("=====================================================================")
-        if self.workMode ==1001:
-            print("inCif is ", self.inMmCifName)
-            self.addAMolTreeIntoACif(self.inMmCifName)
+        #if self.workMode ==1001:
+        #    print("inCif is ", self.inMmCifName)
+        #    self.addAMolTreeIntoACif(self.inMmCifName)
             
         if self.addTree :
             print("Tree to be added")
@@ -4584,6 +4585,11 @@ class Acedrg(CExeCode ):
         
         print("Number of molecules in the cif is ", len(aSetMols))
         if len(aSetMols) > 0:
+            
+            # setup a PT graph.
+            print("setup a PT graph")
+            aPTG = setPTGraph()
+            
             aSetBrokenIds = []
             if "rings" in aSetMols[0]:
                  cutRings(aSetMols[0], aSetBrokenIds)
@@ -4595,142 +4601,131 @@ class Acedrg(CExeCode ):
             #print(allGraphs[0].nodes.data()) 
             #print("The edge properties of the graph are : ")
             #print(allGraphs[0].edges.data())
-            T = nx.minimum_spanning_tree(allGraphs[0])
-            #T1=sorted(T.edges(data=True))
-            #E = set(T.edges())  # optimization
-            #[e for e in allGraphs[0].edges() if e in E or reversed(e) in E]
-            #print(E)
-            
-            aTreeInCif = {}
-            for aA in aSetMols[0]["atoms"]:
-                id = aA["_chem_comp_atom.atom_id"]
-                aTreeInCif[id] = {}
-                aTreeInCif[id]["type_symbol"] = aA["_chem_comp_atom.type_symbol"]
-                aTreeInCif[id]["connect_type"] = "."
-                
-            nodeConns = {}    
-            idxS = 0
-            startId = ""
-            for u, v, d in T.edges(data=True):
-                print("u and v  ", [u, v]) 
-                id1 = allGraphs[0].nodes[u]["_chem_comp_atom.atom_id"]
-                id2 = allGraphs[0].nodes[v]["_chem_comp_atom.atom_id"]
-                print("From Nodes : Tree section between %s and %s"%(id1, id2))
-                #id1 = d["_chem_comp_bond.atom_id_1"]
-                #id2 = d["_chem_comp_bond.atom_id_2"]
-                
-                if idxS==0:
-                    startId = id1 
-                    aTreeInCif[id1]["connect_type"] = "START" 
-                    aTreeInCif[id1]["atom_back"] = "n/a"
-                    idxS+=1
-                
-                if not id1 in nodeConns:
-                    nodeConns[id1] = []
-                if not id2 in nodeConns:
-                    nodeConns[id2] = []
-                nodeConns[id1].append(id2)
-                nodeConns[id2].append(id1)
-                
-                """   
-                if not "atom_forward" in aTreeInCif[id1]:
-                    aTreeInCif[id1]["atom_forward"] = [] 
-                if not "atom_forward" in aTreeInCif[id2]:
-                    aTreeInCif[id2]["atom_forward"] = []
-                if "atom_back" in aTreeInCif[id2]:
-                    aTreeInCif[id2]["atom_forward"].append(id1)
-                    aTreeInCif[id1]["atom_back"] = id2
-                else:
-                    aTreeInCif[id1]["atom_forward"].append(id2)
-                    aTreeInCif[id2]["atom_back"] = id1
-                """
-                
-            print("Starting atom in the tree is %s"%startId)
-            
         
-            aSList = []
-            setTreeNodeOrder(nodeConns, startId, aTreeInCif, aSList) 
-            endingId = ""
-            tmpCands = []
-            for aId in aTreeInCif:
-                #if not "atom_back" in aTreeInCif[aId] and aTreeInCif[aId] != "H" and not aId in aSetBrokenIds:
-                if aId == "C" and aId != startId:
-                    endingId =  aId
-                    aTreeInCif[aId]["connect_type"] = "END"
-                elif aTreeInCif[aId]["type_symbol"] !="H" and aId != startId:
-                    tmpCands.append(aId)
-            if endingId =="" and len(tmpCands) > 0:
-                endingId = tmpCands[0]
+            aGM = nx.algorithms.isomorphism.GraphMatcher(allGraphs[0], aPTG,node_match= lambda n1,n2:n1['_chem_comp_atom.type_symbol']==n2['_chem_comp_atom.type_symbol']) 
+            aMapList = list(aGM.subgraph_isomorphisms_iter())
+            nFound = len(aMapList)
+            print("number of Peptide units found in the mol is ", nFound)
+            if len(aMapList) > 0:
+                print("Select PEPTIDE units")
+                idxSel = 0
+                if nFound > 1:
+                    for idxG in range(nFound):
+                        idSet = []
+                        for aK in aMapList[idxG].keys():
+                            idSet.append(allGraphs[0].nodes[aK]["_chem_comp_atom.atom_id"])
+                        if "N" in idSet and "CA" in idSet:
+                            idxSel = idxG
+                            break
+                print("selected subg idx is ", idxSel)        
+                print(aMapList[idxSel])
+                startId = ""
+                endingId = ""
+                print("The subgraph matching between those atoms: ")
+                for aK in aMapList[idxSel].keys():
+                    id1 = allGraphs[0].nodes[aK]["_chem_comp_atom.atom_id"]
+                    id2 = aPTG.nodes[aMapList[idxSel][aK]]["_chem_comp_atom.atom_id"]
+                    if id2 =="N":
+                        startId = id1
+                    if id2 =="C":
+                        endingId = id1
+                #print("atom %s in %s ====== atom %s in PTG "%(id1, self.monomRoot, id2))
+            
+                #print("Starting atom in the tree is %s"%startId)
+            
+                #print("EndingId is ", endingId)
+                
+                T = nx.minimum_spanning_tree(allGraphs[0])
+                print("========= Spanning Tree ====")
+                T1=sorted(T.edges(data=True))
+                E = set(T.edges())  # optimization
+                #[e for e in allGraphs[0].edges() if e in E or reversed(e) in E]
+                #print(E)
+                
+                aTreeInCif = {}
+                for aA in aSetMols[0]["atoms"]:
+                    id = aA["_chem_comp_atom.atom_id"]
+                    aTreeInCif[id] = {}
+                    aTreeInCif[id]["type_symbol"] = aA["_chem_comp_atom.type_symbol"]
+                    aTreeInCif[id]["connect_type"] = "."
+                    aTreeInCif[id]["atom_back"]    = ""
+                    aTreeInCif[id]["atom_forward"] = []
+                    if id == startId:
+                        aTreeInCif[id]["connect_type"] = "START" 
+                        aTreeInCif[id]["atom_back"] = "n/a"
+                    if id == endingId:
+                        aTreeInCif[id]["connect_type"] = "END"
+                        aTreeInCif[id]["atom_forward"] = ["."]
+                        
+                nodeConns = {}  
+                
+                for u, v, d in T.edges(data=True):
+                    #print("u and v  ", [u, v]) 
+                    id1  = allGraphs[0].nodes[u]["_chem_comp_atom.atom_id"]
+                    elm1 = aTreeInCif[id1]["type_symbol"]
+                    id2  = allGraphs[0].nodes[v]["_chem_comp_atom.atom_id"]
+                    elm2 = aTreeInCif[id2]["type_symbol"]
                     
-            print("EndingId is ", endingId)
-            
-            # Check if all of nodes have a parent node
-            #for aId in aTreeInCif:
-            #    if not "atom_back" in aTreeInCif[aId]:
-            #        aTreeInCif[aId]["atom_back"] = "n/a"
-            #        aTreeInCif[id1]["connect_type"] = "START" 
-            
-               
-            #for aId in aTreeInCif:
-            #    print("Prop of ", aId)
-            #    print(aTreeInCif[aId])
-            
-        
-            
-            # Form the output section
-            allOutLines = []
-            startForw = ""
-            if "CA" in nodeConns[startId] and not "atom_forward" in aTreeInCif[startId]:
-                startForw = "CA"
-                aTreeInCif[startId]["atom_forward"] = ["CA"]
-            else:
-                if "atom_forward" in aTreeInCif[startId]:
-                    for aId in aTreeInCif[startId]["atom_forward"]:
-                        if aTreeInCif[aId]["type_symbol"] != "H":
-                            startForw = aId
-                            break
-                else:
-                    print("A bug in set tree starting point")
-            #for aId in aTreeInCif:
-            #    print("Prop of ", aId)
-            #    print(aTreeInCif[aId])
-            aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), startId.ljust(8), "n/a".ljust(8), startForw.ljust(8), "START".ljust(6))
-            #print(aLine)
-            allOutLines.append(aLine)
-            
-            for aId in aTreeInCif:
-                #print(aId)
-                #print(aTreeInCif[aId])
-                if aId != startId and aId !=endingId:
-                    aIdForw = "."
-                    for aFId in aTreeInCif[aId]["atom_forward"]:
-                        # Take non-H first
-                        if aTreeInCif[aFId]["type_symbol"] != "H":
-                            aIdForw = aFId
-                            break
-                    # else take H if possible    
-                    if aIdForw =="" and len(aTreeInCif[aId]["atom_forward"]) >0:
-                        aIdForw = aTreeInCif[aId]["atom_forward"][0]
+                    if id1 == startId and elm2 !="H":
+                        aTreeInCif[id1]["atom_forward"].append(id2)
+                    elif id2 == startId and elm1 !="H":
+                        aTreeInCif[id2]["atom_forward"].append(id1)  
+                        
+                    if not id1 in nodeConns:
+                        nodeConns[id1] = []
+                    if not id2 in nodeConns:
+                        nodeConns[id2] = []
+                    nodeConns[id1].append(id2)
+                    nodeConns[id2].append(id1)
                 
-                    aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), aId.ljust(8), 
-                                            aTreeInCif[aId]["atom_back"].ljust(8), aIdForw.ljust(8), ".".ljust(6)) 
-                    #print(aLine)
-                    allOutLines.append(aLine)
-            aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), endingId.ljust(8), aTreeInCif[endingId ]["atom_back"].ljust(8), ".".ljust(8), "END".ljust(6))
-            #print(aLine)
-            allOutLines.append(aLine)
-            
-            
-            f = open(tInCifN, "a")
-            for aL in aTreeInCifHeader:
-                f.write(aL)
-            for aL in allOutLines:
-                f.write(aL)
+                aSList = []
+                setTreeNodeOrder(nodeConns, startId, aTreeInCif, aSList)  
                 
-            f.close()
-        
-            
-            
+                allOutLines = []
+                
+                #for aId in aTreeInCif:
+                #    print("Prop of ", aId)
+                #    print(aTreeInCif[aId])
+                
+                
+                aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), startId.ljust(8), \
+                                        aTreeInCif[startId]["atom_back"].ljust(8), \
+                                        aTreeInCif[startId]["atom_forward"][0].ljust(8), "START".ljust(6))
+                #print(aLine)
+                allOutLines.append(aLine)
+                
+                for aId in aTreeInCif:
+                    #print(aId)
+                    #print(aTreeInCif[aId])
+                    if aId != startId and aId !=endingId:
+                        aIdForw = "."
+                        for aFId in aTreeInCif[aId]["atom_forward"]:
+                            # Take non-H first
+                            if aTreeInCif[aFId]["type_symbol"] != "H":
+                                aIdForw = aFId
+                                break
+                        # else take H if possible    
+                        if aIdForw =="" and len(aTreeInCif[aId]["atom_forward"]) >0:
+                            aIdForw = aTreeInCif[aId]["atom_forward"][0]
+                    
+                        aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), aId.ljust(8), 
+                                                aTreeInCif[aId]["atom_back"].ljust(8), aIdForw.ljust(8), ".".ljust(6)) 
+                        #print(aLine)
+                        allOutLines.append(aLine)
+                        
+                aLine = "%s%s%s%s%s\n"%(self.monomRoot.ljust(6), endingId.ljust(8), \
+                                        aTreeInCif[endingId]["atom_back"].ljust(8), ".".ljust(8), "END".ljust(6))
+                #print(aLine)
+                allOutLines.append(aLine)
+                
+                f = open(tInCifN, "a")
+                for aL in aTreeInCifHeader:
+                    f.write(aL)
+                for aL in allOutLines:
+                    f.write(aL)
+                    
+                f.close()
+                
             
             
             

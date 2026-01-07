@@ -582,6 +582,9 @@ namespace LIBMOL
         void setOneSetCarbonAngles(std::map<int, std::vector<AngleDict> >::iterator tAs);
         // bond angles of the centere atoms with coordination bonds
         void setCoordAngs(int tAtmIdx, std::vector<std::vector<AngleDict>::iterator>  tAngs);
+        void setCoordAngsByConf(int tAtmIdx, std::vector<std::vector<AngleDict>::iterator>  tAngs);
+
+
         // Torsion angles related
         void setupMiniTorsions();
         void selectOneTorFromOneBond(ID  tS, std::vector<TorsionDict> & tTors);

@@ -10796,35 +10796,33 @@ namespace LIBMOL
             }
         }
 
-        if (allAtoms[tAtmIdx].connAtoms.size() ==6)
+        if (lUsingRefCoords)
         {
-
-
-            if (lUsingRefCoords)
+            std::cout << "Using reference coordinates to set angles" << std::endl;
+            for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                 iA !=tAngs.end(); iA++)
             {
-                std::cout << "Using reference coordinates to set angles" << std::endl;
-                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
-                     iA !=tAngs.end(); iA++)
+                std::vector<REAL>  aV1, aV2;
+                for (unsigned i=0; i < allAtoms[(*iA)->atoms[0]].coords.size(); i++)
                 {
-                    std::vector<REAL>  aV1, aV2;
-                    for (unsigned i=0; i < allAtoms[(*iA)->atoms[0]].coords.size(); i++)
-                    {
-                        aV1.push_back(allAtoms[(*iA)->atoms[1]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
-                        aV2.push_back(allAtoms[(*iA)->atoms[2]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
-                    }
-                    (*iA)->value = getAngle2V(aV1, aV2)*PID180;
-                    if ((*iA)->value <190.00 && (*iA)->value > 170.00)
-                    {
-                        (*iA)->value = 180.00;
-                    }
-                    else if ((*iA)->value <100.00 && (*iA)->value > 80.00)
-                    {
-                        (*iA)->value = 90.00;
-                    }
-                    (*iA)->sigValue = 3.0;
+                    aV1.push_back(allAtoms[(*iA)->atoms[1]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
+                    aV2.push_back(allAtoms[(*iA)->atoms[2]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
                 }
+                (*iA)->value = getAngle2V(aV1, aV2)*PID180;
+                if ((*iA)->value <190.00 && (*iA)->value > 170.00)
+                {
+                    (*iA)->value = 180.00;
+                }
+                else if ((*iA)->value <100.00 && (*iA)->value > 80.00)
+                {
+                    (*iA)->value = 90.00;
+                }
+                (*iA)->sigValue = 3.0;
             }
-            else if (aMax > 4)
+        }
+        else if (allAtoms[tAtmIdx].connAtoms.size() ==6)
+        {
+            if (aMax > 4)
             {
                 // Asumme it is Octahedral
                 for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
@@ -10867,15 +10865,16 @@ namespace LIBMOL
                 for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
                      iA !=tAngs.end(); iA++)
                 {
-                    std::vector<int> tAtms;
-                    tAtms.push_back((*iA)->atoms[1]);
-                    tAtms.push_back((*iA)->atoms[2]);
+                    //std::vector<int> tAtms;
+                    //tAtms.push_back((*iA)->atoms[1]);
+                    //tAtms.push_back((*iA)->atoms[2]);
 
                     if (( (*iA)->atoms[1] == graphSymm[sMax][0]&&
                          (*iA)->atoms[2]  == graphSymm[sMax][1]) ||
                         ( (*iA)->atoms[2] ==graphSymm[sMax][0] &&
                          (*iA)->atoms[1]  ==graphSymm[sMax][1]) )
                     {
+                        // diagonal atoms in the square plane
                         (*iA)->value = 180.00;
                         (*iA)->sigValue = 3.0;
                     }
@@ -10884,7 +10883,17 @@ namespace LIBMOL
                         ( (*iA)->atoms[2] ==graphSymm[sMax][2] &&
                          (*iA)->atoms[1]  ==graphSymm[sMax][3]) )
                     {
+                        // diagonal atoms in the square plane
                         (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() &&
+                             std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // NB atoms in the square plane
+                        (*iA)->value = 90.00;
                         (*iA)->sigValue = 3.0;
                     }
                     else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
@@ -10892,7 +10901,7 @@ namespace LIBMOL
                              std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
                                       (*iA)->atoms[2]) !=graphSymm[sMax].end())
                     {
-                        // One atom in the base plane
+                        // One atom in the square plane
                         (*iA)->value = 90.00;
                         (*iA)->sigValue = 3.0;
                     }
@@ -10905,7 +10914,117 @@ namespace LIBMOL
                 }
             }
         }
+        else if (allAtoms[tAtmIdx].connAtoms.size() ==5)
+        {
+            if (aMax ==3 )
+            {
+                // Asumme it is Trigonal bi-pyramidal
+                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+                {
+                    std::vector<int> tAtms;
+                    tAtms.push_back((*iA)->atoms[1]);
+                    tAtms.push_back((*iA)->atoms[2]);
+
+                    if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() &&
+                        std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // angles for Trigonal plane atoms
+                        (*iA)->value = 120.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() ||
+                             std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // One atom in the trigonal plane
+                        (*iA)->value = 90.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else
+                    {
+                        // Both atoms are axial
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                }
+            }
+            else if (aMax==4)
+            {
+                // Asumme it is square-pyramidal
+                for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+                {
+                    if (( (*iA)->atoms[1] == graphSymm[sMax][0]&&
+                         (*iA)->atoms[2]  == graphSymm[sMax][1]) ||
+                        ( (*iA)->atoms[2] ==graphSymm[sMax][0] &&
+                         (*iA)->atoms[1]  ==graphSymm[sMax][1]) )
+                    {
+                        // diagonal atoms in the square plane
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (( (*iA)->atoms[1] == graphSymm[sMax][2]&&
+                         (*iA)->atoms[2]  == graphSymm[sMax][3]) ||
+                        ( (*iA)->atoms[2] ==graphSymm[sMax][2] &&
+                         (*iA)->atoms[1]  ==graphSymm[sMax][3]) )
+                    {
+                        // diagonal atoms in the square plane
+                        (*iA)->value = 180.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() &&
+                             std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // NB atoms in the square plane
+                        (*iA)->value = 90.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                    else if (std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[1]) !=graphSymm[sMax].end() ||
+                             std::find(graphSymm[sMax].begin(), graphSymm[sMax].end(),
+                                      (*iA)->atoms[2]) !=graphSymm[sMax].end())
+                    {
+                        // One atom in the square plane
+                        (*iA)->value = 90.00;
+                        (*iA)->sigValue = 3.0;
+                    }
+                }
+            }
+        }
     }
+
+    void CodClassify::setCoordAngsByConf(int tAtmIdx,
+                         std::vector<std::vector<AngleDict>::iterator>  tAngs)
+    {
+        std::cout << "Using reference coordinates to set angles" << std::endl;
+        for (std::vector<std::vector<AngleDict>::iterator>::iterator iA=tAngs.begin();
+                     iA !=tAngs.end(); iA++)
+        {
+            std::vector<REAL>  aV1, aV2;
+            for (unsigned i=0; i < allAtoms[(*iA)->atoms[0]].coords.size(); i++)
+            {
+                aV1.push_back(allAtoms[(*iA)->atoms[1]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
+                aV2.push_back(allAtoms[(*iA)->atoms[2]].coords[i]-allAtoms[(*iA)->atoms[0]].coords[i]);
+            }
+            (*iA)->value = getAngle2V(aV1, aV2)*PID180;
+            if ((*iA)->value <190.00 && (*iA)->value > 170.00)
+            {
+                (*iA)->value = 180.00;
+            }
+            else if ((*iA)->value <100.00 && (*iA)->value > 80.00)
+            {
+                (*iA)->value = 90.00;
+            }
+            (*iA)->sigValue = 3.0;
+        }
+    }
+
     /*
     void CodClassify::searchCodAnglesUsingSqlite()
     {

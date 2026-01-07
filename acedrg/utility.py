@@ -920,7 +920,77 @@ def setTreeNodeOrder(tConn, tStartId, tTree, tStartList):
                     #print("No start")
                     #print("Back to ", aId, " next" )
        
-        return             
+        return  
+
+def setOneAtom(tElm, tId, tIdx):
+
+    weightMap      = {}
+    weightMap["N"] = 1
+    weightMap["C"] = 2
+    weightMap["O"] = 3
+    
+    aAtom = {}
+    aAtom["_chem_comp_atom.type_symbol"] = tElm
+    aAtom["_chem_comp_atom.atom_id"] = tId
+    aAtom["_chem_comp_atom.idx"]    = tIdx
+    aAtom["_chem_comp_atom.gweigt"] = weightMap[tElm]
+    return aAtom
+
+def setPTAtoms():
+    
+    aSetAtoms = []
+    
+    aSetElems = [["N", "N"], ["C", "CA"], ["C", "CB"], ["C", "C"], ["O", "O"], ["O", "OXT"]]
+    
+    for aIdx in range(len(aSetElems)):
+        aSetAtoms.append(setOneAtom(aSetElems[aIdx][0], aSetElems[aIdx][1], aIdx))
+    
+    return aSetAtoms
+
+def setPTBonds():
+    
+    return [[0, 1], [1,2], [1,3], [3,4], [3, 5]]
+
+def setPTGraph():
+    
+    print("For a PT graph: ")
+    aSetPTAtom  = setPTAtoms()
+    print("Atoms are :", aSetPTAtom)
+    aSetPTBonds = setPTBonds()
+    print("Bonds are : ", aSetPTBonds)
+    
+    aG = nx.Graph(name="aPTGraph")
+    
+    # Nodes
+    for aAt in aSetPTAtom:
+        aIdx = aAt["_chem_comp_atom.idx"]
+        aG.add_node(aIdx)    
+        for aK in aAt.keys():
+            aG.nodes[aIdx][aK] = aAt[aK]
+    #Edges 
+    for aB in aSetPTBonds:
+        aIdx1 = aB[0]
+        aIdx2 = aB[1]
+        aWeight = aG.nodes[aIdx1]["_chem_comp_atom.gweigt"] + aG.nodes[aIdx2]["_chem_comp_atom.gweigt"] 
+        aG.add_edge(aIdx1, aIdx2, weight=aWeight)
+    
+    print("=======================================")
+    print("The node properties of the graph are : ")
+    print(aG.nodes.data()) 
+      
+    print("=======================================")
+    print("The edge properties of the graph are : ")
+    print(aG.edges.data())
+   
+    return aG
+
+
+
+def setOnePepSecToAGraph():
+    
+    
+    pass 
+           
           
 
         
