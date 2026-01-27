@@ -420,6 +420,21 @@ def BondOrderS2N(tBS):
 
     return aBN
 
+def BondOrderRKitBType2N(tBS):
+
+    aBN = -1
+
+    if tBS==Chem.BondType.SINGLE :
+        aBN = 1      
+    elif tBS==Chem.BondType.DOUBLE:
+        aBN = 2
+    elif tBS==Chem.BondType.TRIPLE:
+        aBN = 3
+    else:
+        aBN = 1   # e.g. metal coordination bonds
+
+    return aBN
+
 
 def checkRepAtomTypes(tFileName, tS):
 

@@ -1122,7 +1122,7 @@ class FileTransformer(object) :
             for aId in totalOrders.keys():
                 if not totalOrders[aId][1]:
                    # print("atom %s has zero bond-order, aromatic bond order exists. check and change!"%aId)
-                   pass 
+                    pass 
                 else:
                     self.setAlt2AtomId(totalOrders[aId]) 
 
@@ -1166,9 +1166,9 @@ class FileTransformer(object) :
             if aPair[0]["_chem_comp_atom.type_symbol"].strip().upper() == "N":
                 if aPair[1] == 4:
                     aPair[0]["_chem_comp_atom.charge"] = "1"
-            elif aPair[0]["_chem_comp_atom.type_symbol"].strip().upper() == "O":
-                if aPair[1] == 1:
-                    aPair[0]["_chem_comp_atom.charge"] = "-1"
+            #elif aPair[0]["_chem_comp_atom.type_symbol"].strip().upper() == "O":
+            #    if aPair[1] == 1:
+            #        aPair[0]["_chem_comp_atom.charge"] = "-1"
             elif aPair[0]["_chem_comp_atom.type_symbol"].strip().upper() == "B":
                 if aPair[1] == 4:
                     aPair[0]["_chem_comp_atom.charge"]          = "-1"
@@ -1316,6 +1316,7 @@ class FileTransformer(object) :
             # Ignore all of the coordinates
             chargeAtomList = []
             idxAtom = 1
+            
             for aAtom in self.atoms:
                 if self.mmCifHasCoords :
                     if aAtom["_chem_comp_atom.x"].find("?") ==-1 and aAtom["_chem_comp_atom.y"].find("?") ==-1 and aAtom["_chem_comp_atom.z"].find("?")==-1:
@@ -1334,6 +1335,7 @@ class FileTransformer(object) :
 
                 
                 id = aAtom["type_symbol_in_mol"]
+                print("elem=", id)
                     
                 md =" 0 "
                
@@ -1352,7 +1354,7 @@ class FileTransformer(object) :
                 
                 charge = " 0 "
                 if "_chem_comp_atom.charge" in aAtom:
-                    #print "The charge is ", aAtom["_chem_comp_atom.charge"]
+                    print("The charge is ", aAtom["_chem_comp_atom.charge"])
                     #print "Is that number digit ", aAtom["_chem_comp_atom.charge"].isdigit() 
                     if aAtom["_chem_comp_atom.charge"].find(".") !=-1:
                         aAtom["_chem_comp_atom.charge"] = aAtom["_chem_comp_atom.charge"].strip().split(".")[0]
@@ -1383,8 +1385,9 @@ class FileTransformer(object) :
             # print("Number of atoms with charges ", len(chargeAtomList))
             # Bond block
            
+            
             self.DelocBondConvertor()
- 
+            
             sss ="0"
             xxx ="0"
             rrr ="0"
@@ -1440,7 +1443,7 @@ class FileTransformer(object) :
                         self.nameMapingCifMol["H"][id1] = [] 
                     self.nameMapingCifMol["H"][id1].append(id2)
                     #print "H atom %s is bonding to %s "%(id2, id1)
-                   
+                 
             if len(chargeAtomList) != 0:
                 aL = "M CHG  %d "%len(chargeAtomList)
                 for aPair in chargeAtomList:
@@ -2739,10 +2742,13 @@ def outputOneMolInACif2(tCif,  tFileIdx, tAtoms, tBonds, tAngs) :
     outputHeadSecInOneMol(tCif, tFileIdx, tAtoms)
     outputAtomsInOneMol(tCif, tFileIdx, tAtoms)
     outputBondsInOneMol(tCif, tFileIdx, tBonds)
-    outputAngsInOneMol(tCif,tFileIdx, tAngs)
+    if len(tAngs) > 0:
+        outputAngsInOneMol(tCif,tFileIdx, tAngs)
     tCif.close()      
     
 def outputOneMolFullDictInACif(tCif, tFileIdx, tMol):
+    
+    
     
     outputHeadSecInOneMol(tCif, tFileIdx, tMol["atoms"])
     outputAtomsInOneMol(tCif, tFileIdx, tMol["atoms"])
@@ -2820,10 +2826,12 @@ def outputAtomsInOneMol(tCif, tFileIdx, tAtoms):
         if not "_chem_comp_atom.charge" in aA:
             aA["_chem_comp_atom.charge"] = "0"
             
-        aC = aA["_chem_comp_atom.charge"]
+        aC = str(aA["_chem_comp_atom.charge"])
         aC = aC.ljust(len(aC)+3)
         
-        
+        aX ="0.0"
+        aY ="0.0"
+        aZ ="0.0"   
         if "_chem_comp_atom.model_Cartn_x" in aA:
             
             aX   = str(aA["_chem_comp_atom.model_Cartn_x"])
@@ -2906,6 +2914,7 @@ def outputBondsInOneMol(tCif, tFileIdx, tBonds):
     
     aCId = tFileIdx.ljust(6) 
     for aB in tBonds:
+        
         aId1 = aB["_chem_comp_bond.atom_id_1"]
         aId1 = aId1.ljust(len(aId1)+3)
         
@@ -2913,7 +2922,7 @@ def outputBondsInOneMol(tCif, tFileIdx, tBonds):
         aId2 = aId2.ljust(len(aId2)+3)
         if not "_chem_comp_bond.value_order" in aB:
             aB["_chem_comp_bond.value_order"] = "SINGLE"
-        aOr  = aB["_chem_comp_bond.value_order"].ljust(10)
+        aOr  = str(aB["_chem_comp_bond.value_order"]).ljust(10)
         
         if not "_chem_comp_bond.pdbx_aromatic_flag" in aB:
             aB["_chem_comp_bond.pdbx_aromatic_flag"] = "n"
