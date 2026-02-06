@@ -2028,10 +2028,11 @@ class AcedrgRDKit(object):
         elemList = []
         for aAtom in initAtoms:
             elemList.append(aAtom.GetSymbol())
-            #print("atom idx ", aAtom.GetIdx())
-            #print("atom element ", aAtom.GetSymbol())
-            #print("atom val ", aAtom.GetTotalValence())
-            #print("atom charge ", aAtom.GetFormalCharge())
+            print("atom idx ", aAtom.GetIdx())
+            print("atom element ", aAtom.GetSymbol())
+            print("atom val ", aAtom.GetTotalValence())
+            print("atom charge ", aAtom.GetFormalCharge())
+
         # print("number of props in the mol ", len(tMol.GetPropNames()))
         if not len(elemList):
             print("No atoms in from your file, check your file format")
@@ -2077,21 +2078,21 @@ class AcedrgRDKit(object):
         Chem.SanitizeMol(tMol)
         Chem.Kekulize(tMol)
         
-        
+            
             
         
         # Check 
+        print("check the new molecule")
         for aAtom in tMol.GetAtoms():
             self.atomPDPCMap[aAtom.GetIdx()]={}
             self.atomPDPCMap[aAtom.GetIdx()]["origC"] = aAtom.GetFormalCharge()
             self.atomPDPCMap[aAtom.GetIdx()]["newC"]  = self.atomPDPCMap[aAtom.GetIdx()]["origC"]
             self.atomPDPCMap[aAtom.GetIdx()]["origH"] = aAtom.GetTotalNumHs()
             self.atomPDPCMap[aAtom.GetIdx()]["newH"]  = self.atomPDPCMap[aAtom.GetIdx()]["origH"]
-            #print("atom idx : %d  its element %s : "
-            #      %(aAtom.GetIdx(),  aAtom.GetSymbol()))
+            print("atom idx : %d  its element %s : and charge : "
+                  %(aAtom.GetIdx(),  aAtom.GetSymbol(), ))
             #print("The original Number of H it connnects %d"%aAtom.GetTotalNumHs())
             #print("Its original charge %d"%aAtom.GetFormalCharge())
-        
         
         # Make sure an atom in the molecule has the same charge in the input file.
         # RDKit sometimes change it when initiating the molecule
@@ -2133,8 +2134,7 @@ class AcedrgRDKit(object):
         # self.showInfoAboutAtomsAndBonds(aMol, 1)
         # self.checkSugar(tMol)
         
-        
-        
+ 
         if not self.noProtonation:
             if tPH[0]:
                 self.setAllFormalChargeFuncGroupAtoms(tMol, tPH[1])
@@ -2144,9 +2144,9 @@ class AcedrgRDKit(object):
         # print("fixed Name ", tMol.GetProp("fixedName"))
         if tMol.GetProp("fixedName") == "NO":
             if self.useExistCoords:
-                #print("Previous ", len(tMol.GetAtoms()))
+                print("Previous ", len(tMol.GetAtoms()))
                 aMol = Chem.AddHs(tMol, explicitOnly=False, addCoords=True)
-                #print("After ", len(aMol.GetAtoms())) 
+                print("After ", len(aMol.GetAtoms())) 
             else:
                 
                 aMol = Chem.AddHs(tMol)
@@ -2185,16 +2185,17 @@ class AcedrgRDKit(object):
                 self.setNamesForAtomsInMol(aMol, tChemCheck, tNameMap, 1)
         # self.showInfoAboutAtomsAndBonds(aMol, 2)
         allAtoms = aMol.GetAtoms()
-        #print("number of atom now ", len(allAtoms))
-        
-        
-        #print("After p/dp process: ")
+        print("Here: number of atom now ", len(allAtoms))
+        for aAtom in aMol.GetAtoms():
+            print("atom idx : %d  its element %s : "%(aAtom.GetIdx(),  aAtom.GetSymbol()))       
+
+        print("After p/dp process: ")
         for aAtom in tMol.GetAtoms():
             if aAtom.GetSymbol() != "H":
-                #print("atom idx : %d  its element %s : "
-                #      %(aAtom.GetIdx(),  aAtom.GetSymbol()))
-                #print("The original Number of H it connnects %d"%aAtom.GetTotalNumHs())
-                #print("Its original charge %d"%aAtom.GetFormalCharge())
+                print("atom idx : %d  its element %s : "
+                      %(aAtom.GetIdx(),  aAtom.GetSymbol()))
+                print("The original Number of H it connnects %d"%aAtom.GetTotalNumHs())
+                print("Its original charge %d"%aAtom.GetFormalCharge())
                 self.atomPDPCMap[aAtom.GetIdx()]["newC"] = aAtom.GetFormalCharge()
                 self.atomPDPCMap[aAtom.GetIdx()]["newH"] = aAtom.GetTotalNumHs()
         

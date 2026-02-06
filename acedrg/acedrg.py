@@ -1277,6 +1277,7 @@ class Acedrg(CExeCode ):
             print("===================================================================") 
             print("| Generate the dictionary file using the internal database        |")
             print("===================================================================") 
+
             if self.workMode != 16 and self.workMode != 162:
                 if tIdxMol !=-1: 
                     self.outRstCifName   = os.path.join(self.scrDir, self.baseRoot + "_mol_" + str(tIdxMol) + "_cod.rst")   
@@ -1309,6 +1310,7 @@ class Acedrg(CExeCode ):
             if self.useExistCoords:
                 self._cmdline +=" -e yes "
             #print(self._cmdline)
+
             self.runExitCode = self.subExecute()
         if self.workMode==113:
             #print("self.monomRoot=", self.monomRoot)
@@ -4021,6 +4023,8 @@ class Acedrg(CExeCode ):
                     self.chemCheck.GetAtomsAndBondsFromSmi(self.inSmiName, initAtoms, initBonds)
                     self.containCBM = self.chemCheck.checkCarbonMol(initAtoms, initBonds)
                     self.chemCheck.getNewMols2(initAtoms, initBonds, self.scrDir, self.monomRoot)
+                    self.processComboMolContainCarBoFromSmi(initAtoms, initBonds)
+ 
                 elif self.chemCheck.isOrganic(self.inSmiName, self.workMode):
                     self.rdKit.reSetSmi = True
                     self.rdKit.initMols("smi", self.inSmiName, self.monomRoot, self.chemCheck, self.inputPara["PH"], self.numConformers)
@@ -4032,6 +4036,7 @@ class Acedrg(CExeCode ):
                     self.rdKit.setSimpleCifFromOneMol("smi", self.inSmiName, interMedCifName, self.monomRoot, self.chemCheck)
                     self.workMode =1211
                 
+                """
                 aSetCBMols    = []
                 aSetNonCBMols = []
                 for aMol in self.chemCheck.aSetNewMols:
@@ -4118,6 +4123,7 @@ class Acedrg(CExeCode ):
                     print("File %s does not exist."%aOutCifS)
                     print("Problems in geometry optimisation. Check")
              
+                """
         if self.workMode == 13 or self.workMode == 131 or self.workMode==53:
                 
             # The input file is  a mol file
@@ -4646,6 +4652,95 @@ class Acedrg(CExeCode ):
             aInCifN = self.outRoot + ".cif"
             print("Tree infile is ", aInCifN)
             self.addAMolTreeIntoACif(aInCifN)
+
+
+    def processComboMolContainCarBoFromSmi(self, tInitAtoms, tInitBonds):
+                
+                aSetCBMols    = []
+                aSetNonCBMols = []
+                for aMol in self.chemCheck.aSetNewMols:
+                    aMol["tempCif"] = ""
+                    if not aMol["isCBMol"]:
+                        print(aMol["fileIdx"], " IS NOT CB mol")
+                        print("Running ", aMol["fileIdx"])
+                        #if "atoms" in aMol:
+                        #    for aAt in aMol["atoms"]:
+                        #         aCombNonCBMol["atoms"].append(aAt)
+                        #if "bonds" in aMol:
+                        #    for aB in aMol["bonds"]:
+                        #        aCombNonCBMol["bonds"].append(aB)
+                        
+                        aInCif = os.path.join(self.scrDir, aMol["fileIdx"] + ".cif")
+                        aOutRoot = os.path.join(self.scrDir, aMol["fileIdx"] + "_out")
+                        self._log_name        = os.path.join(self.scrDir, aMol["fileIdx"] + ".log")
+                        self._cmdline         = self.exeAcedrg 
+                        self._cmdline +=      " -c %s   -r %s -o %s -K "%(aInCif, self.monomRoot, aOutRoot)
+                        # print(self._cmdline)
+                        print("Run mol : ", aMol["fileIdx"])
+                        aOutCif = aOutRoot + ".cif"
+                        print("The output file is ", aOutCif)
+                        self.subExecute() 
+                        if os.path.isfile(aOutCif):
+                            aMol["tempCif"] = aOutCif
+                            print("monomRoot is ", self.monomRoot)
+                            fromCifTorMolGemmi(aOutCif, self.monomRoot, self.monomRoot, aSetNonCBMols)
+                            print("Number of nonCB mols with dictionary ", len(aSetNonCBMols))    
+                
+                    else:
+                        
+                        aSetCBMols.append(aMol)
+                        for aAt in aSetCBMols[0]["atoms"]:
+                            aAt["_chem_comp_atom.tmp_atom_conn"] = []
+                            #print("5:Now atom ", aAt["_chem_comp_atom.atom_id"], " conn : ")
+                            for aIdxNew in aAt["_chem_comp_atom.atom_conn"]:
+                                aAt["_chem_comp_atom.tmp_atom_conn"].append(aIdxNew)
+                                #print(aMol["atoms"][aIdxNew]["_chem_comp_atom.atom_id"])
+                        print(aMol["fileIdx"], " Is CB mol")
+                
+                if len(aSetCBMols) > 0:
+                    for aMol in aSetCBMols:
+                        self.chemCheck.processOneCBMol(aMol)
+                        aTmpCifN = os.path.join(self.scrDir, aMol["fileIdx"] + "_out.cif")
+                        aTmpCif  = open(aTmpCifN, "w")
+                        print(aTmpCifN)
+                        outputOneMolInACif2(aTmpCif, self.monomRoot, aMol["remainAtoms"], aMol["remainBonds"], aMol["remainAngs"])
+                        aMol["tempCif"] = aTmpCifN
+                        
+                print("Number of nonCB mols with dictionary ", len(aSetNonCBMols))
+                print("Number of CB mols with dictionary ", len(aSetCBMols))
+                print("using coords ", self.useExistCoords)
+                
+                
+                if len(self.chemCheck.aSetNewMols) > 0:
+                    aComboMol = {}
+                    self.chemCheck.assembleNewMods2(tInitAtoms, tInitBonds, 
+                                                   aSetNonCBMols, aSetCBMols, self.scrDir, self.monomRoot, aComboMol)
+                
+                
+                if len(aComboMol["atoms"]) > 0 and len(aComboMol["bonds"]) > 0:
+                    aInCifN = os.path.join(self.scrDir, "inComboLig.cif")
+                    print(aInCifN)
+                    aInCif  = open(aInCifN, "w")
+                    outputOneMolFullDictInACif(aInCif, self.monomRoot, aComboMol)
+                    aInCif.close()
+                
+                aRoot1 = "outComboLig_st1" 
+                aOutCifS1 =  os.path.join(self.scrDir, aRoot1+"_updated.cif")
+                self.runServalcat(aRoot1, aInCifN)
+                if os.path.isfile(aOutCifS1):
+                    aRoot2 = "outComboLig_st2"
+                    aOutCifS2 =  os.path.join(self.scrDir, aRoot1+"_updated.cif")
+                    self.runServalcat(aRoot2, aOutCifS1)
+                    if os.path.isfile(aOutCifS2):
+                        finOutCif = self.outRoot + ".cif"
+                        #shutil.copy(aOutCifS2, finOutCif)
+                        reWriteAcedrgDescriptorSec(aOutCifS2, finOutCif, self.outCifGlobSect)
+                        print("The final output cif is %s"%finOutCif)
+                else:
+                    print("File %s does not exist."%aOutCifS)
+                    print("Problems in geometry optimisation. Check")
+             
+   
     
     def addAMolTreeIntoACif(self, tInCifN):
         
