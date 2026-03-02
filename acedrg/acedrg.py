@@ -139,7 +139,7 @@ class Acedrg(CExeCode ):
         #self.servalcat        = "/lmb/home/kyamashita/app/dials-upstream-3.10/build/bin/servalcat "
         
         if "CCP4" in os.environ:
-             self.metalCoord  = os.path.join(os.environ['CBIN'], "metalCoord")
+             self.metalCoord  = shutil.which("metalCoord")
         else:
             self.metalCoord       = "metalCoord "
         
