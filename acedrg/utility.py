@@ -955,7 +955,8 @@ def setPTAtoms():
     
     aSetAtoms = []
     
-    aSetElems = [["N", "N"], ["C", "CA"], ["C", "CB"], ["C", "C"], ["O", "O"], ["O", "OXT"]]
+    #aSetElems = [["N", "N"], ["C", "CA"], ["C", "CB"], ["C", "C"], ["O", "O"], ["O", "OXT"]]
+    aSetElems = [["N", "N"], ["C", "CA"], ["C", "CB"], ["C", "C"] ]
     
     for aIdx in range(len(aSetElems)):
         aSetAtoms.append(setOneAtom(aSetElems[aIdx][0], aSetElems[aIdx][1], aIdx))
@@ -964,7 +965,7 @@ def setPTAtoms():
 
 def setPTBonds():
     
-    return [[0, 1], [1,2], [1,3], [3,4], [3, 5]]
+    return [[0, 1], [1,2], [1,3]] 
 
 def setPTGraph():
     

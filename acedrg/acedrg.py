@@ -139,7 +139,7 @@ class Acedrg(CExeCode ):
         #self.servalcat        = "/lmb/home/kyamashita/app/dials-upstream-3.10/build/bin/servalcat "
         
         if "CCP4" in os.environ:
-             self.metalCoord  = os.path.join(os.environ['CBIN'], "metalCoord")
+             self.metalCoord  =   shutil.which("metalCoord")   #os.path.join(os.environ['CBIN'], "metalCoord")
         else:
             self.metalCoord       = "metalCoord "
         
@@ -206,7 +206,6 @@ class Acedrg(CExeCode ):
 
         self.acedrg    = os.path.abspath(sys.argv[0])
         self.acedrgDir = os.path.dirname(os.path.dirname(self.acedrg))
-        print("acedrgDir ", self.acedrgDir)
         #self.acedrg    = ""
         #print "files ", glob.glob(sys.exec_prefix + "/*")
         #self.acedrgDir = sys.exec_prefix
@@ -1353,10 +1352,10 @@ class Acedrg(CExeCode ):
             if self.workMode ==162:
                 self._cmdline += " -E yes "    
             
-            print(self._cmdline)
+            #print(self._cmdline)
             
             self.runExitCode =os.system(self._cmdline + ">%s"%self._log_name)
-            print(self.runExitCode)
+            #print(self.runExitCode)
             #self.runExitCode = self.subExecute()
             
         if self.workMode in [21, 211] :
@@ -2031,7 +2030,7 @@ class Acedrg(CExeCode ):
             inCifNamesRoot =[]
             if not self.noRdKitConfs:
                 idxC = 1
-                #print("Number of selct conformers ", self.rdKit.selecConformerIds)
+                print("Number of selct conformers ", self.rdKit.selecConformerIds)
                 for idxConf in self.rdKit.selecConformerIds : 
                     aCifRoot  = "mol_" + str(tIdxMol+1) + "_conf_" + str(idxC)
                     aConfCif = os.path.join(self.scrDir, aCifRoot + "_init.cif")
@@ -2063,7 +2062,7 @@ class Acedrg(CExeCode ):
                     self.runGeoOpt(aCifRoot, aConfCif) 
                     if  self.runExitCode :
                         print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
-        
+            print("Here3: ", self.refmacMinFValueList)
             if len(self.refmacMinFValueList) > 0 :
                 #self.refmacMinFValueList.sort(listComp2)
                 self.refmacMinFValueList=sorted(self.refmacMinFValueList, key=cmp_to_key(listComp2))
@@ -2168,14 +2167,12 @@ class Acedrg(CExeCode ):
                 #    monoId = self.monomRoot[:3]
                 #else:
                 monoId = self.monomRoot
-     
+            
             elif tDataDescriptor:
                 monoId = tDataDescriptor[-1].strip().split()[0]
             else:
                 monoId = "LIG"
                 
-
-            
             if tDataDescriptor:
                 cifCont['head']   = ["#\n", "data_comp_list\n", "loop_\n"]
                 for aL in tDataDescriptor:
@@ -3360,9 +3357,14 @@ class Acedrg(CExeCode ):
 
         if self.workMode ==111 or self.workMode ==121 or self.workMode ==131 or self.workMode ==141:
             if os.path.isfile(self.outRstCifName):
+                print(self.outRstCifName)
+                self.getFinalOutputFiles2(self.outRoot, self.rdKit.molecules[0], self.outRstCifName, 
+                                      self.fileConv.ccp4DataDes,self.fileConv.strDescriptors,self.fileConv.delocBondList)
+                """
                 tCif = self.outRoot + ".cif"
                 #os.system("cp %s %s"%(self.outRstCifName, tCif)) 
-                shutil.copy(self.outRstCifName, tCif) 
+                shutil.copy(self.outRstCifName, tCif)
+                """ 
             else:
                 print("acedrg failed to generate a dictionary file")       
     
@@ -3657,8 +3659,8 @@ class Acedrg(CExeCode ):
                         aC = int(aA["_chem_comp_atom.charge"])
                         if aC !=0:
                             self.fileConv.inputCharge[aA["_chem_comp_atom.atom_id"]] = aC
-                    
-                self.workMode =11    
+                if self.workMode != 111:    
+                    self.workMode =11    
                 if len(self.fileConv.dataDescriptor):
                     
                     #self.setMonoRoot(self.fileConv.dataDescriptor)
@@ -4310,8 +4312,6 @@ class Acedrg(CExeCode ):
                                 print("File %s does not exist."%aOutCifS)
                                 print("Problems in geometry optimisation. Check")
 
-                    
-
                         
                 elif os.path.isfile(self.inMdlName) and self.chemCheck.isOrganic(self.inMdlName, self.workMode):
                     aTmpMoleFile = os.path.join(self.scrDir, self.baseRoot + "_edited.mol")
@@ -4348,19 +4348,17 @@ class Acedrg(CExeCode ):
                 print(self.inMol2Name, " can not be found for reading ")
                 sys.exit()
 
-        
         if not self.workMode in [80, 81, 1001, 1002]:
             self.setOutCifGlobSec()
         if self.workMode in [11, 12, 13, 14, 15]:
             if self.isPEP and self.workMode==11:
                 self.workMode = 112
             else :
-                 self.workMode = 11
+                self.workMode = 11
         elif self.workMode in [111, 121, 131, 141, 151]:
             self.workMode = 111
         if self.workMode in [51, 52, 53, 54, 55]:
             self.workMode = 51
-        
         if self.workMode in [11,  111, 112, 114, 51] :  #  and not self.isAA :
             #print("Number of molecule ", len(self.rdKit.molecules))
             
@@ -4375,8 +4373,8 @@ class Acedrg(CExeCode ):
                 if len(self.fileConv.leaAtmMap):
                     self.addAtmMap(self.rdKit.molecules[iMol], self.fileConv.leaAtmMap)
                 
-                print("self.useExistCoords   = ", self.useExistCoords )
-                print("self.useExistCoords2   = ", self.useExistCoords2 )
+                #print("self.useExistCoords   = ", self.useExistCoords )
+                #print("self.useExistCoords2   = ", self.useExistCoords2 )
                 
                 self.rdKit.MolToSimplifiedMmcif(self.rdKit.molecules[iMol], self.inMmCifName, self.chemCheck, self.monomRoot, self.fileConv.chiralPre,\
                                                 self.fileConv.chiralBoth)
@@ -4530,9 +4528,17 @@ class Acedrg(CExeCode ):
                                                    self.acedrgTables, self.versionInfo, self.testMode)
         if self.workMode ==111 or self.workMode ==121 or self.workMode ==131 or self.workMode ==141:
             if os.path.isfile(self.outRstCifName):
+                print(self.outRstCifName)
+                self.getFinalOutputFiles2(self.outRoot, self.rdKit.molecules[0], self.outRstCifName, 
+                                      self.fileConv.ccp4DataDes,self.fileConv.strDescriptors,self.fileConv.delocBondList)
+                """
                 tCif = self.outRoot + ".cif"
                 #os.system("cp %s %s"%(self.outRstCifName, tCif)) 
                 shutil.copy(self.outRstCifName, tCif) 
+                """
+                print("=====================================================================")
+                print("|               Finished                                            |")
+                print("=====================================================================")
             else:
                 print("acedrg failed to generate a dictionary file")     
 

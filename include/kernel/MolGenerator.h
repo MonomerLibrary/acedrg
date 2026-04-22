@@ -430,9 +430,24 @@ namespace LIBMOL
                                FileName tOutName);
 
         void executePdb(FileName tOutName, int tMode);
+
+        void executeNonBonding(FileName tInParaName, FileName tOutName);
+
         void setAllPropsFromCoords(Molecule & tMol);
 
+        void setRPExcludedAtoms(std::vector<std::string> & tExcIds);
 
+        void setAllNonBondingLinks(double tNonBondFac,
+                                   std::vector<std::string> & tExcIds,
+                                   std::map<std::string, std::string>  &  tAtomSimClasses,
+                                   std::vector<CrystInfo>::iterator  tCryst,
+                                   std::vector<std::string> & tDistLines);
+
+        void get3LayersNBAtomList(std::map<std::string,
+                                   std::vector<int> > & tNBAtomList,
+                                   std::map<std::string,
+                                   std::string>  & tAtomSimClasses);
+        void outNonBondingLinks(FileName tOutName, std::vector<std::string> & tDistLines);
 
         std::string                     aLibmolTabDir;
         bool                            lColid;

@@ -83,7 +83,7 @@ namespace LIBMOL
 
         int c, index;
         while ((c = getopt (numArg, ArgVars,
-"a:b:c:d:e:i:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:z:A:C:D:E:H:L:M:N:O:P:Q:R:S:T:U:W:X:Y:Z:1:2:3:4:"))
+"a:b:c:d:e:i:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:z:A:B:C:D:E:H:L:M:N:O:P:Q:R:S:T:U:W:X:Y:Z:1:2:3:4:"))
                != -1)
         {
             switch (c)
@@ -201,6 +201,9 @@ namespace LIBMOL
                     break;
                 case 'A':
                     IOEntries["AtomTypeOutName"] = optarg;
+                    break;
+                case 'B':
+                    IOEntries["NonBonding"] = optarg;
                     break;
                 case 'C':
                     IOEntries["PeptidesOnly"] = optarg;
@@ -648,6 +651,10 @@ namespace LIBMOL
                 if (IOEntries.find("enableNeu") != IOEntries.end())
                 {
                     workMode = 3111;
+                }
+                else if (IOEntries.find("NonBonding") != IOEntries.end())
+                {
+                    workMode = 3112;
                 }
                 else
                 {

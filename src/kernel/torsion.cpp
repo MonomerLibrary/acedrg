@@ -325,12 +325,12 @@ namespace LIBMOL
                 std::cout << "atom1 " << iT->atoms[0] << std::endl
                           << " atom2 " << iT->atoms[1] << std::endl
                           << "atom 3 " << iT->atoms[2] << std::endl
-                          << "atom 4 " 
+                          << "atom 4 "
                           << iT->atoms[3] << std::endl;
                 break;
             }
             aTorIdx++;
-            
+
 
         }
 
@@ -872,8 +872,8 @@ namespace LIBMOL
                                             idxR2.push_back(*iConn);
 					                    }
                                     }
-                                    else if (tAtoms[*iConn].chemType.find("H")
-                                             ==std::string::npos)
+                                    else if (tAtoms[*iConn].chemType
+                                             !="H")     //==std::string::npos)
                                     {
 					                    if (std::find(idxNonH2.begin(), idxNonH2.end(), *iConn)==idxNonH2.end())
 					                    {
@@ -913,7 +913,6 @@ namespace LIBMOL
                     if (tIdxT !=-1 && tAllTorsions[tIdxT].atoms[0] != tAllTorsions[tIdxT].atoms[3])
                     {
                         tMiniTorsions.push_back(tAllTorsions[tIdxT]);
-                        std::cout << "added 1 " << std::endl;
                         lDone = true;
                     }
                     else
@@ -942,7 +941,6 @@ namespace LIBMOL
                                       << tAtoms[idx2].id << ", and "
                                       << tAtoms[idxR2[0]].id
                                       << std::endl;
-                           std::cout << "added 2 " << std::endl;
                            lDone = true;
                         }
                         else
@@ -961,7 +959,6 @@ namespace LIBMOL
                         if (tIdxT !=-1 && tAllTorsions[tIdxT].atoms[0] != tAllTorsions[tIdxT].atoms[3])
                         {
                             tMiniTorsions.push_back(tAllTorsions[tIdxT]);
-                            std::cout << "added 3 " << std::endl;
                             lDone = true;
                         }
                         else
@@ -986,7 +983,6 @@ namespace LIBMOL
                         if (tIdxT !=-1 && tAllTorsions[tIdxT].atoms[0] != tAllTorsions[tIdxT].atoms[3])
                         {
                            tMiniTorsions.push_back(tAllTorsions[tIdxT]);
-                           std::cout << "added 4 " << std::endl;
                            lDone = true;
                         }
                         else
@@ -1005,7 +1001,6 @@ namespace LIBMOL
                         if (tIdxT !=-1 && tAllTorsions[tIdxT].atoms[0] != tAllTorsions[tIdxT].atoms[3] )
                         {
                             tMiniTorsions.push_back(tAllTorsions[tIdxT]);
-                            std::cout << "added 5 " << std::endl;
                             lDone = true;
                         }
                         else
@@ -1037,7 +1032,6 @@ namespace LIBMOL
                         if (tIdxT !=-1 && tAllTorsions[tIdxT].atoms[0] != tAllTorsions[tIdxT].atoms[3])
                         {
                            tMiniTorsions.push_back(tAllTorsions[tIdxT]);
-                           std::cout << "added 6 " << std::endl;
                            lDone = true;
                         }
                         else

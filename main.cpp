@@ -329,6 +329,7 @@ int main(int argc, char** argv) {
     else if (AJob.workMode==31
              || AJob.workMode==311
              || AJob.workMode==3111
+             || AJob.workMode==3112
              || AJob.workMode ==312
              || AJob.workMode ==313
              || AJob.workMode ==314
@@ -342,6 +343,7 @@ int main(int argc, char** argv) {
         if (   AJob.workMode==31
             || AJob.workMode==311
             || AJob.workMode==3111
+            || AJob.workMode==3112
             || AJob.workMode ==312
             || AJob.workMode ==313
             || AJob.workMode ==314
@@ -420,6 +422,12 @@ int main(int argc, char** argv) {
                 {
                     aMolCreator.executeNeuD(AJob.IOEntries["userOutName"].c_str());
                 }
+                else if (AJob.workMode==3112)
+                {
+                    aMolCreator.executeNonBonding(AJob.IOEntries["UserParaFile"].c_str(),
+                                                  AJob.IOEntries["userOutName"].c_str());
+                }
+
                 else if (AJob.workMode ==312 || AJob.workMode==313)
                 {
                     std::cout << "Studies on metal atoms " << std::endl;

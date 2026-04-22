@@ -1335,7 +1335,7 @@ class FileTransformer(object) :
 
                 
                 id = aAtom["type_symbol_in_mol"]
-                print("elem=", id)
+                #print("elem=", id)
                     
                 md =" 0 "
                
@@ -1354,7 +1354,7 @@ class FileTransformer(object) :
                 
                 charge = " 0 "
                 if "_chem_comp_atom.charge" in aAtom:
-                    print("The charge is ", aAtom["_chem_comp_atom.charge"])
+                    #print("The charge is ", aAtom["_chem_comp_atom.charge"])
                     #print "Is that number digit ", aAtom["_chem_comp_atom.charge"].isdigit() 
                     if aAtom["_chem_comp_atom.charge"].find(".") !=-1:
                         aAtom["_chem_comp_atom.charge"] = aAtom["_chem_comp_atom.charge"].strip().split(".")[0]

@@ -1175,6 +1175,7 @@ namespace LIBMOL
         }
         else if (tWorkMode==31
              || tWorkMode==311
+             || tWorkMode==3112
              || tWorkMode ==312
              || tWorkMode ==313
              || tWorkMode ==314
