@@ -516,24 +516,15 @@ class Acedrg(CExeCode ):
             print("can not find libmol at libexec/")
             sys.exit()
                                 
-        if "CCP4" in os.environ:
+        if not self.libmol and "CCP4" in os.environ:
+            tLibmol = os.path.join(os.environ['CCP4'], "libexec", "libmol")
+            if platform.system()=="Windows": tLibmol += ".exe"
+            if glob.glob(tLibmol):
+                self.libmol = tLibmol
 
-            #tLibcheck = os.path.join(os.environ['CBIN'], "libcheck")
-            #if platform.system()=="Windows": tLibcheck += ".exe"
-            #if not glob.glob(tLibcheck):
-            #    print("libcheck could not be found")
-            #    sys.exit()
-            #else:
-            #    self.libcheck = tLibcheck
-            
-            if not self.libmol:
-                tLibmol = os.path.join(os.environ['CCP4'], "libexec", "libmol")
-                if platform.system()=="Windows": tLibmol += ".exe"
-                if glob.glob(tLibmol):
-                    self.libmol = tLibmol
-        else :
-            print("You need to install CCP4 suite")
-            print("or activate ccp4.setup")
+        if not self.libmol:
+            print("Could not find libmol. Install acedrg via pip, or set "
+                  "LIBMOL_ROOT, or activate a CCP4 installation.")
             sys.exit()
         if not self.acedrgTables:
             if "LIBMOL_ROOT" in os.environ:
@@ -548,7 +539,7 @@ class Acedrg(CExeCode ):
             # print tAcedrgTables
             if os.path.isdir(tAcedrgTables):
                 self.acedrgTables = tAcedrgTables
-        if not self.acedrgTables:
+        if not self.acedrgTables and "CCP4" in os.environ:
             tAcedrgTables = os.path.join(os.environ['CCP4'], "share","acedrg","tables")
             if glob.glob(tAcedrgTables):
                 self.acedrgTables = tAcedrgTables
@@ -556,7 +547,9 @@ class Acedrg(CExeCode ):
             tFuncGroupTable = os.path.join(self.acedrgTables, "funSmi.table")
             if os.path.isfile(tFuncGroupTable):
                 self.funcGroupTable = tFuncGroupTable
-            
+            if "CLIBD_MON" not in os.environ:
+                os.environ["CLIBD_MON"] = os.path.join(self.acedrgTables, "")
+
         #print("The path to Acedrg tables is at ", self.acedrgTables)
         #print("Libmol used is at ", self.libmol)
 
