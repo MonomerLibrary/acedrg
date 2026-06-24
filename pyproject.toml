@@ -1,0 +1,37 @@
+[build-system]
+requires = ["scikit-build-core>=0.8"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "acedrg"
+version = "0.0.0rc2"
+description = "Stereochemical description generator for ligands"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MPL-2.0"
+authors = [{ name = "Fei Long", email = "flong-github@mrc-lmb.cam.ac.uk" }]
+dependencies = [
+    "rdkit",
+    "gemmi",
+    "networkx",
+    "numpy",
+    "future",
+    "pdbecif",
+    "servalcat",
+]
+
+[project.optional-dependencies]
+metal = ["metalCoord"]
+tautomer = ["molvs"]
+
+[project.scripts]
+acedrg = "acedrg.acedrg:main"
+
+[tool.scikit-build]
+wheel.packages = ["acedrg"]
+# libmol is a standalone executable, not a Python C-extension, so the wheel has
+# no Python-ABI dependency: one py3-none-<platform> wheel covers all Python 3.
+wheel.py-api = "py3"
+cmake.version = ">=3.15"
+cmake.build-type = "Release"
+sdist.include = ["acedrg/**", "src/**", "include/**", "main.cpp", "CMakeLists.txt", "utils/**"]
