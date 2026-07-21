@@ -555,8 +555,8 @@ namespace LIBMOL
         // std::cout << "Number of rings " << tAllRings.size() << std::endl;
         for (unsigned i=0; i < tAllRings.size(); i++)
         {
-            std::cout << "Ring " <<  tAllRings[i].rep << std::endl;
-            std::cout << "A: Is planar " << tAllRings[i].isPlanar << std::endl;
+            //std::cout << "Ring " <<  tAllRings[i].rep << std::endl;
+            //std::cout << "A: Is planar " << tAllRings[i].isPlanar << std::endl;
             if (tAllRings[i].isPlanar && std::find(DoneList.begin(), DoneList.end(), i) ==DoneList.end())
             {
 
@@ -567,11 +567,11 @@ namespace LIBMOL
                 curLinkedRing.push_back(i);
                 findAllRingsConnectedOneRing(i, tAllRings,DoneList, curLinkedRing);
 
-                std::cout << "those are connected : " << std::endl;
-                for (unsigned cr=0; cr < curLinkedRing.size(); cr++)
-                {
-                    std::cout << tAllRings[curLinkedRing[cr]].rep << std::endl;
-                }
+                //std::cout << "those are connected : " << std::endl;
+                //for (unsigned cr=0; cr < curLinkedRing.size(); cr++)
+                //{
+                //    std::cout << tAllRings[curLinkedRing[cr]].rep << std::endl;
+                //}
 
                 if (curLinkedRing.size() > 1)
                 {
@@ -2272,13 +2272,13 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
         // Check aromaticity for individual rings
 
         std::vector<RingDict> tAroRings;
-        std::cout << "\n1. Check aromaticity for individual ring " << std::endl;
+        //std::cout << "\n1. Check aromaticity for individual ring " << std::endl;
         for (std::vector<RingDict>::iterator iR=tAllRings.begin();
                 iR !=tAllRings.end(); iR++)
         {
             // bool lS_sp3 = false;
-            std::cout << "Ring " << iR->rep << std::endl;
-            std::cout << "is Planar " << iR->isPlanar << std::endl;
+            //std::cout << "Ring " << iR->rep << std::endl;
+            //std::cout << "is Planar " << iR->isPlanar << std::endl;
             std::vector<int> atmIdx;
             for (std::vector<AtomDict>::iterator iAt=iR->atoms.begin();
                     iAt !=iR->atoms.end(); iAt++)
@@ -2290,15 +2290,14 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
 
             if (iR->isPlanar)
             {
-                std::cout << "One Planar Ring! It contains " << iR->atoms.size()
-                          << " atoms. " << std::endl;
-                //std::cout << "HereP" << std::endl;
+                //std::cout << "One Planar Ring! It contains " << iR->atoms.size()
+                //          << " atoms. " << std::endl;
                 bool lAro = checkAromaSys(atmIdx, tAtoms, 0);
                 if (lAro)
                 {
                     iR->isAromatic = true;
                     tAroRings.push_back(*iR);
-                    std::cout << "1 It is an aromatic ring " << std::endl;
+                    //std::cout << "1 It is an aromatic ring " << std::endl;
                 }
                 else
                 {
@@ -2310,10 +2309,10 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
                         iR->isAntiAroma = true;
 
                     }
-                    std::cout << "2 number of pi elecs is "
-                                  <<numPi << std::endl;
-                    std::cout << fabs(fmod(numPi, 4.0)) << std::endl;
-                    std::cout << iR->isAntiAroma << std::endl;
+                    //std::cout << "2 number of pi elecs is "
+                    //              <<numPi << std::endl;
+                    //std::cout << fabs(fmod(numPi, 4.0)) << std::endl;
+                    //std::cout << iR->isAntiAroma << std::endl;
                     // std::cout << "It is not an aromatic ring " << std::endl;
                 }
                 bool lAroP = checkAromaSys(atmIdx, tAtoms, 1);
@@ -2321,7 +2320,7 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
                 {
                     iR->isAromaticP = true;
                     tAroRings.push_back(*iR);
-                    std::cout << "It is an aromaticP ring " << std::endl;
+                    //std::cout << "It is an aromaticP ring " << std::endl;
                 }
                 //std::cout << std::endl;
             }
@@ -2329,8 +2328,8 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
             {
 
                 bool lNBUnR=checkUndRing(atmIdx, tAtoms);
-                std::cout << "Ring with sp3 atom " << lNBUnR << std::endl;
-                std::cout << "Is it a planar ring " << iR->isPlanar << std::endl;
+                //std::cout << "Ring with sp3 atom " << lNBUnR << std::endl;
+                //std::cout << "Is it a planar ring " << iR->isPlanar << std::endl;
                 /*
                 if (lNBUnR)
                 {
@@ -2367,19 +2366,19 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
                 */
             }
 
-            std::cout << "Finally, Is the ring aromatic ? " << iR->isAromatic << std::endl;
-            std::cout << "Finally, Is the ring aromaticP ? " << iR->isAromaticP << std::endl;
+            //std::cout << "Finally, Is the ring aromatic ? " << iR->isAromatic << std::endl;
+            //std::cout << "Finally, Is the ring aromaticP ? " << iR->isAromaticP << std::endl;
         }
 
         // Test: extra-step for pyrole rings
         setPyroleRings(tAllRings);
 
-        for (std::vector<RingDict>::iterator iR=tAllRings.begin();
-                iR !=tAllRings.end(); iR++)
-        {
-            std::cout <<  "1. Ring " << iR->rep << std::endl;
-            std::cout << "Arom " << iR->isAromatic << std::endl;
-        }
+        //for (std::vector<RingDict>::iterator iR=tAllRings.begin();
+        //        iR !=tAllRings.end(); iR++)
+        //{
+            //std::cout <<  "1. Ring " << iR->rep << std::endl;
+            //std::cout << "Arom " << iR->isAromatic << std::endl;
+        //}
         //std::cout << "A: Number of rings "
         //          << tAllRings.size() << std::endl;
         std::vector<std::vector<int> >  mergedRingSets;
@@ -2389,22 +2388,22 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
         //          << tAllRings.size() << std::endl;
 
         tPlanes.clear();
-        for (std::vector<RingDict>::iterator iR=tAllRings.begin();
-                iR !=tAllRings.end(); iR++)
-        {
-            std::cout <<  "2. Ring " << iR->rep << std::endl;
-            std::cout << "Arom " << iR->isAromatic << std::endl;
-        }
+        //for (std::vector<RingDict>::iterator iR=tAllRings.begin();
+        //        iR !=tAllRings.end(); iR++)
+        //{
+            //std::cout <<  "2. Ring " << iR->rep << std::endl;
+            //std::cout << "Arom " << iR->isAromatic << std::endl;
+        //}
         // setAllRingPlanes(tAllRings, tAtoms, tPlanes);
         //setAllRingPlanes2(tAllRings, mergedRingSets, tAtoms, tPlanes);
         setAllRingPlanes4(tAllRings, tAtoms, tPlanes);
 
-        for (std::vector<RingDict>::iterator iR=tAllRings.begin();
-                iR !=tAllRings.end(); iR++)
-        {
-            std::cout <<  "3. Ring " << iR->rep << std::endl;
-            std::cout << "Arom " << iR->isAromatic << std::endl;
-        }
+        //for (std::vector<RingDict>::iterator iR=tAllRings.begin();
+        //        iR !=tAllRings.end(); iR++)
+        //{
+            //std::cout <<  "3. Ring " << iR->rep << std::endl;
+            //std::cout << "Arom " << iR->isAromatic << std::endl;
+        //}
 
         setAllOtherPlanes(tAllRings, tAtoms, tPlanes);
 
@@ -3760,8 +3759,8 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
             }
 
 
-            std::cout << "Confirm : Ring " << tRings[i].rep << std::endl;
-            std::cout << "aromatic " <<  tRings[i].isAromatic << std::endl;
+            //std::cout << "Confirm : Ring " << tRings[i].rep << std::endl;
+            //std::cout << "aromatic " <<  tRings[i].isAromatic << std::endl;
 
             for (std::vector<AtomDict>::iterator iAt=tRings[i].atoms.begin();
                     iAt !=tRings[i].atoms.end(); iAt++)
@@ -3796,8 +3795,8 @@ extern REAL setPiForOneAtomAll(int tIdx, std::vector<AtomDict> & tAtoms,
                               << iAt->seriNum << std::endl;
                     exit(1);
                 }
-                std::cout << "Atom " << iAt->id << " add a ring sign "
-                          << iAt->ringRepS[aRepId] << std::endl;
+                //std::cout << "Atom " << iAt->id << " add a ring sign "
+                //          << iAt->ringRepS[aRepId] << std::endl;
             }
         }
     }

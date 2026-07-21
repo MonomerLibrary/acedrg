@@ -1364,15 +1364,14 @@ namespace LIBMOL
                 
                 REAL tD = distanceV(aAtomList[*iA1].coords, aAtomList[*iA2].coords);
                 
-                /*
-                if(*iA1==0)
-                {
-                    std::cout << "r=" << tD << " for atom " 
-                              << aAtomList[*iA2].id 
-                              << " of " << aAtomList[*iA2].seriNum << std::endl; 
+                //
+                //if(*iA1==0)
+                //{
+                    //std::cout << "r=" << tD << " for atom " 
+                    //          << aAtomList[*iA2].id 
+                    //          << " of " << aAtomList[*iA2].seriNum << std::endl; 
                                       
-                }
-                 */
+                //}
                 
                 if ( tD <=tL && tD >= 0.0005)
                 {
@@ -1567,6 +1566,81 @@ namespace LIBMOL
         //std::cout << "------------------------------------------"
         //          << std::endl;
        */
+    }
+    
+ 
+    void NeighbListDict::building(std::vector<AtomDict> & aAtomList, 
+                                  int tDim, REAL tNBCutoff, 
+                                  REAL tNBShell, REAL tNBDist,  int tMode)
+    {
+        /*
+         tMode = 0, default Mode. Build a atom neighbList
+         tMode = 1, optional Mode. Build a Residue neighbList directly from 
+                    the cell system without atom neighList 
+         tMode = 2, optional Mode. Build both atom and residue neighbLists.
+                    The latter is based on the former.  
+         select a mode depending on the situation. 
+          
+       */
+        
+        //std::cout << std::endl << "------------------------------------------"
+        //          << std::endl;
+        // std::cout << "Build neighbor list System " << std::endl;
+        //time_t rtime;
+        //time(&rtime);
+        //std::cout << "Current time is " << ctime(&rtime);
+        
+        for (std::vector<AtomDict>::iterator iA=aAtomList.begin();
+                iA != aAtomList.end(); iA++)
+        {
+            if ((int)iA->neighbAtoms.size() !=0)
+            {
+                iA->neighbAtoms.clear();
+            }
+        }
+        
+        buildCellSystem(aAtomList, tDim, tNBCutoff, tNBShell);
+        
+        // std::cout << "error level " << itsErrLevel << std::endl;
+        if (!itsErrLevel)
+        {
+            if (tMode ==0)
+            {
+                std::cout << "Build atom NB List " << std::endl;
+                buildAtomNeighbList(aAtomList, tNBDist);
+            }
+            else if (tMode==1)
+            {
+                buildResidueNBList();
+            }
+        }
+        
+        //Check
+        //for (std::vector<AtomDict>::iterator iA=aAtomList.begin();
+        //        iA != aAtomList.end(); iA++)
+        //{
+            //std::cout << "Here ===========================" << std::endl;
+            //std::cout << "For atom " << iA->id;
+            //if ((int)iA->neighbAtoms.size() >0)
+            //{
+                //std::cout << ", its NB atoms atoms are:" << std::endl;
+                //for (std::vector<int>::iterator iNB=iA->neighbAtoms.begin();
+                //        iNB != iA->neighbAtoms.end(); iNB++)
+                //{
+                //    std::cout << aAtomList[*iNB].id << std::endl;
+                //}
+            //}
+            //else
+            //{
+            //    std::cout << ", it has no NB atom " << std::endl;
+            //}
+            
+        //}
+        //std::cout << "Finish building neighbor lists "<< std::endl;
+        //time(&rtime);
+        //std::cout << "Current time is " << ctime(&rtime);         
+        //std::cout << "------------------------------------------"
+        //          << std::endl;
     }
     
     

@@ -8621,7 +8621,7 @@ namespace LIBMOL
                     //double r1 =  (double) rand()/RAND_MAX;
                     //double r2 =  (double) rand()/RAND_MAX;
                     //double r3 =  (double) rand()/RAND_MAX;
-                    std::cout << "atom " << iA->id << " leaving_flag " << iA->leaving_flag << std::endl;
+                    //std::cout << "atom " << iA->id << " leaving_flag " << iA->leaving_flag << std::endl;
                     REAL tCharge =0.0;
                     //if (iA->charge !=0.0)
                     //{

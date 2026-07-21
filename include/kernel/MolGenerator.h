@@ -179,6 +179,11 @@ namespace LIBMOL
 
         void getUniqueAtomLinksPdb(PeriodicTable & tPTab);
 
+        void getUniqueAtomLinksNonBonding(double   &    tRadFac,
+                                          double   &    tNonBDist,
+                                          PeriodicTable & tPTab,
+                                          std::vector<CrystInfo>::iterator tCryst);
+
         void setAssymCellAtomLinks(PeriodicTable & tPTab,
                                 std::vector<CrystInfo>::iterator tCryst);
 

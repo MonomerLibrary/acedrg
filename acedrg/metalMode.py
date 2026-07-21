@@ -7,12 +7,12 @@ import os,os.path,sys
 from functools  import cmp_to_key
 
 
-from .  exebase    import CExeCode
+from  . exebase    import CExeCode
 
-from . filetools   import FileTransformer
+from  . filetools   import FileTransformer
 
-from .  utility    import BondOrderS2N
-from .  utility    import getLinkedGroups
+from  . utility    import BondOrderS2N
+from  . utility    import getLinkedGroups
 
 
 class metalMode(CExeCode):

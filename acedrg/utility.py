@@ -632,8 +632,8 @@ def getAAngFrom3Ps(tPosC, tPos1, tPos2):
     return np.degrees(angle)
 
 def setOneAtomCoordsOutCB(tIdxCB, tIdxNonCB, tAtomsCB, tAtomsNCB, tLeng):
-    print("here ", tAtomsCB[tIdxCB]["_chem_comp_atom.atom_id"])
-    print(tAtomsCB[tIdxCB]["_chem_comp_atom.atom_conn"])
+    #print("here ", tAtomsCB[tIdxCB]["_chem_comp_atom.atom_id"])
+    #print(tAtomsCB[tIdxCB]["_chem_comp_atom.atom_conn"])
     if len(tAtomsCB[tIdxCB]["_chem_comp_atom.atom_conn"]) > 3:
         aSetPos = []
         for aIdx in tAtomsCB[tIdxCB]["_chem_comp_atom.atom_conn"]:
@@ -785,6 +785,11 @@ def aMolToAGraph(tAtoms, tBonds, tFileId):
     weightMap["GA"] = 9
     weightMap["GI"] = 9
     weightMap["IN"] = 9
+    weightMap["F"]  = 10
+    weightMap["CL"] = 10
+    weightMap["BR"] = 10
+    weightMap["I"]  = 10
+    weightMap["AT"] = 10
     weightMap["OTHER"] =1
     
     
@@ -1000,13 +1005,58 @@ def setPTGraph():
    
     return aG
 
-
-
 def setOnePepSecToAGraph():
     
-    
     pass 
-           
-          
+
+
+def getStrsPosDict(tStr, tPosDict):
+
+    lInB = False
+    i =0
+    iA = 0
+    for aC in tStr:
+        if not i in tPosDict:
+            tPosDict[i] = []
+        if aC == "[":
+            tPosDict[i].append(iA)
+            lInB = True
+        elif aC == "]":
+            tPosDict[i].append(iA)
+            i+=1
+            lInB = False
+        elif lInB :
+            pass
+        elif not aC.isdigit():
+            tPosDict[i].append(iA)
+            i+=1
+        iA+=1
+
+
+def modifyNAndBInSmiles(tOrigSmi, tPosDict,tErrMsg):
+
+    sList = list(tOrigSmi)
+    aRet = ""
+    errNums = tErrMsg.strip().split(":")[-1].strip().split()
+    print("errNums: ", errNums)
+    print(tPosDict)
+    iM =0
+    for aN in errNums:
+        aN=int(aN)
+        aC=""
+        aA=tPosDict[aN][0]
+        aC=tOrigSmi[aA]
+        print(aC)
+        if (aC=="n") and iM < 1 :
+            sList[aA]='N'
+            iM+=1
+            break
+        elif aC == "b" and iM < 1:
+            sList[aA]='B'
+            break
+    
+    return "".join(sList)
+
+        
 
         

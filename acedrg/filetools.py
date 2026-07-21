@@ -20,7 +20,10 @@ import time
 import math
 import random 
 
+import networkx as nx
+
 from gemmi import cif
+
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -30,6 +33,7 @@ from . utility  import setBoolDict
 from . utility  import splitLineSpa
 from . utility  import aLineToAlist
 from . utility  import aLineToAlist2
+from . utility  import aMolToAGraph
 
 class FileTransformer(object) :
 
@@ -3122,10 +3126,33 @@ def fromACrysToMolCifsGemmi(tInCifFN, tFileIdx, tMols):
                     if "rings" in aMol and len(aMol["rings"]) > 0:
                         setAtomRingConn(aMol["atoms"], aMol["rings"])
                     tMols.append(aMol)  
-                    
+
+def getMonomRootFromCifGemmi(tInCifFN):
+    
+    aMono = ""
+    try:                        
+        aInCif = cif.read_file(tInCifFN) 
+    except IOError:                 
+        print("%s does not exist"%tInCifFN)
+    else:
+        numBl = len(aInCif)     
+        print("Num of block: ", numBl)                    
+        for aBloc in aInCif:
+            print("Block ",aBloc.name)
+            if aBloc.name.find("comp")==-1:
+                aMono = aBloc.name 
+                break
+            else:
+                strs= aBloc.name.split("_")
+                if len(strs)==2:
+                    aMono= strs[1]
+    print("aMono ", aMono) 
+    return aMono
+        
 
 def fromCifTorMolGemmi(tInCifFN, tFileIdx, tMono, tMols):
 
+    print("inFile ", tInCifFN)
     try:
         aInCif = cif.read_file(tInCifFN)
     except IOError:
@@ -3133,12 +3160,12 @@ def fromCifTorMolGemmi(tInCifFN, tFileIdx, tMono, tMols):
     else:
         numBl = len(aInCif) 
         print(numBl)
-        print(tMono)
         if numBl > 0:
-            print("Those blocks are ")
+            #print("Those blocks are ")
             for aBloc in aInCif:
+                #print("Bloc name = ",aBloc.name)
                 aBName = "comp_" + tMono
-                if aBloc.name.find(aBName)!=-1:
+                if aBloc.name.find("_comp_list")==-1 and(aBloc.name.find(tMono)!=-1):
                     aMol = {}
                     aMol["fileIdx"] = tFileIdx 
                     for aItem in aBloc:
@@ -3309,8 +3336,71 @@ def setupAMolTreeInCif(tCifName, tTree):
     
     fromCifTorMolGemmi(tCifName)
         
+def addAtomSeri(tAtoms, tBonds):
+    
+    nIdx =0
+    atIdMap = {}
+    for aAt in tAtoms:
+        aAt["_chem_comp_atom.atom_serial_number"] = nIdx
+        aId = aAt["_chem_comp_atom.atom_id"] 
+        atIdMap[aId] = aAt["_chem_comp_atom.atom_serial_number"]
+        nIdx+=1
+    
+    for aB in tBonds:
+        aId1 = aB["_chem_comp_bond.atom_id_1"]
+        aId2 = aB["_chem_comp_bond.atom_id_2"]
+        if aId1 in atIdMap:
+             aB["_chem_comp_bond.atom_serial_number_1"] = atIdMap[aId1]
+        else:
+             print("Bug. can not find atom ", aId1)
+        
+        if aId2 in atIdMap:
+             aB["_chem_comp_bond.atom_serial_number_2"] = atIdMap[aId2]
+        else:
+             print("Bug. can not find atom ", aId2)    
+        
+def matchAtomNames(tInFN, tTargetFN, tMonoRoot):
     
 
-       
-        
-        
+    print("initial file %s "%tInFN)
+    print("tTargetFile %s "%tTargetFN)  
+    fileIdIn = os.path.basename(tInFN).strip().split(".")[0]
+    inMols = []
+    fromCifTorMolGemmi(tInFN, fileIdIn, tMonoRoot, inMols)
+    print("Number of mols in inFile : ", len(inMols))
+    inGraphs =[]
+    for aMol in inMols:
+        addAtomSeri(aMol["atoms"], aMol["bonds"])
+        inGraphs.append(aMolToAGraph(aMol["atoms"], aMol["bonds"], tMonoRoot))
+    print("Number of graphs for InMol is ", len(inGraphs))
+
+    fileIdTar = os.path.basename(tTargetFN).strip().split(".")[0]
+    tarMols = []            #Only one mol
+    fromCifTorMolGemmi(tTargetFN, fileIdTar, tMonoRoot, tarMols)
+    print("Number of mols in tarFile : ", len(tarMols))
+    tarGraphs =[]
+    for aMol in tarMols:
+        addAtomSeri(aMol["atoms"], aMol["bonds"])
+        tarGraphs.append(aMolToAGraph(aMol["atoms"], aMol["bonds"], tMonoRoot))
+    print("Number of graphs for tarMol is ", len(tarGraphs))
+    #print("Node properties of target graph:")
+    #print(tarGraphs[0].nodes.data())
+    print("Edge properties of target graph:")
+    print(tarGraphs[0].edges.data())
+    aGM = nx.algorithms.isomorphism.GraphMatcher(inGraphs[0], tarGraphs[0], node_match= lambda n1,n2:n1['_chem_comp_atom.type_symbol']==n2['_chem_comp_atom.type_symbol'], edge_match= lambda e1,e2: e1['weight'] == e2['weight'])
+    aMapList = list(aGM.subgraph_isomorphisms_iter())
+    nFound = len(aMapList)
+    #print("nFound= ", nFound)
+    if nFound > 0:
+        #print(aMapList[0])
+        #for aM in aMapList:
+        #    print("aM=", aM)
+        #    print("%dth subgraph matching. %d nodes matched"%(aM, len(aMapList[aM].nodes)))
+        print("The first match : ") 
+        for aK in aMapList[0].keys():
+            id1 = inGraphs[0].nodes[aK]["_chem_comp_atom.atom_id"]
+            id2 = tarGraphs[0].nodes[aMapList[0][aK]]["_chem_comp_atom.atom_id"]
+            #print("atom %s in %s ====== atom %s in %s "%(id1, fileIdIn, id2, fileIdTar))
+            print("atom orig id ", inMols[0]["atoms"][aK]["_chem_comp_atom.atom_id"])   
+            inMols[0]["atoms"][aK]["_chem_comp_atom.atom_id"]=id2
+            print("atom %s now becomes atom %s "%(id1, id2))   

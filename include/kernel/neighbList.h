@@ -196,6 +196,9 @@ namespace LIBMOL
         void        building(std::vector<AtomDict> & aAtomList,
                              int tDim, REAL tNBCutoff, 
                              REAL tNBShell, int tMode);  
+        void        building(std::vector<AtomDict> & aAtomList,
+                             int tDim, REAL tNBCutoff, 
+                             REAL tNBShell, REAL tNBDist, int tMode);  
         void        building(std::vector<AtomDict>   &   tAtomList, 
                              std::vector<AtomDict>   &   tAllAtoms,
                              int tDim,              REAL tNBCutoff, 

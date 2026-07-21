@@ -1070,7 +1070,7 @@ namespace LIBMOL {
                     buildRefAtoms(iCryst);
                     // getUniqueBonds(aPTable);
 
-                    getUniqueAtomLinks(userParas["radFac"], aPTable, iCryst);
+                    getUniqueAtomLinksNonBonding(userParas["radFac"], userParas["nonBondFac"], aPTable, iCryst);
 
                     getMolByEqClassInCell();
 
@@ -1252,7 +1252,8 @@ namespace LIBMOL {
                                               std::vector<CrystInfo>::iterator  tCryst,
                                               std::vector<std::string> & tDistLines)
     {
-         double rDCut = 3.99;
+         double rDCut = tNonBondFac;
+      
          std::map<std::string, std::vector<int> >   allLinkedAtoms;
          get3LayersNBAtomList(allLinkedAtoms, tAtomSimClasses);
 
@@ -1329,40 +1330,46 @@ namespace LIBMOL {
                iAtm !=allAtoms.end(); iAtm++)
         {
             if (iAtm->isInPreCell && checkNBAtomOccp(iAtm))
-            {
+            {    
                  aAtmChemTypeMap[iAtm->id]=iAtm->chemType;
                  for (std::vector<int>::iterator iC=iAtm->connAtoms.begin();
                      iC != iAtm->connAtoms.end(); iC++)
                  {
                     aNBAtmChemTypeMap[iAtm->id].push_back(allAtoms[*iC].chemType);
                      if (std::find(tAllLinkedAtoms[iAtm->id].begin(),
-                                  tAllLinkedAtoms[iAtm->id].end(), allAtoms[*iC].seriNum)
+                                  tAllLinkedAtoms[iAtm->id].end(),  *iC)
                                   == tAllLinkedAtoms[iAtm->id].end())
                      {
-                         tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC].seriNum);
+                         //tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC].seriNum);
+                         tAllLinkedAtoms[iAtm->id].push_back(*iC);
                      }
                      for (std::vector<int>::iterator iC2=allAtoms[*iC].connAtoms.begin();
                               iC2 != allAtoms[*iC].connAtoms.end(); iC2++)
                      {
+                         
                          if (std::find(tAllLinkedAtoms[iAtm->id].begin(),
-                             tAllLinkedAtoms[iAtm->id].end(), allAtoms[*iC2].seriNum)
-                                == tAllLinkedAtoms[iAtm->id].end())
+                             tAllLinkedAtoms[iAtm->id].end(),*iC2) 
+                                == tAllLinkedAtoms[iAtm->id].end() 
+                             && allAtoms[*iC2].seriNum !=iAtm->seriNum )
                              {
-                                 tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC2].seriNum);
+                                 //tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC2].seriNum);
+                                 tAllLinkedAtoms[iAtm->id].push_back(*iC2);
                              }
                              for (std::vector<int>::iterator iC3=allAtoms[*iC2].connAtoms.begin();
                                       iC3 != allAtoms[*iC2].connAtoms.end(); iC3++)
                              {
                                  if (std::find(tAllLinkedAtoms[iAtm->id].begin(),
-                                    tAllLinkedAtoms[iAtm->id].end(), allAtoms[*iC3].seriNum)
+                                    tAllLinkedAtoms[iAtm->id].end(), *iC3)
                                     == tAllLinkedAtoms[iAtm->id].end())
                                  {
-                                         tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC3].seriNum);
+                                         //tAllLinkedAtoms[iAtm->id].push_back(allAtoms[*iC3].seriNum);
+                                         tAllLinkedAtoms[iAtm->id].push_back(*iC3);
                                  }
                              }
                          }
-
+               
                  }
+                 std::cout << "=============================" << std::endl;
                  aNBAtmChemTypeMap[iAtm->id].sort(compareNoCase);
                  tAtomSimClasses[iAtm->id] = iAtm->chemType;
                  for (std::list<std::string>::iterator iL=aNBAtmChemTypeMap[iAtm->id].begin();
@@ -2788,22 +2795,20 @@ namespace LIBMOL {
                     }
 
 
-                    /*
-                    std::cout << "Distance between: " << std::endl
-                                      << "Atom 1 " << allAtoms[i].id
-                                      << " of serial number "
-                                      << allAtoms[i].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[i].fromOrig].id
-                                      << std::endl
-                                      << "Atom 2 " << allAtoms[*iNB].id
-                                      << " of serial number " << allAtoms[*iNB].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[*iNB].fromOrig].id
-                                      << " is " << rD << std::endl;
-                    std::cout << "Range between " << bondRange[0]
-                                      << " and " << bondRange[1] << std::endl;
-                    */
+                    //std::cout << "Distance between: " << std::endl
+                    //                  << "Atom 1 " << allAtoms[i].id
+                    //                  << " of serial number "
+                    //                  << allAtoms[i].seriNum
+                    //                  << " from original atom "
+                    //                  << allAtoms[allAtoms[i].fromOrig].id
+                    //                  << std::endl
+                    //                  << "Atom 2 " << allAtoms[*iNB].id
+                    //                  << " of serial number " << allAtoms[*iNB].seriNum
+                    //                  << " from original atom "
+                    //                  << allAtoms[allAtoms[*iNB].fromOrig].id
+                    //                  << " is " << rD << std::endl;
+                    //std::cout << "Range between " << bondRange[0]
+                    //                  << " and " << bondRange[1] << std::endl;
                 }
 
 
@@ -2844,31 +2849,29 @@ namespace LIBMOL {
 
                             //std::cout << "Its has " << allAtoms[i].neighbAtoms.size()
                             //          << " neighbor atoms. " << std::endl;
-                            /*
-                            std::cout << "Distance between: " << std::endl
-                                      << "Atom 1 " << allAtoms[i].id
-                                      << " of serial number "
-                                      << allAtoms[i].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[i].fromOrig].id
-                                      << std::endl
-                                      << "Atom 2 " << allAtoms[*iNB].id
-                                      << " of serial number " << allAtoms[*iNB].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[*iNB].fromOrig].id
-                                      << " is " << std::endl << rD
-                                      << std::endl;
-                            std::cout << "Range between " << bondRange[0]
-                                      << " and " << bondRange[1] << std::endl;
+                            //std::cout << "Distance between: " << std::endl
+                            //          << "Atom 1 " << allAtoms[i].id
+                            //          << " of serial number "
+                            //          << allAtoms[i].seriNum
+                            //          << " from original atom "
+                            //          << allAtoms[allAtoms[i].fromOrig].id
+                            //          << std::endl
+                            //          << "Atom 2 " << allAtoms[*iNB].id
+                            //          << " of serial number " << allAtoms[*iNB].seriNum
+                            //          << " from original atom "
+                            //          << allAtoms[allAtoms[*iNB].fromOrig].id
+                            //          << " is " << std::endl << rD
+                            //          << std::endl;
+                            //std::cout << "Range between " << bondRange[0]
+                            //          << " and " << bondRange[1] << std::endl;
 
 
-                            std::cout << "a bond between "
-                                      << allAtoms[i].id << " and "
-                                      << allAtoms[*iNB].id
-                                      << " is added to the bond_list_cell "
-                                      << std::endl << "Its bond length is " << rD
-                                      << std::endl;
-                             */
+                            //std::cout << "a bond between "
+                            //          << allAtoms[i].id << " and "
+                            //          << allAtoms[*iNB].id
+                            //          << " is added to the bond_list_cell "
+                            //          << std::endl << "Its bond length is " << rD
+                            //          << std::endl;
 
                     }
                 }
@@ -3188,29 +3191,29 @@ namespace LIBMOL {
                             //          << allAtoms[i].neighbAtoms.size()
                             //          << " neighbor atoms. " << std::endl;
 
-                            std::cout << "Distance between: " << std::endl
-                                      << "Atom 1 " << allAtoms[i].id
-                                      << " of serial number "
-                                      << allAtoms[i].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[i].fromOrig].id
-                                      << std::endl
-                                      << "Atom 2 " << allAtoms[*iNB].id
-                                      << " of serial number " << allAtoms[*iNB].seriNum
-                                      << " from original atom "
-                                      << allAtoms[allAtoms[*iNB].fromOrig].id
-                                      << " is " << std::endl << rD
-                                      << std::endl;
-                            std::cout << "Range between " << bondRange[0]
-                                      << " and " << bondRange[1] << std::endl;
+                            //std::cout << "Distance between: " << std::endl
+                            //          << "Atom 1 " << allAtoms[i].id
+                            //          << " of serial number "
+                            //          << allAtoms[i].seriNum
+                            //          << " from original atom "
+                            //          << allAtoms[allAtoms[i].fromOrig].id
+                            //          << std::endl
+                            //          << "Atom 2 " << allAtoms[*iNB].id
+                            //          << " of serial number " << allAtoms[*iNB].seriNum
+                            //          << " from original atom "
+                            //          << allAtoms[allAtoms[*iNB].fromOrig].id
+                            //          << " is " << std::endl << rD
+                            //          << std::endl;
+                            //std::cout << "Range between " << bondRange[0]
+                            //          << " and " << bondRange[1] << std::endl;
 
 
-                            std::cout << "a bond between "
-                                      << allAtoms[i].id << " and "
-                                      << allAtoms[*iNB].id
-                                      << " is added to the bond_list_cell "
-                                      << std::endl << "Its bond length is " << rD
-                                      << std::endl;
+                            //std::cout << "a bond between "
+                            //          << allAtoms[i].id << " and "
+                            //          << allAtoms[*iNB].id
+                            //          << " is added to the bond_list_cell "
+                            //          << std::endl << "Its bond length is " << rD
+                            //          << std::endl;
 
                         //}
                     }
@@ -3910,20 +3913,20 @@ namespace LIBMOL {
                     }
 
 
-                    std::cout << "Distance between: " << std::endl
-                                      << "Atom 1 " << allAtoms[i].id
-                                      << " of serial number "
-                                      << allAtoms[i].seriNum
-                                      //<< " from original atom "
-                                      //<< allAtoms[allAtoms[i].fromOrig].id
-                                      << std::endl
-                                      << "Atom 2 " << allAtoms[*iNB].id
-                                      << " of serial number " << allAtoms[*iNB].seriNum
-                                      //<< " from original atom "
-                                      //<< allAtoms[allAtoms[*iNB].fromOrig].id
-                                      << " is " << rD << std::endl;
-                    std::cout << "Range between " << bondRange[0]
-                                      << " and " << bondRange[1] << std::endl;
+                    //std::cout << "Distance between: " << std::endl
+                    //                  << "Atom 1 " << allAtoms[i].id
+                    //                  << " of serial number "
+                    //                  << allAtoms[i].seriNum
+                    //                  //<< " from original atom "
+                    //                  //<< allAtoms[allAtoms[i].fromOrig].id
+                    //                  << std::endl
+                    //                  << "Atom 2 " << allAtoms[*iNB].id
+                    //                  << " of serial number " << allAtoms[*iNB].seriNum
+                    //                  //<< " from original atom "
+                    //                  //<< allAtoms[allAtoms[*iNB].fromOrig].id
+                    //                  << " is " << rD << std::endl;
+                    //std::cout << "Range between " << bondRange[0]
+                    //                  << " and " << bondRange[1] << std::endl;
 
                 }
 
@@ -3961,29 +3964,29 @@ namespace LIBMOL {
                             //std::cout << "Its has " << allAtoms[i].neighbAtoms.size()
                             //          << " neighbor atoms. " << std::endl;
 
-                            std::cout << "Distance between: " << std::endl
-                                      << "Atom 1 " << allAtoms[i].id
-                                      << " of serial number "
-                                      << allAtoms[i].seriNum
+                            //std::cout << "Distance between: " << std::endl
+                            //          << "Atom 1 " << allAtoms[i].id
+                            //          << " of serial number "
+                            //          << allAtoms[i].seriNum
                                       //<< " from original atom "
                                       //<< allAtoms[allAtoms[i].fromOrig].id
-                                      << std::endl
-                                      << "Atom 2 " << allAtoms[*iNB].id
-                                      << " of serial number " << allAtoms[*iNB].seriNum
+                            //          << std::endl
+                            //          << "Atom 2 " << allAtoms[*iNB].id
+                            //          << " of serial number " << allAtoms[*iNB].seriNum
                                       //<< " from original atom "
                                       //<< allAtoms[allAtoms[*iNB].fromOrig].id
-                                      << " is " << std::endl << rD
-                                      << std::endl;
-                            std::cout << "Range between " << bondRange[0]
-                                      << " and " << bondRange[1] << std::endl;
+                           //           << " is " << std::endl << rD
+                           //           << std::endl;
+                           //std::cout << "Range between " << bondRange[0]
+                           //           << " and " << bondRange[1] << std::endl;
 
 
-                            std::cout << "a bond between "
-                                      << allAtoms[i].id << " and "
-                                      << allAtoms[*iNB].id
-                                      << " is added to the bond_list_cell "
-                                      << std::endl << "Its bond length is " << rD
-                                      << std::endl;
+                            //std::cout << "a bond between "
+                            //          << allAtoms[i].id << " and "
+                            //          << allAtoms[*iNB].id
+                            //          << " is added to the bond_list_cell "
+                            //          << std::endl << "Its bond length is " << rD
+                            //          << std::endl;
 
 
                         //}
@@ -4021,6 +4024,357 @@ namespace LIBMOL {
         }
         */
     }
+
+    void MolGenerator::getUniqueAtomLinksNonBonding(double        & tRadFac,
+                                                    double   &    tNonBDist,
+                                                    PeriodicTable & tPTab,
+                                                    std::vector<CrystInfo>::iterator tCryst)
+    {
+
+        /*
+        std::cout << "all atoms are listed in the following " << std::endl;
+
+        for (std::vector<AtomDict>::iterator iAt=allAtoms.begin();
+                iAt !=allAtoms.end(); iAt++)
+        {
+            std::cout << "atom " << iAt->id << " of serial number "
+                      << iAt->seriNum << " in (cell "
+                      << iAt->sId << ")" << std::endl;
+
+            //for (std::vector<REAL>::iterator iX=iAt->coords.begin();
+            //        iX !=iAt->coords.end(); iX++)
+            //{
+            //    std::cout << *iX << std::endl;
+            //}
+        }
+        */
+
+        // Cancel lower boundary for allowed values
+
+        setMetalBondRangeFromTable(tRadFac);
+        std::cout << "tRadFac=" <<  tRadFac << std::endl;
+        setMetalBondRangeFromPeriodicTable(tRadFac, tPTab);
+
+        REAL covalent_sensitivity0 = 0.15;
+        REAL covalent_sensitivity1 = 0.22;
+        REAL covalent_sensitivity2 = 0.240;
+        REAL covalent_sensitivity3 = 0.30;
+        REAL covalent_sensitivity4 = 0.40;
+
+        REAL covalent_sensitivity = covalent_sensitivity0;
+
+        NeighbListDict tNBListOfSystem;
+
+        int aDim = 3;
+        int aMode = 0;
+        REAL tCellL, tCellShell;
+
+        if (lHasMetal)
+        {
+            tCellL = 4.5;
+            tCellShell = 1.0;
+        }
+        else
+        {
+            tCellL= 3.5;
+            tCellShell = 0.5;
+        }
+
+
+        tNBListOfSystem.building(allAtoms, aDim, tCellL, tCellShell, tNonBDist, aMode);
+
+
+        //std::cout << "NB list for allAtoms set " << std::endl;
+
+
+        /*
+        for (std::vector<AtomDict>::iterator iAt=allAtoms.begin();
+                iAt !=allAtoms.end(); iAt++)
+        {
+            if (iAt->isInPreCell)
+            {
+                std::cout << "atom "<< iAt->id << "(serial number "
+                          << iAt->seriNum  <<") has " << iAt->neighbAtoms.size()
+                          << " NB atoms " << std::endl;
+
+
+                    //for (std::vector<int>::iterator iNB=iAt->neighbAtoms.begin();
+                    //        iNB != iAt->neighbAtoms.end(); iNB++)
+                    //{
+                    //    std::cout << "NB atom " << allAtoms[*iNB].id << std::endl;
+                    //}
+
+            }
+        }
+        */
+
+
+
+        // std::vector<std::string>   existBondID;
+        // int j=0;
+        for (unsigned i = 0; i < allAtoms.size(); i++)
+        {
+            //if (allAtoms[i].sId=="555")
+            //{
+            //j++;
+            //std::cout << "Look for bonds to atom " << allAtoms[i].id
+            //          << "(serial number  " << allAtoms[i].seriNum
+            //          << ") " << std::endl;
+            bool lMetal = false;
+            if (allAtoms[i].isMetal)
+            {
+                lMetal = true;
+            }
+            ID elem1 = allAtoms[i].chemType;
+            for (std::vector<int>::iterator iNB = allAtoms[i].neighbAtoms.begin();
+                    iNB != allAtoms[i].neighbAtoms.end(); iNB++)
+            {
+
+                ID elem2 = allAtoms[(*iNB)].chemType;
+                REAL rD = getBondLenFromFracCoords(allAtoms[i].fracCoords, allAtoms[(*iNB)].fracCoords,
+                        tCryst->itsCell->a, tCryst->itsCell->b,
+                        tCryst->itsCell->c, tCryst->itsCell->alpha,
+                        tCryst->itsCell->beta, tCryst->itsCell->gamma);
+
+                if (allAtoms[i].isMetal && allAtoms[(*iNB)].isMetal)
+                {
+                    metalRelatedMetalNBs[allAtoms[i].seriNum][allAtoms[(*iNB)].seriNum]
+                            = rD;
+
+
+                }
+
+                if (allAtoms[i].isInPreCell)
+                {
+                    ID id1 = allAtoms[i].id, id2 = allAtoms[(*iNB)].id;
+                    std::list<std::string> tIds;
+                    tIds.push_back(id1);
+                    tIds.push_back(id2);
+                    tIds.sort(compareNoCase2);
+                    std::string aCombID;
+                    int nRS = 0;
+                    for (std::list<std::string>::iterator iId = tIds.begin();
+                        iId != tIds.end(); iId++)
+                    {
+                        if (nRS == 0)
+                        {
+                            aCombID.append(*iId);
+                        } else
+                        {
+                            aCombID.append("_" + *iId);
+                        }
+                        nRS++;
+                    }
+
+
+                    //ID elem1 = allAtoms[i].chemType,
+                    //   elem2 = allAtoms[(*iNB)].chemType;
+                    if (std::find(distsNBs[elem1][elem2][rD].begin(),
+                                  distsNBs[elem1][elem2][rD].end(), aCombID)
+                             ==distsNBs[elem1][elem2][rD].end())
+                    {
+                        distsNBs[elem1][elem2][rD].push_back(aCombID);
+                    }
+
+                    if (lMetal && rD < 4.0)
+                    {
+                        metalNBs[i].push_back(*iNB);
+                    }
+
+                }
+
+                std::vector<REAL> bondRange;
+
+                if ((allAtoms[i].chemType == "H" && allAtoms[*iNB].chemType == "O")
+                        || (allAtoms[i].chemType == "O" && allAtoms[*iNB].chemType == "H")
+                        || (allAtoms[i].chemType == "B"|| allAtoms[*iNB].chemType == "B")) {
+
+                    covalent_sensitivity = covalent_sensitivity4;
+
+                } else if (allAtoms[*iNB].chemType == "O" || allAtoms[i].chemType == "O") {
+
+                    covalent_sensitivity = covalent_sensitivity3;
+                } else if (allAtoms[*iNB].chemType == "H"
+                        || allAtoms[i].chemType == "H") {
+                    covalent_sensitivity = covalent_sensitivity3;
+                } else if ((!allAtoms[i].isMetal) && (!allAtoms[*iNB].isMetal)) {
+                    covalent_sensitivity = covalent_sensitivity1;
+                }else if (allAtoms[i].isMetal && allAtoms[(*iNB)].isMetal){
+                   covalent_sensitivity = covalent_sensitivity0;
+                }
+                else {
+                    covalent_sensitivity = covalent_sensitivity2;
+                }
+
+                //std::cout << "covalent_sensitivity=" << covalent_sensitivity << std::endl;
+
+                getBondingRangePairAtoms2(allAtoms[i], allAtoms[(*iNB)],
+                        covalent_sensitivity, tPTab,
+                        bondRange);
+
+
+
+
+                if (lMetal)
+                {
+
+                    if (metalBondRange.find(elem1)!=metalBondRange.end())
+                    {
+                        //std::cout << "Range1 between " << bondRange[0]
+                        //          << " and " << bondRange[1]
+                        //          << " for elements " << elem1
+                        //          << " and " << elem2 << std::endl;
+
+                        if (metalBondRange[elem1].find(elem2)
+                             !=metalBondRange[elem1].end())
+                        {
+                            //if (allAtoms[i].id.compare("Mo")==0)
+                            //{
+                            //    std::cout << "Range2 between "
+                            //              <<  metalBondRange[elem1][elem2]["min"]
+                            //              << " and " << metalBondRange[elem1][elem2]["max"]
+                            //              << " for elements " << elem1
+                            //              << " and " << elem2 << std::endl;
+                            //}
+                            double mLowB
+                            = 0.98*metalBondRange[elem1][elem2]["min"];
+                            double mUpperB
+                            = metalBondRange[elem1][elem2]["max"];
+                            if (mLowB < bondRange[0])
+                            {
+                                bondRange[0] = mLowB;
+                            }
+                            if (mUpperB > bondRange[1])
+                            {
+                                double dR=mUpperB -bondRange[1];
+                                bondRange[1] = bondRange[1] + 0.5*dR;       //mUpperB;
+                            }
+                        }
+
+                    }
+
+
+                    //std::cout << "Distance between: " << std::endl
+                    //                << "Atom 1 " << allAtoms[i].id
+                    //                << " of serial number "
+                    //                  << allAtoms[i].seriNum
+                    //                  << " from original atom "
+                    //                  << allAtoms[allAtoms[i].fromOrig].id
+                    //                  << std::endl
+                    //                  << "Atom 2 " << allAtoms[*iNB].id
+                    //                  << " of serial number " << allAtoms[*iNB].seriNum
+                    //                  << " from original atom "
+                    //                  << allAtoms[allAtoms[*iNB].fromOrig].id
+                    //                  << " is " << rD << std::endl;
+                    //std::cout << "Range between " << bondRange[0]
+                    //                  << " and " << bondRange[1] << std::endl;
+                }
+
+
+                if (bondRange[0] > 0.20 && bondRange[1] > 0.20)
+                {
+
+
+                    if (bondRange[0] > 0.5)
+                    {
+                        bondRange[0] = 0.5;
+                    }
+
+                    if (rD > bondRange[0] && rD < bondRange[1])
+                    {
+
+                        // setOneUniqueBondCell(i, *iNB, rD);
+                        if (std::find(allAtoms[i].connAtoms.begin(), allAtoms[i].connAtoms.end(), *iNB)
+                                == allAtoms[i].connAtoms.end()) {
+                            allAtoms[i].connAtoms.push_back(*iNB);
+                            if (!inVectABS(allAtoms[i].bondLengths, rD, 0.000001))
+                            {
+                                allAtoms[i].bondLengths.push_back(rD);
+                            }
+
+                        }
+                        if (std::find(allAtoms[*iNB].connAtoms.begin(),
+                                      allAtoms[*iNB].connAtoms.end(), i)
+                                      == allAtoms[*iNB].connAtoms.end())
+                        {
+                            allAtoms[*iNB].connAtoms.push_back(i);
+                            if (!inVectABS(allAtoms[*iNB].bondLengths, rD, 0.000001))
+                            {
+                                allAtoms[*iNB].bondLengths.push_back(rD);
+                            }
+                        }
+
+
+
+                            //std::cout << "Its has " << allAtoms[i].neighbAtoms.size()
+                            //          << " neighbor atoms. " << std::endl;
+                            /*
+                            std::cout << "Distance between: " << std::endl
+                                      << "Atom 1 " << allAtoms[i].id
+                                      << " of serial number "
+                                      << allAtoms[i].seriNum
+                                      << " from original atom "
+                                      << allAtoms[allAtoms[i].fromOrig].id
+                                      << std::endl
+                                      << "Atom 2 " << allAtoms[*iNB].id
+                                      << " of serial number " << allAtoms[*iNB].seriNum
+                                      << " from original atom "
+                                      << allAtoms[allAtoms[*iNB].fromOrig].id
+                                      << " is " << std::endl << rD
+                                      << std::endl;
+                            std::cout << "Range between " << bondRange[0]
+                                      << " and " << bondRange[1] << std::endl;
+
+
+                            std::cout << "a bond between "
+                                      << allAtoms[i].id << " and "
+                                      << allAtoms[*iNB].id
+                                      << " is added to the bond_list_cell "
+                                      << std::endl << "Its bond length is " << rD
+                                      << std::endl;
+                             */
+
+                    }
+                }
+            }
+        }
+
+        // std::cout << "Number of atoms in the unit cell considered " << j << std::endl;
+
+        // cleanUnconnAtoms();
+        /*
+        std::cout << "*********************************" << std::endl;
+        std::cout << "Before check " << std::endl
+                  << "*********************************" << std::endl;
+
+        for (std::vector<AtomDict>::iterator iAt = allAtoms.begin();
+                iAt != allAtoms.end(); iAt++)
+        {
+            if (iAt->isInPreCell)
+            {
+                std::cout << "Atom " << iAt->id << " (serial number " << iAt->seriNum
+                        << " ) bonds to " << iAt->connAtoms.size() << " atoms"
+                        << std::endl;
+                // std::cout << "The NB atoms are :" << std::endl;
+                //for (std::vector<int>::iterator iC = iAt->connAtoms.begin();
+                //        iC != iAt->connAtoms.end(); iC++) {
+
+                //    std::cout << "Atom " << allAtoms[*iC].id
+                //            << " of serial number " << allAtoms[*iC].seriNum
+                //            << std::endl;
+                    //std::cout << "it connects to "
+                    //        << allAtoms[allAtoms[*iC].fromOrig].connAtoms.size()
+                    //        << " 2nd NB atoms " << std::endl << std::endl;
+                //  }
+            }
+        }
+        */
+
+
+        // setUniqueAtomLinks(tPTab, tCryst);
+    }
+
+
 
     void MolGenerator::compileMetalAtomNB()
     {
@@ -6990,6 +7344,7 @@ namespace LIBMOL {
         tMol.setAtomFormTypes();
 
         // check
+        /*
         std::cout << "Check again " << std::endl;
         for (std::vector<AtomDict>::iterator iAt=tMol.atoms.begin();
                 iAt != tMol.atoms.end(); iAt++)
@@ -7007,7 +7362,7 @@ namespace LIBMOL {
                 }
             }
         }
-
+        */
     }
 
     void MolGenerator::setBondOrderAndFormalChargeByExcessEl(Molecule& tMol,

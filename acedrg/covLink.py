@@ -5850,8 +5850,8 @@ class CovLinkGenerator(CExeCode):
         lD2 = False
         lD3 = False
 
+        
         # Two extract loops to keep tors enter in order
-                
         for aTor in tOutCombLigandTors:
             if (aTor["atom_id_2_alias"] == tAtm1Id and aTor["atom_id_3_alias"] == tAtm2Id) or\
                (aTor["atom_id_2_alias"] == tAtm2Id and aTor["atom_id_3_alias"] == tAtm1Id):
@@ -5879,7 +5879,6 @@ class CovLinkGenerator(CExeCode):
                     if not lD3:                  
                         tLinkTors.append(aTor)
                         lD3 = True
-                    tLinkTors.append(aTor)
             elif (aTor["atom_id_4_alias"] == tAtm2Id and aTor["atom_id_3_alias"] == tAtm1Id):
                 if aTor["atom_id_2_alias"][0] !="H" or aTor["atom_id_1_alias"][0] !="H":
                     #print("Torsion angle between %s and %s "%(aTor["atom_id_1"], aTor["atom_id_2"]))
@@ -5887,6 +5886,7 @@ class CovLinkGenerator(CExeCode):
                         tLinkTors.append(aTor)
                         lD3 = True
                
+        print("num final tors ", len(tLinkTors))        
     def outOneLinkInfo(self, tLinkedObj):
 
         #aOutCifName = tLinkedObj.combLigand["name"] + "_link.cif"

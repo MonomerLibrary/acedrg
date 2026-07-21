@@ -5703,6 +5703,17 @@ namespace LIBMOL
                                 exit(1);
                             }
 
+
+                            std::string aNB_2SP_1 = a2NBSP_TRAN(tBuf[6]);
+                            std::string aNB_2SP_2 = a2NBSP_TRAN(tBuf[7]);
+
+
+                            std::cout << "tBuf[6]=" << tBuf[6] << std::endl;
+                            std::cout << "aNB_2SP_1=" << aNB_2SP_1 << std::endl;
+                            std::cout << "tBuf[7]=" << tBuf[7] << std::endl;
+                            std::cout << "aNB_SP_2=" << aNB_2SP_2 << std::endl;
+
+
                             allDictBondsIdxD[ha1][ha2][tBuf[2]][tBuf[3]][tBuf[4]][tBuf[5]][tBuf[6]]
                                      [tBuf[7]][aA1TypeM][aA2TypeM][aA1TypeF][aA2TypeF] = nline;
 
@@ -16457,26 +16468,26 @@ namespace LIBMOL
         {
             std::vector<TorsionDict> tmpTorsions;
             std::cout << "size of miniTorsions " << miniTorsions.size() << std::endl;
+            std::cout << "size of tmpTorsions " << tmpTorsions.size() << std::endl;
+
             int i=1;
             for (std::vector<TorsionDict>::iterator iTor=miniTorsions.begin();
                 iTor != miniTorsions.end(); iTor++)
             {
                 std::cout << "Tor " << i << std::endl;
-                std::cout << " iTor->atoms[0] " << iTor->atoms[0] << std::endl
-                          << " iTor->atoms[1] " << iTor->atoms[1]
-                          << " iTor->atoms[2] " << iTor->atoms[2] << std::endl
-                          << " iTor->atoms[3] " << iTor->atoms[3] << std::endl;
+                if (iTor->atoms.size()==4)
+                {
+                    std::cout << " iTor->atoms[0] " << iTor->atoms[0] << std::endl
+                              << " iTor->atoms[1] " << iTor->atoms[1]
+                              << " iTor->atoms[2] " << iTor->atoms[2] << std::endl
+                              << " iTor->atoms[3] " << iTor->atoms[3] << std::endl;
 
-		        if (iTor->atoms.size()==4 && allAtoms[iTor->atoms[0]].id !=allAtoms[iTor->atoms[3]].id )
-		        {
-                    std::cout << "tmpTors " << std::endl;
-                    std::cout << "atom 1 " << allAtoms[iTor->atoms[0]].id
-			              << " atom 2 " << allAtoms[iTor->atoms[1]].id
-			              << " atom 3 " << allAtoms[iTor->atoms[2]].id
-			              << " atom 4 " << allAtoms[iTor->atoms[3]].id << std::endl;
-                    tmpTorsions.push_back(*iTor);
-                    i++;
-		        }
+		    if ( allAtoms[iTor->atoms[0]].id !=allAtoms[iTor->atoms[3]].id )
+		    {
+                        tmpTorsions.push_back(*iTor);
+                        i++;
+		    }
+                }
 
             }
 
@@ -18450,6 +18461,25 @@ namespace LIBMOL
             }
         }
 
+    }
+
+    std::string CodClassify::a2NBSP_TRAN (std::string & tOldStr)
+    {
+        std::string a2NB_SP_1="";
+        std::vector<std::string> tmpStrs1, tmpStrs2;
+        StrTokenize(tOldStr, tmpStrs1, ':');
+        for (int i=0; i <tmpStrs1.size(); i++)
+        {
+            std::vector<std::string> tmpStrs1_1;
+            StrTokenize(tmpStrs1[i], tmpStrs1_1, '-');
+            a2NB_SP_1+=tmpStrs1_1[0];
+            if (i <tmpStrs1.size()-1)
+            {
+                a2NB_SP_1+="-";
+            }
+        }
+
+        return a2NB_SP_1;
     }
 
 

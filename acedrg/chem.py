@@ -2429,7 +2429,12 @@ class ChemCheck(object):
             
             
     def addOneHAtomCoordsAndOneBondAndAllAngs(self, tAt, tMol, tLeng, tCurNumAtoms, tExcH):
-        
+        print("Here")
+        linkH = []
+        for aIdx in tAt["_chem_comp_atom.atom_conn"]:
+            if tMol["atoms"][aIdx]["_chem_comp_atom.type_symbol"] =="H":
+                linkH.append(aIdx)
+
         if len(tAt["_chem_comp_atom.atom_conn"]) > 4:
             x1 = float(tAt["_chem_comp_atom.model_Cartn_x"])
             y1 = float(tAt["_chem_comp_atom.model_Cartn_y"])
@@ -2440,68 +2445,109 @@ class ChemCheck(object):
             
             aSetCombP = []
             for aIdx in tAt["_chem_comp_atom.atom_conn"]:
-                aId = tMol["atoms"][aIdx]["_chem_comp_atom.atom_id"]
-                x = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_x"])
-                y = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_y"])
-                z = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_z"])
-                aPos = [x,y,z]
-                aSetPos.append(aPos)
-                aSetCombP.append([aPos, aId])
+                if tMol["atoms"][aIdx]["_chem_comp_atom.type_symbol"] !="H":
+                    aId = tMol["atoms"][aIdx]["_chem_comp_atom.atom_id"]
+                    x = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_x"])
+                    y = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_y"])
+                    z = float(tMol["atoms"][aIdx]["_chem_comp_atom.model_Cartn_z"])
+                    aPos = [x,y,z]
+                    aSetPos.append(aPos)
+                    aSetCombP.append([aPos, aId])
                 
             aDirV= getAUnitDirVec(aPosNonH, aSetPos)
              
-            aHAtom = {}
-            aHAtom["_chem_comp_atom.comp_id"] = tAt["_chem_comp_atom.comp_id"]
-            aHAtom["_chem_comp_atom.atom_id"] = "H" + str(tCurNumAtoms)
-            if aHAtom["_chem_comp_atom.atom_id"] in tExcH:
-                aHAtom["_chem_comp_atom.atom_id"] =aHAtom["_chem_comp_atom.atom_id"]+"a"
-            tCurNumAtoms+=1
-            aHAtom["_chem_comp_atom.alt_atom_id"] = aHAtom["_chem_comp_atom.atom_id"]
-            aHAtom["_chem_comp_atom.type_symbol"] = "H"
-            aHAtom["_chem_comp_atom.charge"]      = "0"
-            aHAtom["_chem_comp_atom.pdbx_align"]  = "1"
-            aHAtom["_chem_comp_atom.pdbx_aromatic_flag"] = "N"
-            aHAtom["_chem_comp_atom.pdbx_leaving_atom_flag"] = "N"
-            aHAtom["_chem_comp_atom.pdbx_stereo_config"]  = "N"
+            if len(linkH)==1:
+                # with existing H atom
+                print("Reset coordinates for atom ", tMol["atoms"][linkH[0]]["_chem_comp_atom.atom_id"])
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_x"] = x1 + tLeng*aDirV[0]
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_y"] = y1+ tLeng*aDirV[1]
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_z"] = z1 + tLeng*aDirV[2]
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.pdbx_model_Cartn_x_ideal"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_x"] 
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.pdbx_model_Cartn_y_ideal"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_y"] 
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.pdbx_model_Cartn_z_ideal"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_z"] 
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.x"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_x"] 
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.y"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_y"] 
+                tMol["atoms"][linkH[0]]["_chem_comp_atom.z"] = tMol["atoms"][linkH[0]]["_chem_comp_atom.model_Cartn_y"] 
+                tMol["remainAtoms"].append(tMol["atoms"][linkH[0]])
+                aId = tMol["atoms"][linkH[0]]["_chem_comp_atom.atom_id"]
+                 
+                for aBond in tMol["bonds"]:
+                    if aBond["_chem_comp_bond.atom_id_1"] == aId or aBond["_chem_comp_bond.atom_id_2"] == aId:
+                        aBond["_chem_comp_bond.value_order"] = "SING"
+                        aBond["_chem_comp_bond.value_dist"] = tLeng
+                        aBond["_chem_comp_bond.value_dist_esd"] = 0.01
+                        aBond["_chem_comp_bond.pdbx_aromatic_flag"] = "N"
+                        aBond["_chem_comp_bond.value_dist_nucleus"] = tLeng
+                        aBond["_chem_comp_bond.value_dist_nucleus_esd"] = 0.01
+                         
+                        tMol["remainBonds"].append(aBond)
+                        break
+ 
+                for aPair in aSetCombP:
+                    aAng = {}
+                    aAng["_chem_comp_angle.comp_id"]     =  tAt["_chem_comp_atom.comp_id"]
+                    aAng["_chem_comp_angle.atom_id_1"]   =  aId
+                    aAng["_chem_comp_angle.atom_id_2"]   =  tAt["_chem_comp_atom.atom_id"]
+                    aAng["_chem_comp_angle.atom_id_3"]   =  aPair[1]
+                    aAng["_chem_comp_angle.value_angle"] =  118.0        # getAAngFrom3Ps(aPosNonH, aPosH, aPair[0])
+                    #print("an angle between %s-%s-%s is %6.4f" %(aAng["_chem_comp_angle.atom_id_1"], aAng["_chem_comp_angle.atom_id_2"], 
+                    #                                            aAng["_chem_comp_angle.atom_id_3"], aAng["_chem_comp_angle.value_angle"]))
+                    aAng["_chem_comp_angle.value_angle_esd"] = 3.00
+                    tMol["remainAngs"].append(aAng)                 
+                          
+            else:
+                # add new H atom
+                aHAtom = {}
+                aHAtom["_chem_comp_atom.comp_id"] = tAt["_chem_comp_atom.comp_id"]
+                aHAtom["_chem_comp_atom.atom_id"] = "H" + str(tCurNumAtoms)
+                if aHAtom["_chem_comp_atom.atom_id"] in tExcH:
+                    aHAtom["_chem_comp_atom.atom_id"] =aHAtom["_chem_comp_atom.atom_id"]+"a"
+                tCurNumAtoms+=1
+                aHAtom["_chem_comp_atom.alt_atom_id"] = aHAtom["_chem_comp_atom.atom_id"]
+                aHAtom["_chem_comp_atom.type_symbol"] = "H"
+                aHAtom["_chem_comp_atom.charge"]      = "0"
+                aHAtom["_chem_comp_atom.pdbx_align"]  = "1"
+                aHAtom["_chem_comp_atom.pdbx_aromatic_flag"] = "N"
+                aHAtom["_chem_comp_atom.pdbx_leaving_atom_flag"] = "N"
+                aHAtom["_chem_comp_atom.pdbx_stereo_config"]  = "N"
             
-            aHAtom["_chem_comp_atom.model_Cartn_x"] = x1 + tLeng*aDirV[0]
-            aHAtom["_chem_comp_atom.model_Cartn_y"] = y1+ tLeng*aDirV[1]
-            aHAtom["_chem_comp_atom.model_Cartn_z"] = z1 + tLeng*aDirV[2]
-            aHAtom["_chem_comp_atom.pdbx_model_Cartn_x_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_x"]
-            aHAtom["_chem_comp_atom.pdbx_model_Cartn_y_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_y"]
-            aHAtom["_chem_comp_atom.pdbx_model_Cartn_z_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_z"]
-            aHAtom["_chem_comp_atom.x"] = aHAtom["_chem_comp_atom.model_Cartn_x"]
-            aHAtom["_chem_comp_atom.y"] = aHAtom["_chem_comp_atom.model_Cartn_y"]
-            aHAtom["_chem_comp_atom.z"] = aHAtom["_chem_comp_atom.model_Cartn_z"]
-            #aPosH = [tMol["storedHs"][tIdxH]["_chem_comp_atom.model_Cartn_x"],tMol["storedHs"][tIdxH]["_chem_comp_atom.model_Cartn_y"],
-            #        tMol["storedHs"][tIdxH]["_chem_comp_atom.model_Cartn_z"]]
-            tMol["remainAtoms"].append(aHAtom)
-            #print("H atom ", aHAtom["_chem_comp_atom.alt_atom_id"], " is added ")
-            aBond = {}
-            aBond["_chem_comp_bond.comp_id"]   = tAt["_chem_comp_atom.comp_id"]
-            aBond["_chem_comp_bond.atom_id_1"] = tAt["_chem_comp_atom.atom_id"]
-            aBond["_chem_comp_bond.atom_id_2"] = aHAtom["_chem_comp_atom.atom_id"]
-            aBond["_chem_comp_bond.value_order"] = "SING" 
-            aBond["_chem_comp_bond.value_dist"] = tLeng
-            aBond["_chem_comp_bond.value_dist_esd"] = 0.01
-            aBond["_chem_comp_bond.pdbx_aromatic_flag"] = "N"
-            aBond["_chem_comp_bond.value_dist_nucleus"] = tLeng
-            aBond["_chem_comp_bond.value_dist_nucleus_esd"] = 0.01
+                aHAtom["_chem_comp_atom.model_Cartn_x"] = x1 + tLeng*aDirV[0]
+                aHAtom["_chem_comp_atom.model_Cartn_y"] = y1+ tLeng*aDirV[1]
+                aHAtom["_chem_comp_atom.model_Cartn_z"] = z1 + tLeng*aDirV[2]
+                aHAtom["_chem_comp_atom.pdbx_model_Cartn_x_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_x"]
+                aHAtom["_chem_comp_atom.pdbx_model_Cartn_y_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_y"]
+                aHAtom["_chem_comp_atom.pdbx_model_Cartn_z_ideal"] = aHAtom["_chem_comp_atom.model_Cartn_z"]
+                aHAtom["_chem_comp_atom.x"] = aHAtom["_chem_comp_atom.model_Cartn_x"]
+                aHAtom["_chem_comp_atom.y"] = aHAtom["_chem_comp_atom.model_Cartn_y"]
+                aHAtom["_chem_comp_atom.z"] = aHAtom["_chem_comp_atom.model_Cartn_z"]
+
+                tMol["remainAtoms"].append(aHAtom)
+                #print("H atom ", aHAtom["_chem_comp_atom.alt_atom_id"], " is added ")
+                aBond = {}
+                aBond["_chem_comp_bond.comp_id"]   = tAt["_chem_comp_atom.comp_id"]
+                aBond["_chem_comp_bond.atom_id_1"] = tAt["_chem_comp_atom.atom_id"]
+                aBond["_chem_comp_bond.atom_id_2"] = aHAtom["_chem_comp_atom.atom_id"]
+                aBond["_chem_comp_bond.value_order"] = "SING" 
+                aBond["_chem_comp_bond.value_dist"] = tLeng
+                aBond["_chem_comp_bond.value_dist_esd"] = 0.01
+                aBond["_chem_comp_bond.pdbx_aromatic_flag"] = "N"
+                aBond["_chem_comp_bond.value_dist_nucleus"] = tLeng
+                aBond["_chem_comp_bond.value_dist_nucleus_esd"] = 0.01
             
-            tMol["remainBonds"].append(aBond)
+                tMol["remainBonds"].append(aBond)
             
     
-            for aPair in aSetCombP:
-                aAng = {}
-                aAng["_chem_comp_angle.comp_id"]     =  tAt["_chem_comp_atom.comp_id"]
-                aAng["_chem_comp_angle.atom_id_1"]   =  aHAtom["_chem_comp_atom.atom_id"]
-                aAng["_chem_comp_angle.atom_id_2"]   =  tAt["_chem_comp_atom.atom_id"]
-                aAng["_chem_comp_angle.atom_id_3"]   =  aPair[1]
-                aAng["_chem_comp_angle.value_angle"] =  118.0        # getAAngFrom3Ps(aPosNonH, aPosH, aPair[0])
-                #print("an angle between %s-%s-%s is %6.4f" %(aAng["_chem_comp_angle.atom_id_1"], aAng["_chem_comp_angle.atom_id_2"], 
-                #                                            aAng["_chem_comp_angle.atom_id_3"], aAng["_chem_comp_angle.value_angle"]))
-                aAng["_chem_comp_angle.value_angle_esd"] = 3.00
-                tMol["remainAngs"].append(aAng)                 
+                for aPair in aSetCombP:
+                    aAng = {}
+                    aAng["_chem_comp_angle.comp_id"]     =  tAt["_chem_comp_atom.comp_id"]
+                    aAng["_chem_comp_angle.atom_id_1"]   =  aHAtom["_chem_comp_atom.atom_id"]
+                    aAng["_chem_comp_angle.atom_id_2"]   =  tAt["_chem_comp_atom.atom_id"]
+                    aAng["_chem_comp_angle.atom_id_3"]   =  aPair[1]
+                    aAng["_chem_comp_angle.value_angle"] =  118.0        # getAAngFrom3Ps(aPosNonH, aPosH, aPair[0])
+                    #print("an angle between %s-%s-%s is %6.4f" %(aAng["_chem_comp_angle.atom_id_1"], aAng["_chem_comp_angle.atom_id_2"], 
+                    #                                            aAng["_chem_comp_angle.atom_id_3"], aAng["_chem_comp_angle.value_angle"]))
+                    aAng["_chem_comp_angle.value_angle_esd"] = 3.00
+                    tMol["remainAngs"].append(aAng)                 
         
         return tCurNumAtoms
         
@@ -2790,7 +2836,6 @@ class ChemCheck(object):
             id1 = tAllAtoms[aIdxB[0]]["_chem_comp_atom.atom_id"]
             id2 = tAllAtoms[aIdxB[1]]["_chem_comp_atom.atom_id"]
             print("Broken bond id1 ", id1, " id2 ", id2)
-            
             if id1 in atomIdMapNonCB and id2 in atomIdMapCB:
                 self.TRNonCBMols(tNonCBMols, tCBMols, atomIdMapNonCB[id1], atomIdMapCB[id2], aIdxB[2], tAllBonds, extraBonds, extraAngs)
                 self.RotateNonCBMols(tNonCBMols, tCBMols, atomIdMapNonCB[id1], atomIdMapCB[id2])
@@ -2840,16 +2885,16 @@ class ChemCheck(object):
         aLeng = 1.1
         for aAt in tCBMol["atoms"]:
             if aAt["_chem_comp_atom.type_symbol"] =="B" or aAt["_chem_comp_atom.type_symbol"] =="C":
-                #print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
-                
-                if len(aAt["_chem_comp_atom.atom_conn"])==5 and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds:
-                    #print("it needs a H")
-                    #print("Its index is ", aAt["_chem_comp_atom.atom_serial_number"])
-                    #print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
+                nConn = len(aAt["_chem_comp_atom.atom_conn"])
+                print(aAt["_chem_comp_atom.atom_id"], " has connections ", aAt["_chem_comp_atom.atom_conn"])       
+                if (nConn==5 or nConn==6) and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds:
+                    print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
+                    print("it needs a H")
+                    print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
                     if not "angles" in tCBMol:
                         tCBMol["angles"] = []
                     tCurNumAtoms=self.addOneHAtomCoordsAndOneBondAndAllAngs(aAt, tCBMol, aLeng, tCurNumAtoms, tExcHs)
-                    
+           
         
     def setAComboMol(self, tNonCBMols, tCBMols, tExtraBonds, tExtraAngs, tExtraTors, tExcHs, tComboMol):
         
@@ -2871,8 +2916,6 @@ class ChemCheck(object):
         allMols = []
         for aMol in tNonCBMols:
             allMols.append(aMol)
-        for aMol in   tCBMols:
-            allMols.append(aMol)
             
         for aMol in tNonCBMols:
             
@@ -2886,16 +2929,16 @@ class ChemCheck(object):
                 id2 = aBo["_chem_comp_bond.atom_id_2"]
                 if not id1 in tExcHs and not id2 in tExcHs:
                     tComboMol["bonds"].append(aBo)
-            print("self.tmpHIdMap : ")
-            print(self.tmpHIdMap)
+            #print("self.tmpHIdMap : ")
+            #print(self.tmpHIdMap)
 
-            print("Check-Angles")       
+            #print("Check-Angles")       
             if "angles" in aMol:
                 for aAng in aMol["angles"]:
                     id1 = aAng["_chem_comp_angle.atom_id_1"]
                     id2 = aAng["_chem_comp_angle.atom_id_2"]
                     id3 = aAng["_chem_comp_angle.atom_id_3"]
-                    print("id1=",id1, " id2=", id2, " id3=", id3)
+                    #print("id1=",id1, " id2=", id2, " id3=", id3)
                     if id1 in self.tmpHIdMap:
                         aAng["_chem_comp_angle.atom_id_1"] = self.tmpHIdMap[id1]
                         tComboMol["angles"].append(aAng)
@@ -2904,7 +2947,7 @@ class ChemCheck(object):
                         tComboMol["angles"].append(aAng)
                     else:
                         tComboMol["angles"].append(aAng)
-                    print(aAng)
+                    #print(aAng)
                         
             if "torsions" in aMol:
                 for aTor in aMol["torsions"]:
@@ -2980,17 +3023,17 @@ class ChemCheck(object):
         #for aB in tComboMol["bonds"]:
         #    print("-----------------")
         #    print(aB)
-        print("Here all Angles: ")
-        for aA in tComboMol["angles"]:
-            print(aA)      
+        #print("Here all Angles: ")
+        #for aA in tComboMol["angles"]:
+        #    print(aA)      
         for aBo in tExtraBonds:
             if "_chem_comp_bond.atom_id_1" in aBo:
-                print("an extra bond: ")
+                #print("an extra bond: ")
                 if str(aBo["_chem_comp_bond.value_order"]).find("1") !=-1:
                     aBo["_chem_comp_bond.value_order"] = "SING"
                 if str(aBo["_chem_comp_bond.value_order"]).find("2") !=-1:
                     aBo["_chem_comp_bond.value_order"] = "DOUB"
-                print(aBo) 
+                #print(aBo) 
                 tComboMol["bonds"].append(aBo)
         for aAng in tExtraAngs:
             tComboMol["angles"].append(aAng)
@@ -3280,9 +3323,10 @@ class ChemCheck(object):
                 aAt["_chem_comp_atom.model_Cartn_y"] = float(aAt["_chem_comp_atom.model_Cartn_y"])
                 aAt["_chem_comp_atom.model_Cartn_z"] = float(aAt["_chem_comp_atom.model_Cartn_z"])
             for aAt in tCBMols[idxCBM]["atoms"]:
-                aAt["_chem_comp_atom.model_Cartn_x"] = float(aAt["_chem_comp_atom.model_Cartn_x"])
-                aAt["_chem_comp_atom.model_Cartn_y"] = float(aAt["_chem_comp_atom.model_Cartn_y"])
-                aAt["_chem_comp_atom.model_Cartn_z"] = float(aAt["_chem_comp_atom.model_Cartn_z"])
+                if aAt["_chem_comp_atom.type_symbol"] !="H":
+                    aAt["_chem_comp_atom.model_Cartn_x"] = float(aAt["_chem_comp_atom.model_Cartn_x"])
+                    aAt["_chem_comp_atom.model_Cartn_y"] = float(aAt["_chem_comp_atom.model_Cartn_y"])
+                    aAt["_chem_comp_atom.model_Cartn_z"] = float(aAt["_chem_comp_atom.model_Cartn_z"])
                 
             idxNonCBA2 = -1 
             idY1  = tNonCBMols[idxNonCBM]["atoms"][idxNonCBA]["_chem_comp_atom.atom_id"]

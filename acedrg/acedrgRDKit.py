@@ -18,15 +18,9 @@ import os
 import os.path
 import sys
 import platform
-import glob
-import shutil
-import re
-import string
-from optparse import OptionParser
-import time
 import math
-import select
 import random
+from io import StringIO
 
 from functools import cmp_to_key
 
@@ -41,15 +35,17 @@ from rdkit.Chem import rdmolops
 from rdkit.Chem.Pharm3D import EmbedLib
 from rdkit.Geometry import rdGeometry
 
-from . chem import ChemCheck
-from . periodicTable import PeriodicTab
-from . periodicTable import AminoAcidsSmas
+from  . chem import ChemCheck
+from  . periodicTable import PeriodicTab
+from  . periodicTable import AminoAcidsSmas
 
-from . utility import listComp
-from . utility import listComp2
-from . utility import listCompDes
-from . utility import listCompAcd
-from . utility import BondOrderS2N
+from  . utility import listComp
+from  . utility import listComp2
+from  . utility import listCompDes
+from  . utility import listCompAcd
+from  . utility import BondOrderS2N
+from  . utility import getStrsPosDict
+from  . utility import modifyNAndBInSmiles
 
 
 class AcedrgRDKit(object):
@@ -351,13 +347,25 @@ class AcedrgRDKit(object):
                 aSmiStr = tFileName.strip()
             if len(aSmiStr):
                 self.smiOrig = aSmiStr
+                aPosDict = {}
+                getStrsPosDict(self.smiOrig, aPosDict)
                 print(self.smiOrig)
-                aMolT     = Chem.MolFromSmiles(self.smiOrig)
-                if aMolT:
+                aMolT = None
+                try:
+                    with rdBase.CaptureErrorLog() as capture:
+                         aMolT     = Chem.MolFromSmiles(self.smiOrig)
+                    if not aMolT:
+                        raise ValueError(capture.messages)
+                except ValueError as e:
+                    print("rdkit error ", capture.messages)
+                    while(not aMolT):
+                        aSmiStr = modifyNAndBInSmiles(aSmiStr, aPosDict, capture.messages)
+                        print("Modified SMILES=", aSmiStr)
+                        with rdBase.CaptureErrorLog() as capture:
+                            aMolT     = Chem.MolFromSmiles(aSmiStr)
+                else :
                     aMolT.SetProp("SmilesIn", self.smiOrig)
-                else:
-                    print("No molecule is generated using SMILES str ", self.smiOrig) 
-                    sys.exit(1)
+                
                 # if self.reSetSmi:
                 #    self.modifySmiTmp()
                 #    self.smiMod = self.smiMod.strip()
@@ -775,7 +783,6 @@ class AcedrgRDKit(object):
         
         
         # set OD1, OD2, OE1, OE2, SD, NE
-        #print("Here")
         #print(len(tAtomSet))
         #print(len(excludeSet))
         for aIdx in tAtomSet:
@@ -3032,7 +3039,7 @@ class AcedrgRDKit(object):
         return tPass
 
     def setCIPCodeSerialForNBAtoms(self, tMol, delAtomIdxs):
-
+        
         reNameSet = {}
 
         rdmolops.AssignStereochemistry(
@@ -3054,28 +3061,31 @@ class AcedrgRDKit(object):
                 name2 = allAtoms[atmIdx2].GetProp("Name")
                 symb1 = allAtoms[atmIdx1].GetSymbol()
                 symb2 = allAtoms[atmIdx2].GetSymbol()
-
                 if self.reSetSmi and len(self.repSign) != 0:
                     if not atmIdx1 in delAtomIdxs and not atmIdx2 in delAtomIdxs:
                         if symb1.find(self.repSign) == -1 and symb2.find(self.repSign) == -1:
                             if atmIdx1 == aIdx:
                                 # print name2
-                                reNameSet[aId].append(
-                                    [allAtoms[atmIdx2], allAtoms[atmIdx2].GetProp("_CIPRank")])
+                                if allAtoms[atmIdx2].HasProp("_CIPRank"):
+                                    reNameSet[aId].append(
+                                        [allAtoms[atmIdx2], allAtoms[atmIdx2].GetProp("_CIPRank")])
                             elif atmIdx2 == aIdx:
                                 # print name1
-                                reNameSet[aId].append(
-                                    [allAtoms[atmIdx1], allAtoms[atmIdx1].GetProp("_CIPRank")])
+                                if allAtoms[atmIdx1].HasProp("_CIPRank"):
+                                    reNameSet[aId].append(
+                                        [allAtoms[atmIdx1], allAtoms[atmIdx1].GetProp("_CIPRank")])
                             else:
                                 print("Bug! atom %s is not in bonds obtained by aAtom.GetBonds()" % (
                                     aAtom.GetProp("Name")))
                                 break
                 else:
                     if atmIdx1 == aIdx:
-                        reNameSet[aId].append(
+                        if allAtoms[atmIdx2].HasProp("_CIPRank"):
+                            reNameSet[aId].append(
                             [allAtoms[atmIdx2], allAtoms[atmIdx2].GetProp("_CIPRank")])
                     elif atmIdx2 == aIdx:
-                        reNameSet[aId].append(
+                        if allAtoms[atmIdx1].HasProp("_CIPRank"):
+                            reNameSet[aId].append(
                             [allAtoms[atmIdx1], allAtoms[atmIdx1].GetProp("_CIPRank")])
                     else:
                         print("Bug! atom is not in bonds obtained by aAtom.GetBonds()" % (

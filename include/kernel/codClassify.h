@@ -620,6 +620,8 @@ namespace LIBMOL
         void setSpecial3NBSymb(std::vector<AtomDict>::iterator tAt);
         void setSpecial3NBSymb2(std::vector<AtomDict>::iterator tAt);
 
+        std::string a2NBSP_TRAN (std::string & tOldStr);
+
         // This should be moved into another specifically designed sqlite3 class
         //void sqlite3Query(sqlite3 *      tDB,
         //                  SqliteStatment tQue,

@@ -57,6 +57,8 @@ from . filetools   import outputOneMolInACif2
 from . filetools   import fromCifTorMolGemmi
 from . filetools   import outputOneMolFullDictInACif
 from . filetools   import reWriteAcedrgDescriptorSec
+from . filetools   import matchAtomNames
+from . filetools   import getMonomRootFromCifGemmi
 
 from . utility    import listComp
 from . utility    import listComp2
@@ -72,6 +74,7 @@ from . utility    import cutRings
 from . utility    import aMolToAGraph
 from . utility    import setTreeNodeOrder
 from . utility    import setPTGraph
+
 
 if os.name != 'nt':
     import fcntl
@@ -203,6 +206,8 @@ class Acedrg(CExeCode ):
         self.allBondsAndAngles["angles"]      = {}
 
         self.naTorsList                       = {}
+        
+        self.nameFile           = ""
 
         self.acedrg    = os.path.abspath(sys.argv[0])
         self.acedrgDir = os.path.dirname(os.path.dirname(self.acedrg))
@@ -216,6 +221,7 @@ class Acedrg(CExeCode ):
 
         #if inputOptionsP.geneInFileName:
         #    self.checInputFormat()          
+        
 
         self.runExitCode      = 0 
         
@@ -254,7 +260,8 @@ class Acedrg(CExeCode ):
 
         self.cLinkMap         = {}
 
-
+        
+        
         #self.execute()  
         self.executeWithRDKit()  
         
@@ -477,9 +484,12 @@ class Acedrg(CExeCode ):
                                     action="store", type="string",
                                     help="a pdb file containing metal elements, required by metalCoord")
         
-
+        self.inputParser.add_option("--MatchName", dest="nameFile", metavar="FILE", 
+                                    action="store", type="string", 
+                                    help="atom names in the output cif file will match to those in this input file")
+        
         (inputOptionsP, inputOptionsU) = self.inputParser.parse_args(t_argvs)
-
+        
         if inputOptionsU:    
             print("Line arguments for those keywords are missing ")
             for a_opt in inputOptionsU:
@@ -516,15 +526,24 @@ class Acedrg(CExeCode ):
             print("can not find libmol at libexec/")
             sys.exit()
                                 
-        if not self.libmol and "CCP4" in os.environ:
-            tLibmol = os.path.join(os.environ['CCP4'], "libexec", "libmol")
-            if platform.system()=="Windows": tLibmol += ".exe"
-            if glob.glob(tLibmol):
-                self.libmol = tLibmol
+        if "CCP4" in os.environ:
 
-        if not self.libmol:
-            print("Could not find libmol. Install acedrg via pip, or set "
-                  "LIBMOL_ROOT, or activate a CCP4 installation.")
+            #tLibcheck = os.path.join(os.environ['CBIN'], "libcheck")
+            #if platform.system()=="Windows": tLibcheck += ".exe"
+            #if not glob.glob(tLibcheck):
+            #    print("libcheck could not be found")
+            #    sys.exit()
+            #else:
+            #    self.libcheck = tLibcheck
+            
+            if not self.libmol:
+                tLibmol = os.path.join(os.environ['CCP4'], "libexec", "libmol")
+                if platform.system()=="Windows": tLibmol += ".exe"
+                if glob.glob(tLibmol):
+                    self.libmol = tLibmol
+        else :
+            print("You need to install CCP4 suite")
+            print("or activate ccp4.setup")
             sys.exit()
         if not self.acedrgTables:
             if "LIBMOL_ROOT" in os.environ:
@@ -539,7 +558,7 @@ class Acedrg(CExeCode ):
             # print tAcedrgTables
             if os.path.isdir(tAcedrgTables):
                 self.acedrgTables = tAcedrgTables
-        if not self.acedrgTables and "CCP4" in os.environ:
+        if not self.acedrgTables:
             tAcedrgTables = os.path.join(os.environ['CCP4'], "share","acedrg","tables")
             if glob.glob(tAcedrgTables):
                 self.acedrgTables = tAcedrgTables
@@ -547,9 +566,7 @@ class Acedrg(CExeCode ):
             tFuncGroupTable = os.path.join(self.acedrgTables, "funSmi.table")
             if os.path.isfile(tFuncGroupTable):
                 self.funcGroupTable = tFuncGroupTable
-            if "CLIBD_MON" not in os.environ:
-                os.environ["CLIBD_MON"] = os.path.join(self.acedrgTables, "")
-
+            
         #print("The path to Acedrg tables is at ", self.acedrgTables)
         #print("Libmol used is at ", self.libmol)
 
@@ -687,9 +704,14 @@ class Acedrg(CExeCode ):
                             if len(strs[2]) ==3:
                                 self.monomRoot = strs[2]
                                 break
+        
+        if len(self.monomRoot) ==0 and self.nameFile!="": 
+            self.monomRoot = getMonomRootFromCifGemmi(self.nameFile)
+        print("2 monoRoot is ", self.monomRoot)    
         if len(self.monomRoot) ==0:
             self.monomRoot = "LIG"
-
+        
+        
     def checkNAFromMmcif(self, tDataDesc=None):
 
         aRet = False
@@ -993,7 +1015,8 @@ class Acedrg(CExeCode ):
                 if self.checkStdCif(t_inputOptionsP.inMmCifName):
                     self.workMode = 1111
                     
-                
+        if t_inputOptionsP.nameFile:
+            self.nameFile = t_inputOptionsP.nameFile        
         
         if t_inputOptionsP.monomRoot:
             self.monomRoot   = t_inputOptionsP.monomRoot
@@ -1064,7 +1087,9 @@ class Acedrg(CExeCode ):
         
         if t_inputOptionsP.addTree:
             self.addTree = t_inputOptionsP.addTree 
-            
+        
+        
+         
             
     def checkStdCif(self, tInCif):
         
@@ -2055,7 +2080,7 @@ class Acedrg(CExeCode ):
                     self.runGeoOpt(aCifRoot, aConfCif) 
                     if  self.runExitCode :
                         print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
-            print("Here3: ", self.refmacMinFValueList)
+            #print("Here3: ", self.refmacMinFValueList)
             if len(self.refmacMinFValueList) > 0 :
                 #self.refmacMinFValueList.sort(listComp2)
                 self.refmacMinFValueList=sorted(self.refmacMinFValueList, key=cmp_to_key(listComp2))
@@ -2063,7 +2088,6 @@ class Acedrg(CExeCode ):
                 #    print("======")
                 #    print("FValue: ", aPair[0], "  File name ", aPair[1])  
             if self.numConformers==1: 
-                
                 #print "Come to output final info"
                 self.getFinalOutputFiles2(self.outRoot, self.rdKit.molecules[tIdxMol], self.refmacMinFValueList[0][1], self.fileConv.ccp4DataDes,self.fileConv.strDescriptors,self.fileConv.delocBondList)
                 # self.getFinalOutputFiles("", self.rdKit.molecules[tIdxMol], aLibCifIn, self.refmacMinFValueList[0][1], self.fileConv.ccp4DataDes,self.fileConv.strDescriptors,self.fileConv.delocBondList)
@@ -3396,12 +3420,12 @@ class Acedrg(CExeCode ):
  
         self.printJobs()
         
+        
         #if self.useExistCoords or self.workMode==16 or self.workMode==161:
         #    print("One of output conformers will using input coordinates as the initial one")
         
         print("workMode : ", self.workMode)
-        
-        
+
         # Stage 1: initiate a mol file for RDKit obj
         if self.workMode == 11 or self.workMode == 111 or self.workMode == 114:
             if os.path.isfile(self.inMmCifName) : # and self.chemCheck.isOrganic(self.inMmCifName, self.workMode):
@@ -3449,7 +3473,6 @@ class Acedrg(CExeCode ):
                     
                 else:
                     self.lOrg = False    
-            
             if self.containCBM: 
                 
                 print("Carbone molecules found")
@@ -4405,8 +4428,18 @@ class Acedrg(CExeCode ):
                                 #nConf = self.rdKit.molecules[idxMol].GetNumConformers()
                             
                                 self.runGeoOptOneMolFull(idxMol)
+                            
                                 if not self.useExistCoords:
                                     self.outEnergyGeoMap(idxMol)
+                                print("nameFile", self.nameFile)
+                                
+                                if len(self.nameFile):
+                                    if os.path.isfile(self.nameFile):
+                                        matchAtomNames(self.outRstCifName, self.nameFile, self.monomRoot)
+                                    else:
+                                        print("The file %s, which contains atom names, does not exists %s"%self.nameFile)
+                                        sys.exit(1)
+                                
                     else:
                         print("Error: No dictionary cif file is generated by Acedrg ")
 
