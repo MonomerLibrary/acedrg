@@ -29,6 +29,7 @@ print ("|  Run all examples of generating covalent-links with   |")
 print ("|  input instruction and other files at ./inLink        |")
 print ("=========================================================")
 
+acedrg = "../../.venv-dev/bin/acedrg"
 inRoot = os.getcwd()
 indir = os.path.join(inRoot, "inLink", "instruct_*.txt")
 
@@ -37,8 +38,8 @@ for aMol in glob.glob(indir):
     outRoot = "Test_" + ligName     
     print(outRoot)
     logName = outRoot + ".log"
-    cmdLine = "acedrg -L %s -o %s > %s"\
-              %(aMol, outRoot, logName)
+    cmdLine = "%s -L %s -o %s > %s"\
+              %(acedrg, aMol, outRoot, logName)
     print(cmdLine)
     numAllJobs += 1
     lRun=os.system(cmdLine)

@@ -28,7 +28,7 @@ print("================================================================")
 print("|  run all examples with input SYBYL/MOL2 files at ./inMOL2    |")
 print("================================================================")
 
-
+acedrg = "../../.venv-dev/bin/acedrg"
 inRoot = os.getcwd()
 indir = os.path.join(inRoot, "inMol2", "*.mol2")
 
@@ -36,8 +36,8 @@ for aMol in glob.glob(indir):
     ligName = os.path.basename(aMol).strip().split(".")[0]
     outRoot = "Test_" + ligName + "_from_Mol2"    
     logName = outRoot + ".log"
-    cmdLine = "acedrg -g %s -o %s > %s"\
-              %(aMol, outRoot, logName)
+    cmdLine = "%s -g %s -o %s > %s"\
+              %(acedrg, aMol, outRoot, logName)
     print(cmdLine)
     numAllJobs += 1
     lRun=os.system(cmdLine)

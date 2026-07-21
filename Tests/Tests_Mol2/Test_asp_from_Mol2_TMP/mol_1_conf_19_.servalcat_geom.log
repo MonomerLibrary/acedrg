@@ -1,0 +1,3291 @@
+
+============ PROCESS INFORMATION =============
+# Servalcat ver. 0.4.142 (Python 3.13.14)
+# Library vers. gemmi 0.7.5, scipy 1.18.0, numpy 2.5.1, pandas 3.0.3
+# Started on 2026-07-13 15:19:46.369523
+# Host: garib-mac-12-wifi.lmb.internal User: flong
+# Command-line:
+# servalcat --logfile Test_asp_from_Mol2_TMP/servalcat.log refine_geom --update_dictionary Test_asp_from_Mol2_TMP/mol_1_conf_19_init.cif -o Test_asp_from_Mol2_TMP/mol_1_conf_19 --randomize 0.01
+Config loaded
+--
+refine:
+  atom_selection:
+    xyz:
+      include:
+      - '*'
+      exclude: []
+      exclude_restraint: []
+    adp:
+      include: []
+      exclude: []
+      exclude_restraint: []
+    occ:
+      include: []
+      exclude: []
+      exclude_restraint: []
+    dfrac:
+      include: []
+      exclude: []
+      exclude_restraint: []
+  occ_groups: []
+  occ_group_constraints: []
+  occ_group_const_mu: 10.0
+  occ_group_const_mu_update_factor: 1.1
+  occ_group_const_mu_update_tol_rel: 0.25
+  occ_group_const_mu_update_tol_abs: 0.01
+  geom_weights:
+    bond:
+      weight: 1.0
+      adaptive_weight: 0.0
+    angle:
+      weight: 1.0
+      adaptive_weight: 0.0
+    tors:
+      weight: 1.0
+      adaptive_weight: 0.0
+    chir:
+      weight: 1.0
+      adaptive_weight: 0.0
+    plane:
+      weight: 1.0
+      adaptive_weight: 0.0
+    vdw:
+      weight: 1.0
+      adaptive_weight: 0.0
+    ncs:
+      weight: 1.0
+    stack:
+      weight: 1.0
+  local_geom_weights: []
+  local_adpr_weights: []
+  initialisation:
+    adp: {}
+    occ: {}
+    dfrac: {}
+  write_trajectory: false
+--
+Reading monomers from /Users/flong/CCP4/ccp4-9/lib/data/monomers/
+Monomer not in the library: LIG.
+Reading monomer: Test_asp_from_Mol2_TMP/mol_1_conf_19_init.cif
+Monomer library loaded: 1 monomers, 109 links, 133 modifications
+       loaded monomers: LIG
+
+Checking if unknown atoms exist..
+Creating restraints..
+
+Chain info:
+ chain 
+  ligands: LIG (1 residues)
+
+Number of refinement parameters:
+       n_params  n_atoms  n_atoms_geom_only  n_atoms_data_only
+xyz           9        9                  0                  0
+adp           0        0                  0                  0
+occ           0        0                  0                  0
+dfrac         0        0                  0                  0
+
+Randomizing structure with rmsd of 0.01
+setting geometry weight wbond= 1.0
+setting geometry adaptive weight wbond=0.0
+setting geometry weight wangle= 1.0
+setting geometry adaptive weight wangle=0.0
+setting geometry weight wtors= 1.0
+setting geometry adaptive weight wtors=0.0
+setting geometry weight wplane= 1.0
+setting geometry adaptive weight wplane=0.0
+setting geometry weight wchir= 1.0
+setting geometry adaptive weight wchir=0.0
+setting geometry weight wstack= 1.0
+setting geometry weight wvdw= 1.0
+setting geometry adaptive weight wvdw=0.0
+setting geometry weight wncs= 1.0
+Torsion angle rules:
+ include:
+  {'group': 'peptide', 'tors_name': 'chi*'}
+  {'link': '*', 'tors_name': 'omega'}
+  {'residue': '*', 'tors_name': 'sp2_sp2*'}
+  {'link': '*', 'tors_name': 'sp2_sp2*'}
+ exclude:
+  none
+External restraints from Refmac instructions
+ Number of distances          : 0
+ Number of angles             : 0
+ Number of torsions           : 0
+ Number of chirals            : 0
+ Number of planes             : 0
+ Number of intervals          : 0
+ Number of stackings          : 0
+ Number of harmonics          : 0
+ Number of special positions  : 0
+
+Running 10 cycles with wchir=4 wvdw=2 without hydrogen
+Geometry weights
+vdws = 10
+atoms = 9
+pairs = 28
+ *** Bond distances outliers (Z >= 5) ***
+
+    atom1     atom2  value  ideal  sigma      z
+/LIG 1/C4 /LIG 1/N5  1.434  1.325  0.010 10.853
+ /LIG 1/C /LIG 1/O9  1.394  1.252  0.017  8.186
+
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.065    5.046      0.013
+Bond angles, non H               10     2.615    1.526      2.412
+Chiral centres                    1     0.006    0.032      0.198
+Planar groups                     8     0.008    0.423      0.020
+VDW torsion                       4     0.086    0.429      0.200
+
+
+====== CYCLE  1 ======
+
+ weight = 1.0000e+00
+ geom_x = 115.67841072349896
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 1.1568e+02
+using cgsolve in c++, ic=False
+diag(geom) min= 364.767059 max= 17003.337994
+diag(all) min= 364.767059 max= 17003.337994
+Trying gamma equal 0.000000
+Not converging with gamma equal 0.000000
+Trying gamma equal 0.052500
+Gamma decreased to 0.042000
+min(dx) = -0.08534642732885084
+max(dx) = 0.08094481348386293
+mean(dx)= 0.001964875642831377
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 1.2027370461889109
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 1.2027e+00
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.003    0.226      0.013
+Bond angles, non H               10     0.527    0.182      2.412
+Chiral centres                    1     0.006    0.031      0.198
+Planar groups                     8     0.000    0.016      0.020
+VDW torsion                       4     0.064    0.321      0.200
+
+
+
+====== CYCLE  2 ======
+
+ weight = 1.0000e+00
+ geom_x = 1.2027370461889109
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 1.2027e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 368.596389 max= 17503.734923
+diag(all) min= 368.596389 max= 17503.734923
+Trying gamma equal 0.042000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.01240800784074531
+max(dx) = 0.018274710808579977
+mean(dx)= -0.0003860760692093774
+cc_prev_dx = 0.25484601371886145
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.9210769872953137
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 9.2108e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.124      0.013
+Bond angles, non H               10     0.551    0.188      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.022      0.020
+VDW torsion                       4     0.058    0.289      0.200
+
+
+
+====== CYCLE  3 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.9210769872953137
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 9.2108e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 368.279669 max= 17536.494372
+diag(all) min= 368.279669 max= 17536.494372
+Trying gamma equal 0.042000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.009387334035099854
+max(dx) = 0.009031691221475676
+mean(dx)= -0.0002979995479529165
+cc_prev_dx = 0.9210412061163903
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8833345774204953
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.8333e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.124      0.013
+Bond angles, non H               10     0.559    0.191      2.412
+Chiral centres                    1     0.007    0.037      0.198
+Planar groups                     8     0.000    0.020      0.020
+VDW torsion                       4     0.056    0.280      0.200
+
+
+
+====== CYCLE  4 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8833345774204953
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.8333e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.967723 max= 17567.001106
+diag(all) min= 367.967723 max= 17567.001106
+Trying gamma equal 0.042000
+Not converging with gamma equal 0.042000
+Trying gamma equal 0.094500
+Not converging with gamma equal 0.094500
+Trying gamma equal 0.149625
+Gamma decreased to 0.138600
+min(dx) = -0.002631277098330299
+max(dx) = 0.0023210014557207754
+mean(dx)= -7.902226778690325e-05
+cc_prev_dx = 0.9979445736898914
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8745443804134228
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.7454e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.124      0.013
+Bond angles, non H               10     0.559    0.191      2.412
+Chiral centres                    1     0.007    0.037      0.198
+Planar groups                     8     0.000    0.020      0.020
+VDW torsion                       4     0.056    0.278      0.200
+
+
+
+====== CYCLE  5 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8745443804134228
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.7454e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.881724 max= 17575.136167
+diag(all) min= 367.881724 max= 17575.136167
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.0027081273735341887
+max(dx) = 0.0022752429861455006
+mean(dx)= -7.346907299750673e-05
+cc_prev_dx = 0.9984211480177032
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8659221278307084
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.6592e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.124      0.013
+Bond angles, non H               10     0.559    0.191      2.412
+Chiral centres                    1     0.007    0.037      0.198
+Planar groups                     8     0.000    0.019      0.020
+VDW torsion                       4     0.055    0.276      0.200
+
+
+
+====== CYCLE  6 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8659221278307084
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.6592e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.793123 max= 17583.461778
+diag(all) min= 367.793123 max= 17583.461778
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.0025919968450745256
+max(dx) = 0.002117812260491961
+mean(dx)= -6.39920783615319e-05
+cc_prev_dx = 0.999025904771128
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8579761302864453
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.5798e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.124      0.013
+Bond angles, non H               10     0.557    0.191      2.412
+Chiral centres                    1     0.007    0.037      0.198
+Planar groups                     8     0.000    0.018      0.020
+VDW torsion                       4     0.055    0.275      0.200
+
+
+
+====== CYCLE  7 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8579761302864453
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.5798e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.708759 max= 17591.424594
+diag(all) min= 367.708759 max= 17591.424594
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0024743887368299865
+max(dx) = 0.0019919905282558127
+mean(dx)= -5.550590004477889e-05
+cc_prev_dx = 0.9992533015301323
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.850589927688125
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.5059e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.123      0.013
+Bond angles, non H               10     0.555    0.190      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.017      0.020
+VDW torsion                       4     0.055    0.273      0.200
+
+
+
+====== CYCLE  8 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.850589927688125
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.5059e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.628439 max= 17599.092868
+diag(all) min= 367.628439 max= 17599.092868
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0023580392925424145
+max(dx) = 0.0018857203498250888
+mean(dx)= -4.7945928619533424e-05
+cc_prev_dx = 0.999371809439364
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8436833172107
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.4368e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.123      0.013
+Bond angles, non H               10     0.553    0.189      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.017      0.020
+VDW torsion                       4     0.054    0.272      0.200
+
+
+
+====== CYCLE  9 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8436833172107
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.4368e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.552051 max= 17606.520626
+diag(all) min= 367.552051 max= 17606.520626
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0022451924015274246
+max(dx) = 0.0017928407759029473
+mean(dx)= -4.121487700685153e-05
+cc_prev_dx = 0.9994400059536567
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8371956383969573
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.3720e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.123      0.013
+Bond angles, non H               10     0.551    0.188      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.016      0.020
+VDW torsion                       4     0.054    0.271      0.200
+
+
+
+====== CYCLE 10 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.8371956383969573
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.3720e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 367.479450 max= 17613.747448
+diag(all) min= 367.479450 max= 17613.747448
+Trying gamma equal 0.138600
+Convergence reached after 15 iterations with no gamma cycles
+min(dx) = -0.0021369961616625123
+max(dx) = 0.0017095504798457805
+mean(dx)= -3.5221681560918706e-05
+cc_prev_dx = 0.999484925494197
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.8310781994714471
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.3108e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.122      0.013
+Bond angles, non H               10     0.548    0.188      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.015      0.020
+VDW torsion                       4     0.054    0.270      0.200
+
+
+$TABLE: stats vs cycle :
+$GRAPHS
+: Geometry :A:1,2,4:
+: Geometry Z :A:1,5,3:
+$$
+ Ncyc  rmsBOND  zBOND  rmsANGL  zANGL
+$$
+$$
+    0   0.0650 5.0459   2.6154 1.5258
+    1   0.0034 0.2256   0.5268 0.1823
+    2   0.0019 0.1240   0.5508 0.1883
+    3   0.0019 0.1243   0.5589 0.1912
+    4   0.0019 0.1239   0.5593 0.1914
+    5   0.0019 0.1237   0.5586 0.1911
+    6   0.0019 0.1236   0.5570 0.1906
+    7   0.0019 0.1233   0.5551 0.1899
+    8   0.0019 0.1230   0.5529 0.1892
+    9   0.0019 0.1227   0.5507 0.1884
+   10   0.0019 0.1224   0.5484 0.1877
+$$
+
+Running 30 cycles with wchir=1 wvdw=2 without hydrogen
+Geometry weights
+vdws = 10
+atoms = 9
+pairs = 28
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.002    0.122      0.013
+Bond angles, non H               10     0.548    0.188      2.412
+Chiral centres                    1     0.007    0.036      0.198
+Planar groups                     8     0.000    0.015      0.020
+VDW torsion                       4     0.054    0.270      0.200
+
+
+====== CYCLE  1 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.821269223034095
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.2127e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 357.286147 max= 17620.802038
+diag(all) min= 357.286147 max= 17620.802038
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.002273806997844841
+max(dx) = 0.0055543031760659
+mean(dx)= 0.000457858609630546
+cc_prev_dx = 0.4123460443465366
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7570327471557865
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.5703e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.095      0.013
+Bond angles, non H               10     0.564    0.192      2.412
+Chiral centres                    1     0.040    0.204      0.198
+Planar groups                     8     0.000    0.015      0.020
+VDW torsion                       4     0.051    0.254      0.200
+
+
+
+====== CYCLE  2 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7570327471557865
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.5703e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 359.906497 max= 17627.119891
+diag(all) min= 359.906497 max= 17627.119891
+Trying gamma equal 0.138600
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.0019468795636131716
+max(dx) = 0.0034349483140451477
+mean(dx)= 0.00024106551404468952
+cc_prev_dx = 0.7314117200370253
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7454537512881185
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.4545e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.093      0.013
+Bond angles, non H               10     0.578    0.196      2.412
+Chiral centres                    1     0.048    0.244      0.198
+Planar groups                     8     0.000    0.014      0.020
+VDW torsion                       4     0.049    0.247      0.200
+
+
+
+====== CYCLE  3 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7454537512881185
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.4545e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.476075 max= 17632.527392
+diag(all) min= 360.476075 max= 17632.527392
+Trying gamma equal 0.138600
+Convergence reached after 18 iterations with no gamma cycles
+min(dx) = -0.0017220212266076953
+max(dx) = 0.0027624901514708127
+mean(dx)= 0.00016254206298671405
+cc_prev_dx = 0.9474245891013161
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7377635561787476
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.3776e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.094      0.013
+Bond angles, non H               10     0.581    0.197      2.412
+Chiral centres                    1     0.051    0.256      0.198
+Planar groups                     8     0.000    0.013      0.020
+VDW torsion                       4     0.049    0.244      0.200
+
+
+
+====== CYCLE  4 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7377635561787476
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.3776e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.664187 max= 17637.559048
+diag(all) min= 360.664187 max= 17637.559048
+Trying gamma equal 0.138600
+Convergence reached after 18 iterations with no gamma cycles
+min(dx) = -0.0016050488886394127
+max(dx) = 0.0023145460058940958
+mean(dx)= 0.00013002276162327393
+cc_prev_dx = 0.9930215000481183
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7310877866054154
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.3109e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.094      0.013
+Bond angles, non H               10     0.580    0.197      2.412
+Chiral centres                    1     0.052    0.261      0.198
+Planar groups                     8     0.000    0.013      0.020
+VDW torsion                       4     0.048    0.242      0.200
+
+
+
+====== CYCLE  5 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7310877866054154
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.3109e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.749988 max= 17642.521692
+diag(all) min= 360.749988 max= 17642.521692
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.0015350716332498274
+max(dx) = 0.002014538631273514
+mean(dx)= 0.00011280110909645976
+cc_prev_dx = 0.9979393104228553
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.724995195341281
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.2500e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.094      0.013
+Bond angles, non H               10     0.577    0.196      2.412
+Chiral centres                    1     0.052    0.264      0.198
+Planar groups                     8     0.000    0.012      0.020
+VDW torsion                       4     0.048    0.240      0.200
+
+
+
+====== CYCLE  6 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.724995195341281
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.2500e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.798695 max= 17647.512102
+diag(all) min= 360.798695 max= 17647.512102
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.001478776989573666
+max(dx) = 0.0019423109393653761
+mean(dx)= 0.00010171247636482884
+cc_prev_dx = 0.9988163038966765
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7193286657038915
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.1933e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.094      0.013
+Bond angles, non H               10     0.574    0.195      2.412
+Chiral centres                    1     0.053    0.266      0.198
+Planar groups                     8     0.000    0.012      0.020
+VDW torsion                       4     0.048    0.239      0.200
+
+
+
+====== CYCLE  7 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7193286657038915
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.1933e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.830515 max= 17652.550426
+diag(all) min= 360.830515 max= 17652.550426
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.0014243152632429192
+max(dx) = 0.001909559496729646
+mean(dx)= 9.374870065614538e-05
+cc_prev_dx = 0.9991714915217723
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7140011259928842
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.1400e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.093      0.013
+Bond angles, non H               10     0.571    0.194      2.412
+Chiral centres                    1     0.053    0.268      0.198
+Planar groups                     8     0.000    0.011      0.020
+VDW torsion                       4     0.048    0.238      0.200
+
+
+
+====== CYCLE  8 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7140011259928842
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.1400e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.853355 max= 17657.631952
+diag(all) min= 360.853355 max= 17657.631952
+Trying gamma equal 0.138600
+Convergence reached after 17 iterations with no gamma cycles
+min(dx) = -0.0013688293021300944
+max(dx) = 0.0018736855269473576
+mean(dx)= 8.771600037479267e-05
+cc_prev_dx = 0.999383905358119
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7089569923857447
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.0896e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.093      0.013
+Bond angles, non H               10     0.568    0.193      2.412
+Chiral centres                    1     0.053    0.268      0.198
+Planar groups                     8     0.000    0.011      0.020
+VDW torsion                       4     0.048    0.238      0.200
+
+
+
+====== CYCLE  9 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7089569923857447
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.0896e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.871027 max= 17662.744940
+diag(all) min= 360.871027 max= 17662.744940
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0013125747685881696
+max(dx) = 0.0018364224349479588
+mean(dx)= 8.302167169352264e-05
+cc_prev_dx = 0.9995240983191181
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.7041580993606873
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.0416e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.093      0.013
+Bond angles, non H               10     0.565    0.192      2.412
+Chiral centres                    1     0.053    0.269      0.198
+Planar groups                     8     0.000    0.011      0.020
+VDW torsion                       4     0.047    0.237      0.200
+
+
+
+====== CYCLE 10 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.7041580993606873
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.0416e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.885719 max= 17667.876465
+diag(all) min= 360.885719 max= 17667.876465
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0012562526532583875
+max(dx) = 0.001798516160506065
+mean(dx)= 7.930835764284062e-05
+cc_prev_dx = 0.9996193780436801
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6995767293569841
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.9958e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.093      0.013
+Bond angles, non H               10     0.563    0.191      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.010      0.020
+VDW torsion                       4     0.047    0.236      0.200
+
+
+
+====== CYCLE 11 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6995767293569841
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.9958e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.898796 max= 17673.014283
+diag(all) min= 360.898796 max= 17673.014283
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0012007672644324893
+max(dx) = 0.0017604641352368792
+mean(dx)= 7.632141459059332e-05
+cc_prev_dx = 0.9996870299975217
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6951917647220094
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.9519e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.092      0.013
+Bond angles, non H               10     0.561    0.191      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.010      0.020
+VDW torsion                       4     0.047    0.235      0.200
+
+
+
+====== CYCLE 12 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6951917647220094
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.9519e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.911164 max= 17678.147901
+diag(all) min= 360.911164 max= 17678.147901
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0011510238597673855
+max(dx) = 0.0017226022796328914
+mean(dx)= 7.38812614237664e-05
+cc_prev_dx = 0.9997363166554405
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6909864466915334
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.9099e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.092      0.013
+Bond angles, non H               10     0.559    0.190      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.010      0.020
+VDW torsion                       4     0.047    0.234      0.200
+
+
+
+====== CYCLE 13 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6909864466915334
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.9099e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.923423 max= 17683.268414
+diag(all) min= 360.923423 max= 17683.268414
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.001124649792648455
+max(dx) = 0.00168518021468728
+mean(dx)= 7.185283657221546e-05
+cc_prev_dx = 0.9997733886059902
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6869470189066504
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.8695e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.092      0.013
+Bond angles, non H               10     0.557    0.189      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.010      0.020
+VDW torsion                       4     0.047    0.234      0.200
+
+
+
+====== CYCLE 14 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6869470189066504
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.8695e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.935962 max= 17688.368455
+diag(all) min= 360.935962 max= 17688.368455
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0010997086437694375
+max(dx) = 0.0016483876606374782
+mean(dx)= 7.013383798652792e-05
+cc_prev_dx = 0.9998021484404
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.683061878023595
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.8306e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.092      0.013
+Bond angles, non H               10     0.555    0.189      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.010      0.020
+VDW torsion                       4     0.047    0.233      0.200
+
+
+
+====== CYCLE 15 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.683061878023595
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.8306e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.949024 max= 17693.442023
+diag(all) min= 360.949024 max= 17693.442023
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0010892397284691074
+max(dx) = 0.0016123656633616197
+mean(dx)= 6.86465596463204e-05
+cc_prev_dx = 0.9998251107254187
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6793210243408415
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.7932e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.091      0.013
+Bond angles, non H               10     0.553    0.188      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.232      0.200
+
+
+
+====== CYCLE 16 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6793210243408415
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.7932e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.962746 max= 17698.484279
+diag(all) min= 360.962746 max= 17698.484279
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0010844953003307817
+max(dx) = 0.0015772145206582632
+mean(dx)= 6.733200476088736e-05
+cc_prev_dx = 0.999843921263746
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6757156948018612
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.7572e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.091      0.013
+Bond angles, non H               10     0.552    0.188      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.232      0.200
+
+
+
+====== CYCLE 17 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6757156948018612
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.7572e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.977192 max= 17703.491348
+diag(all) min= 360.977192 max= 17703.491348
+Trying gamma equal 0.138600
+Convergence reached after 15 iterations with no gamma cycles
+min(dx) = -0.0010786446121548426
+max(dx) = 0.0015430014443111777
+mean(dx)= 6.614586476287944e-05
+cc_prev_dx = 0.9998596726462854
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6722381096193322
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.7224e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.091      0.013
+Bond angles, non H               10     0.550    0.187      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.231      0.200
+
+
+
+====== CYCLE 18 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6722381096193322
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.7224e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 360.992369 max= 17708.460130
+diag(all) min= 360.992369 max= 17708.460130
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.001071900376538293
+max(dx) = 0.0015097635468655154
+mean(dx)= 6.505309306257155e-05
+cc_prev_dx = 0.9998731186526187
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6688812914274896
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.6888e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.090      0.013
+Bond angles, non H               10     0.549    0.187      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.231      0.200
+
+
+
+====== CYCLE 19 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6688812914274896
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.6888e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.008253 max= 17713.388178
+diag(all) min= 361.008253 max= 17713.388178
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0010644248569566055
+max(dx) = 0.0014775215757187872
+mean(dx)= 6.40302421618071e-05
+cc_prev_dx = 0.9998847435574644
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6656389318349322
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.6564e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.090      0.013
+Bond angles, non H               10     0.547    0.186      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.230      0.200
+
+
+
+====== CYCLE 20 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6656389318349322
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.6564e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.024792 max= 17718.273533
+diag(all) min= 361.024792 max= 17718.273533
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.001056356874791689
+max(dx) = 0.001446275201677395
+mean(dx)= 6.305748337584422e-05
+cc_prev_dx = 0.9998949373613594
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6625052899616435
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.6251e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.090      0.013
+Bond angles, non H               10     0.546    0.186      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.229      0.200
+
+
+
+====== CYCLE 21 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6625052899616435
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.6251e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.041920 max= 17723.114635
+diag(all) min= 361.041920 max= 17723.114635
+Trying gamma equal 0.138600
+Convergence reached after 16 iterations with no gamma cycles
+min(dx) = -0.0010478059787684855
+max(dx) = 0.0014160132987195379
+mean(dx)= 6.212106475621632e-05
+cc_prev_dx = 0.9999039473817725
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6594751129935885
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.5948e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.090      0.013
+Bond angles, non H               10     0.545    0.185      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.229      0.200
+
+
+
+====== CYCLE 22 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6594751129935885
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.5948e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.059563 max= 17727.910245
+diag(all) min= 361.059563 max= 17727.910245
+Trying gamma equal 0.138600
+Convergence reached after 15 iterations with no gamma cycles
+min(dx) = -0.0010388609218423823
+max(dx) = 0.0013867163562831348
+mean(dx)= 6.121405249238461e-05
+cc_prev_dx = 0.9999119164177916
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6565435725145307
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.5654e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.089      0.013
+Bond angles, non H               10     0.544    0.185      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.009      0.020
+VDW torsion                       4     0.046    0.228      0.200
+
+
+
+====== CYCLE 23 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6565435725145307
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.5654e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.077650 max= 17732.659212
+diag(all) min= 361.077650 max= 17732.659212
+Trying gamma equal 0.138600
+Convergence reached after 15 iterations with no gamma cycles
+min(dx) = -0.0010295998546931784
+max(dx) = 0.0013583493362935531
+mean(dx)= 6.0320803866656554e-05
+cc_prev_dx = 0.9999191956861118
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6537062124186767
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.5371e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.089      0.013
+Bond angles, non H               10     0.543    0.184      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.046    0.228      0.200
+
+
+
+====== CYCLE 24 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6537062124186767
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.5371e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.096091 max= 17737.360955
+diag(all) min= 361.096091 max= 17737.360955
+Trying gamma equal 0.138600
+Convergence reached after 15 iterations with no gamma cycles
+min(dx) = -0.0010200745090435015
+max(dx) = 0.0013308942880952874
+mean(dx)= 5.944312215679451e-05
+cc_prev_dx = 0.9999256246484558
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.650958905473953
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.5096e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.089      0.013
+Bond angles, non H               10     0.541    0.184      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.227      0.200
+
+
+
+====== CYCLE 25 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.650958905473953
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.5096e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.114810 max= 17742.014808
+diag(all) min= 361.114810 max= 17742.014808
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0010103531571488368
+max(dx) = 0.0013042991862621907
+mean(dx)= 5.857675596019392e-05
+cc_prev_dx = 0.9999314600466142
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6482978167812761
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.4830e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.089      0.013
+Bond angles, non H               10     0.540    0.184      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.227      0.200
+
+
+
+====== CYCLE 26 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6482978167812761
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.4830e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.133743 max= 17746.620133
+diag(all) min= 361.133743 max= 17746.620133
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0010004388174268122
+max(dx) = 0.0012785594250190825
+mean(dx)= 5.7717883037692375e-05
+cc_prev_dx = 0.999936719600376
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6457193725868513
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.4572e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.088      0.013
+Bond angles, non H               10     0.539    0.183      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.226      0.200
+
+
+
+====== CYCLE 27 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6457193725868513
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.4572e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.152806 max= 17751.176652
+diag(all) min= 361.152806 max= 17751.176652
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0009903993591192112
+max(dx) = 0.0012536212143531397
+mean(dx)= 5.686472715678973e-05
+cc_prev_dx = 0.9999415313479969
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6432202333735467
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.4322e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.088      0.013
+Bond angles, non H               10     0.538    0.183      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.226      0.200
+
+
+
+====== CYCLE 28 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6432202333735467
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.4322e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.171936 max= 17755.684062
+diag(all) min= 361.171936 max= 17755.684062
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0009802572101379628
+max(dx) = 0.0012294497888178694
+mean(dx)= 5.6016958563926416e-05
+cc_prev_dx = 0.9999458915695197
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6407972707574618
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.4080e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.088      0.013
+Bond angles, non H               10     0.537    0.183      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.225      0.200
+
+
+
+====== CYCLE 29 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6407972707574618
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.4080e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.191072 max= 17760.142110
+diag(all) min= 361.191072 max= 17760.142110
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0009700362191196967
+max(dx) = 0.001206010463335341
+mean(dx)= 5.5174386476081454e-05
+cc_prev_dx = 0.9999498661446581
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.6384475472645739
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.3845e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.088      0.013
+Bond angles, non H               10     0.537    0.182      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.225      0.200
+
+
+
+====== CYCLE 30 ======
+
+ weight = 1.0000e+00
+ geom_x = 0.6384475472645739
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 6.3845e-01
+using cgsolve in c++, ic=False
+diag(geom) min= 361.210160 max= 17764.550598
+diag(all) min= 361.210160 max= 17764.550598
+Trying gamma equal 0.138600
+Convergence reached after 14 iterations with no gamma cycles
+min(dx) = -0.0009597573483750127
+max(dx) = 0.0011832693534868047
+mean(dx)= 5.4337057616804806e-05
+cc_prev_dx = 0.9999534962364929
+vdws = 10
+atoms = 9
+pairs = 28
+ geom_x = 0.636168298652454
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 6.3617e-01
+                       N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H             8     0.001    0.088      0.013
+Bond angles, non H               10     0.536    0.182      2.412
+Chiral centres                    1     0.053    0.270      0.198
+Planar groups                     8     0.000    0.008      0.020
+VDW torsion                       4     0.045    0.224      0.200
+
+
+$TABLE: stats vs cycle :
+$GRAPHS
+: Geometry :A:1,2,4:
+: Geometry Z :A:1,5,3:
+$$
+ Ncyc  rmsBOND  zBOND  rmsANGL  zANGL
+$$
+$$
+    0   0.0019 0.1224   0.5484 0.1877
+    1   0.0015 0.0949   0.5639 0.1920
+    2   0.0014 0.0934   0.5782 0.1965
+    3   0.0014 0.0936   0.5810 0.1974
+    4   0.0014 0.0937   0.5796 0.1969
+    5   0.0014 0.0937   0.5769 0.1960
+    6   0.0014 0.0936   0.5738 0.1949
+    7   0.0014 0.0934   0.5709 0.1939
+    8   0.0014 0.0931   0.5681 0.1930
+    9   0.0014 0.0929   0.5655 0.1921
+   10   0.0014 0.0926   0.5631 0.1913
+   11   0.0014 0.0924   0.5608 0.1906
+   12   0.0014 0.0921   0.5588 0.1899
+   13   0.0014 0.0918   0.5568 0.1892
+   14   0.0014 0.0915   0.5550 0.1886
+   15   0.0014 0.0912   0.5533 0.1881
+   16   0.0014 0.0910   0.5517 0.1875
+   17   0.0014 0.0907   0.5502 0.1870
+   18   0.0014 0.0904   0.5488 0.1865
+   19   0.0014 0.0902   0.5474 0.1861
+   20   0.0014 0.0899   0.5461 0.1856
+   21   0.0014 0.0897   0.5449 0.1852
+   22   0.0014 0.0894   0.5437 0.1848
+   23   0.0014 0.0892   0.5425 0.1844
+   24   0.0014 0.0889   0.5414 0.1841
+   25   0.0014 0.0887   0.5404 0.1837
+   26   0.0014 0.0885   0.5394 0.1834
+   27   0.0014 0.0882   0.5384 0.1830
+   28   0.0014 0.0880   0.5375 0.1827
+   29   0.0014 0.0878   0.5366 0.1824
+   30   0.0014 0.0876   0.5357 0.1821
+$$
+
+Creating restraints..
+
+Chain info:
+ chain 
+  ligands: LIG (1 residues)
+
+Number of refinement parameters:
+       n_params  n_atoms  n_atoms_geom_only  n_atoms_data_only
+xyz          16       16                  7                  0
+adp           0        0                  0                  0
+occ           0        0                  0                  0
+dfrac         0        0                  0                  0
+
+Randomizing structure with rmsd of 0.01
+setting geometry weight wbond= 1.0
+setting geometry adaptive weight wbond=0.0
+setting geometry weight wangle= 1.0
+setting geometry adaptive weight wangle=0.0
+setting geometry weight wtors= 1.0
+setting geometry adaptive weight wtors=0.0
+setting geometry weight wplane= 1.0
+setting geometry adaptive weight wplane=0.0
+setting geometry weight wchir= 1.0
+setting geometry adaptive weight wchir=0.0
+setting geometry weight wstack= 1.0
+setting geometry weight wvdw= 1.0
+setting geometry adaptive weight wvdw=0.0
+setting geometry weight wncs= 1.0
+Torsion angle rules:
+ include:
+  {'group': 'peptide', 'tors_name': 'chi*'}
+  {'link': '*', 'tors_name': 'omega'}
+  {'residue': '*', 'tors_name': 'sp2_sp2*'}
+  {'link': '*', 'tors_name': 'sp2_sp2*'}
+ exclude:
+  none
+External restraints from Refmac instructions
+ Number of distances          : 0
+ Number of angles             : 0
+ Number of torsions           : 0
+ Number of chirals            : 0
+ Number of planes             : 0
+ Number of intervals          : 0
+ Number of stackings          : 0
+ Number of harmonics          : 0
+ Number of special positions  : 0
+
+Running 10 cycles with wchir=4 wvdw=2 with hydrogen
+Geometry weights
+vdws = 55
+atoms = 16
+pairs = 94
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.006    0.592      0.013
+Bond distances, H                    7     0.011    0.770      0.015
+Bond angles, non H                  10     0.899    0.317      2.412
+Bond angles, H                      14     0.742    0.493      1.803
+Torsion angles, period 2             1     0.315    0.063      5.000
+Torsion angles, period 6             1     1.427    0.071     20.000
+Chiral centres                       1     0.125    0.633      0.198
+Planar groups                       16     0.004    0.183      0.020
+VDW nonbonded                        2     0.093    0.463      0.200
+VDW torsion                         11     0.131    0.657      0.200
+
+
+====== CYCLE  1 ======
+
+ weight = 1.0000e+00
+ geom_x = 19.522168193407953
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 1.9522e+01
+using cgsolve in c++, ic=False
+diag(geom) min= 739.156168 max= 19320.642859
+diag(all) min= 739.156168 max= 19320.642859
+Trying gamma equal 0.000000
+Not converging with gamma equal 0.000000
+Trying gamma equal 0.052500
+Gamma decreased to 0.042000
+min(dx) = -0.032205886573240035
+max(dx) = 0.03287764562194667
+mean(dx)= -0.0009310613985056528
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 8.3664072475158
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.3664e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.258      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.584    0.256      2.412
+Bond angles, H                      14     0.734    0.294      1.803
+Torsion angles, period 2             1     0.153    0.031      5.000
+Torsion angles, period 6             1     0.881    0.044     20.000
+Chiral centres                       1     0.007    0.037      0.198
+Planar groups                       16     0.000    0.021      0.020
+VDW nonbonded                        2     0.043    0.214      0.200
+VDW torsion                         11     0.112    0.562      0.200
+
+
+
+====== CYCLE  2 ======
+
+ weight = 1.0000e+00
+ geom_x = 8.3664072475158
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.3664e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 717.166611 max= 19351.345296
+diag(all) min= 717.166611 max= 19351.345296
+Trying gamma equal 0.042000
+Convergence reached after 33 iterations with no gamma cycles
+min(dx) = -0.010974016064751861
+max(dx) = 0.008591041515143498
+mean(dx)= -1.8000628927529922e-05
+cc_prev_dx = 0.5910630072333312
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 8.108691839441066
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.1087e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.283      0.013
+Bond distances, H                    7     0.001    0.065      0.015
+Bond angles, non H                  10     0.684    0.311      2.412
+Bond angles, H                      14     0.764    0.304      1.803
+Torsion angles, period 2             1     0.179    0.036      5.000
+Torsion angles, period 6             1     1.087    0.054     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.015      0.020
+VDW nonbonded                        2     0.032    0.161      0.200
+VDW torsion                         11     0.109    0.545      0.200
+
+
+
+====== CYCLE  3 ======
+
+ weight = 1.0000e+00
+ geom_x = 8.108691839441066
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.1087e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 718.410868 max= 19353.713677
+diag(all) min= 718.410868 max= 19353.713677
+Trying gamma equal 0.042000
+Not converging with gamma equal 0.042000
+Trying gamma equal 0.094500
+Gamma decreased to 0.084000
+min(dx) = -0.004604339411944077
+max(dx) = 0.0034900504671042075
+mean(dx)= 3.7658121056005156e-05
+cc_prev_dx = 0.9566298529303567
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 8.057259770125867
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.0573e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.285      0.013
+Bond distances, H                    7     0.001    0.065      0.015
+Bond angles, non H                  10     0.729    0.326      2.412
+Bond angles, H                      14     0.762    0.304      1.803
+Torsion angles, period 2             1     0.191    0.038      5.000
+Torsion angles, period 6             1     1.143    0.057     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.014      0.020
+VDW nonbonded                        2     0.030    0.151      0.200
+VDW torsion                         11     0.108    0.541      0.200
+
+
+
+====== CYCLE  4 ======
+
+ weight = 1.0000e+00
+ geom_x = 8.057259770125867
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.0573e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 719.330708 max= 19355.749863
+diag(all) min= 719.330708 max= 19355.749863
+Trying gamma equal 0.084000
+Convergence reached after 25 iterations with no gamma cycles
+min(dx) = -0.00453683700758035
+max(dx) = 0.003953593943645805
+mean(dx)= 6.895648994667775e-05
+cc_prev_dx = 0.9913702890538997
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 8.01956233242874
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 8.0196e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.285      0.013
+Bond distances, H                    7     0.001    0.065      0.015
+Bond angles, non H                  10     0.769    0.337      2.412
+Bond angles, H                      14     0.759    0.303      1.803
+Torsion angles, period 2             1     0.203    0.041      5.000
+Torsion angles, period 6             1     1.199    0.060     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.041    0.205      0.200
+VDW torsion                         11     0.108    0.538      0.200
+
+
+
+====== CYCLE  5 ======
+
+ weight = 1.0000e+00
+ geom_x = 8.01956233242874
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 8.0196e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 720.311916 max= 19358.244876
+diag(all) min= 720.311916 max= 19358.244876
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.004056783324001628
+max(dx) = 0.003756970585967233
+mean(dx)= 7.944029100540745e-05
+cc_prev_dx = 0.9972586255954737
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.992797844007021
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9928e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.286      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.801    0.345      2.412
+Bond angles, H                      14     0.757    0.303      1.803
+Torsion angles, period 2             1     0.210    0.042      5.000
+Torsion angles, period 6             1     1.222    0.061     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.040    0.199      0.200
+VDW torsion                         11     0.107    0.536      0.200
+
+
+
+====== CYCLE  6 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.992797844007021
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9928e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 721.209537 max= 19361.318747
+diag(all) min= 721.209537 max= 19361.318747
+Trying gamma equal 0.084000
+Convergence reached after 22 iterations with no gamma cycles
+min(dx) = -0.0035377849335240913
+max(dx) = 0.0034942150237675567
+mean(dx)= 8.696265143673788e-05
+cc_prev_dx = 0.9974077468366165
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.97365165963411
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9737e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.286      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.828    0.351      2.412
+Bond angles, H                      14     0.755    0.302      1.803
+Torsion angles, period 2             1     0.217    0.043      5.000
+Torsion angles, period 6             1     1.237    0.062     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.039    0.194      0.200
+VDW torsion                         11     0.107    0.535      0.200
+
+
+
+====== CYCLE  7 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.97365165963411
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9737e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 722.011071 max= 19364.005894
+diag(all) min= 722.011071 max= 19364.005894
+Trying gamma equal 0.084000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.003081941717539031
+max(dx) = 0.0032539295212447223
+mean(dx)= 9.407788985219935e-05
+cc_prev_dx = 0.9975048502511916
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.959447559378017
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9594e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.286      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.850    0.356      2.412
+Bond angles, H                      14     0.753    0.301      1.803
+Torsion angles, period 2             1     0.224    0.045      5.000
+Torsion angles, period 6             1     1.247    0.062     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.038    0.189      0.200
+VDW torsion                         10     0.112    0.560      0.200
+
+
+
+====== CYCLE  8 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.959447559378017
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9594e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 722.712064 max= 19366.264158
+diag(all) min= 722.712064 max= 19366.264158
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.0027321018946075337
+max(dx) = 0.0030416672157986472
+mean(dx)= 9.839474150108694e-05
+cc_prev_dx = 0.9981589423928188
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.948418549299439
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9484e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.286      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.868    0.361      2.412
+Bond angles, H                      14     0.751    0.301      1.803
+Torsion angles, period 2             1     0.228    0.046      5.000
+Torsion angles, period 6             1     1.254    0.063     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.037    0.185      0.200
+VDW torsion                         10     0.112    0.559      0.200
+
+
+
+====== CYCLE  9 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.948418549299439
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9484e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 723.325725 max= 19368.293597
+diag(all) min= 723.325725 max= 19368.293597
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.002416357011931931
+max(dx) = 0.0028507827307827343
+mean(dx)= 0.0001015821578537842
+cc_prev_dx = 0.9981431099771209
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.939586063010504
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9396e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.286      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.882    0.364      2.412
+Bond angles, H                      14     0.750    0.300      1.803
+Torsion angles, period 2             1     0.232    0.046      5.000
+Torsion angles, period 6             1     1.257    0.063     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.036    0.181      0.200
+VDW torsion                         10     0.112    0.558      0.200
+
+
+
+====== CYCLE 10 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.939586063010504
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9396e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 723.859794 max= 19369.926659
+diag(all) min= 723.859794 max= 19369.926659
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.0021431051173698232
+max(dx) = 0.0026831468443835153
+mean(dx)= 0.00010408835474142479
+cc_prev_dx = 0.9982382734844093
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.93228349444426
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9323e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.285      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.894    0.367      2.412
+Bond angles, H                      14     0.748    0.300      1.803
+Torsion angles, period 2             1     0.236    0.047      5.000
+Torsion angles, period 6             1     1.257    0.063     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.036    0.178      0.200
+VDW torsion                         10     0.112    0.558      0.200
+
+
+$TABLE: stats vs cycle :
+$GRAPHS
+: Geometry :A:1,2,4:
+: Geometry Z :A:1,5,3:
+$$
+ Ncyc  rmsBOND  zBOND  rmsANGL  zANGL
+$$
+$$
+    0   0.0065 0.5915   0.8986 0.3167
+    1   0.0040 0.2583   0.5838 0.2557
+    2   0.0045 0.2828   0.6839 0.3114
+    3   0.0046 0.2848   0.7287 0.3260
+    4   0.0046 0.2851   0.7686 0.3367
+    5   0.0046 0.2856   0.8013 0.3447
+    6   0.0046 0.2856   0.8281 0.3511
+    7   0.0046 0.2856   0.8499 0.3563
+    8   0.0047 0.2856   0.8677 0.3606
+    9   0.0047 0.2855   0.8822 0.3641
+   10   0.0047 0.2854   0.8939 0.3669
+$$
+
+Running 30 cycles with wchir=1 wvdw=2 with hydrogen
+Geometry weights
+vdws = 55
+atoms = 16
+pairs = 94
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.005    0.285      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.894    0.367      2.412
+Bond angles, H                      14     0.748    0.300      1.803
+Torsion angles, period 2             1     0.236    0.047      5.000
+Torsion angles, period 6             1     1.257    0.063     20.000
+Chiral centres                       1     0.004    0.020      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.036    0.178      0.200
+VDW torsion                         10     0.112    0.558      0.200
+
+
+====== CYCLE  1 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.929179485664818
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9292e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 724.321230 max= 18902.078372
+diag(all) min= 724.321230 max= 18902.078372
+Trying gamma equal 0.084000
+Convergence reached after 24 iterations with no gamma cycles
+min(dx) = -0.0017480099288651842
+max(dx) = 0.002483810205926348
+mean(dx)= 0.00015389589651212035
+cc_prev_dx = 0.8754447411715852
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.915353455608332
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9154e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.065      0.015
+Bond angles, non H                  10     0.906    0.370      2.412
+Bond angles, H                      14     0.754    0.307      1.803
+Torsion angles, period 2             1     0.241    0.048      5.000
+Torsion angles, period 6             1     1.192    0.060     20.000
+Chiral centres                       1     0.012    0.062      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.035    0.174      0.200
+VDW torsion                          9     0.117    0.587      0.200
+
+
+
+====== CYCLE  2 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.915353455608332
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9154e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 724.674564 max= 18909.365075
+diag(all) min= 724.674564 max= 18909.365075
+Trying gamma equal 0.084000
+Convergence reached after 24 iterations with no gamma cycles
+min(dx) = -0.0019507768041594179
+max(dx) = 0.002442245363139464
+mean(dx)= 0.0001257472288466584
+cc_prev_dx = 0.945839588058209
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.909013064555508
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9090e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.916    0.372      2.412
+Bond angles, H                      14     0.755    0.309      1.803
+Torsion angles, period 2             1     0.243    0.049      5.000
+Torsion angles, period 6             1     1.185    0.059     20.000
+Chiral centres                       1     0.014    0.070      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.034    0.171      0.200
+VDW torsion                          9     0.117    0.586      0.200
+
+
+
+====== CYCLE  3 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.909013064555508
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9090e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 724.970266 max= 18916.672545
+diag(all) min= 724.970266 max= 18916.672545
+Trying gamma equal 0.084000
+Convergence reached after 22 iterations with no gamma cycles
+min(dx) = -0.0017970578947065546
+max(dx) = 0.0023957152659812232
+mean(dx)= 0.00011772778616519004
+cc_prev_dx = 0.9916137804702401
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.903530060455645
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.9035e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.268      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.923    0.373      2.412
+Bond angles, H                      14     0.754    0.309      1.803
+Torsion angles, period 2             1     0.242    0.048      5.000
+Torsion angles, period 6             1     1.181    0.059     20.000
+Chiral centres                       1     0.014    0.072      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.034    0.168      0.200
+VDW torsion                          9     0.117    0.586      0.200
+
+
+
+====== CYCLE  4 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.903530060455645
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.9035e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 725.239932 max= 18923.720170
+diag(all) min= 725.239932 max= 18923.720170
+Trying gamma equal 0.084000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.001708313418899186
+max(dx) = 0.0023537089391804417
+mean(dx)= 0.00011406985284551136
+cc_prev_dx = 0.9982255468285636
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.898465539529863
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8985e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.268      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.928    0.374      2.412
+Bond angles, H                      14     0.753    0.309      1.803
+Torsion angles, period 2             1     0.241    0.048      5.000
+Torsion angles, period 6             1     1.175    0.059     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.033    0.165      0.200
+VDW torsion                         10     0.111    0.555      0.200
+
+
+
+====== CYCLE  5 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.898465539529863
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8985e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 725.494913 max= 18930.504494
+diag(all) min= 725.494913 max= 18930.504494
+Trying gamma equal 0.084000
+Convergence reached after 25 iterations with no gamma cycles
+min(dx) = -0.0016054749242522587
+max(dx) = 0.002171198614903683
+mean(dx)= 0.00010456060173246318
+cc_prev_dx = 0.9987825436884067
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.89389648721954
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8939e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.932    0.375      2.412
+Bond angles, H                      14     0.752    0.309      1.803
+Torsion angles, period 2             1     0.238    0.048      5.000
+Torsion angles, period 6             1     1.166    0.058     20.000
+Chiral centres                       1     0.015    0.073      0.198
+Planar groups                       16     0.000    0.013      0.020
+VDW nonbonded                        1     0.033    0.163      0.200
+VDW torsion                         10     0.111    0.555      0.200
+
+
+
+====== CYCLE  6 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.89389648721954
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8939e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 725.746374 max= 18936.608809
+diag(all) min= 725.746374 max= 18936.608809
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.001504472503663093
+max(dx) = 0.0020877602935594937
+mean(dx)= 0.00010114458883424987
+cc_prev_dx = 0.9994941074424362
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.889648649967449
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8896e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.935    0.376      2.412
+Bond angles, H                      14     0.751    0.309      1.803
+Torsion angles, period 2             1     0.236    0.047      5.000
+Torsion angles, period 6             1     1.156    0.058     20.000
+Chiral centres                       1     0.015    0.074      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.032    0.160      0.200
+VDW torsion                         10     0.111    0.555      0.200
+
+
+
+====== CYCLE  7 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.889648649967449
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8896e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 725.985378 max= 18942.376120
+diag(all) min= 725.985378 max= 18942.376120
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.0014078547135325519
+max(dx) = 0.0020091291371929225
+mean(dx)= 9.852758815515669e-05
+cc_prev_dx = 0.9996147836347778
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.885669405279704
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8857e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.938    0.376      2.412
+Bond angles, H                      14     0.750    0.308      1.803
+Torsion angles, period 2             1     0.235    0.047      5.000
+Torsion angles, period 6             1     1.146    0.057     20.000
+Chiral centres                       1     0.015    0.074      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.032    0.158      0.200
+VDW torsion                         10     0.111    0.555      0.200
+
+
+
+====== CYCLE  8 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.885669405279704
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8857e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 726.211748 max= 18947.793641
+diag(all) min= 726.211748 max= 18947.793641
+Trying gamma equal 0.084000
+Convergence reached after 23 iterations with no gamma cycles
+min(dx) = -0.0013179216507397515
+max(dx) = 0.001933344367644237
+mean(dx)= 9.621088203548368e-05
+cc_prev_dx = 0.9996790187567043
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.881921357665847
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8819e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.939    0.377      2.412
+Bond angles, H                      14     0.749    0.308      1.803
+Torsion angles, period 2             1     0.233    0.047      5.000
+Torsion angles, period 6             1     1.135    0.057     20.000
+Chiral centres                       1     0.015    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.031    0.156      0.200
+VDW torsion                         10     0.111    0.554      0.200
+
+
+
+====== CYCLE  9 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.881921357665847
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8819e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 726.424411 max= 18952.880096
+diag(all) min= 726.424411 max= 18952.880096
+Trying gamma equal 0.084000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.0012351368238469494
+max(dx) = 0.0018608044575272845
+mean(dx)= 9.404036885155276e-05
+cc_prev_dx = 0.9997230756687921
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.878376432821707
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8784e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.940    0.377      2.412
+Bond angles, H                      14     0.748    0.308      1.803
+Torsion angles, period 2             1     0.232    0.046      5.000
+Torsion angles, period 6             1     1.124    0.056     20.000
+Chiral centres                       1     0.015    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.031    0.154      0.200
+VDW torsion                         10     0.111    0.554      0.200
+
+
+
+====== CYCLE 10 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.878376432821707
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8784e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 726.623117 max= 18957.658730
+diag(all) min= 726.623117 max= 18957.658730
+Trying gamma equal 0.084000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.0011593507989252922
+max(dx) = 0.001791421088195047
+mean(dx)= 9.192654444838578e-05
+cc_prev_dx = 0.9997559874887674
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.875014100414484
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8750e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.941    0.377      2.412
+Bond angles, H                      14     0.747    0.307      1.803
+Torsion angles, period 2             1     0.230    0.046      5.000
+Torsion angles, period 6             1     1.112    0.056     20.000
+Chiral centres                       1     0.015    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.030    0.152      0.200
+VDW torsion                         11     0.106    0.529      0.200
+
+
+
+====== CYCLE 11 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.875014100414484
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8750e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 726.808210 max= 18992.545414
+diag(all) min= 726.808210 max= 18992.545414
+Trying gamma equal 0.084000
+Convergence reached after 21 iterations with no gamma cycles
+min(dx) = -0.0011136766171366528
+max(dx) = 0.001726595657481956
+mean(dx)= 8.923617570725292e-05
+cc_prev_dx = 0.9999416619634287
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.871846575840615
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8718e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.942    0.377      2.412
+Bond angles, H                      14     0.747    0.307      1.803
+Torsion angles, period 2             1     0.228    0.046      5.000
+Torsion angles, period 6             1     1.102    0.055     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.030    0.150      0.200
+VDW torsion                         11     0.106    0.529      0.200
+
+
+
+====== CYCLE 12 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.871846575840615
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8718e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 726.985508 max= 18996.811659
+diag(all) min= 726.985508 max= 18996.811659
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0010639007197969371
+max(dx) = 0.0016626007098018579
+mean(dx)= 8.642426546342531e-05
+cc_prev_dx = 0.9999334449926375
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.868857288912323
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8689e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.942    0.377      2.412
+Bond angles, H                      14     0.746    0.307      1.803
+Torsion angles, period 2             1     0.226    0.045      5.000
+Torsion angles, period 6             1     1.091    0.055     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.030    0.148      0.200
+VDW torsion                         11     0.106    0.529      0.200
+
+
+
+====== CYCLE 13 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.868857288912323
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8689e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 727.155850 max= 19000.863900
+diag(all) min= 727.155850 max= 19000.863900
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0010165283147374835
+max(dx) = 0.001601546014528631
+mean(dx)= 8.372765620112174e-05
+cc_prev_dx = 0.9999356764374249
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.866034942112666
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8660e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.943    0.377      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.225    0.045      5.000
+Torsion angles, period 6             1     1.080    0.054     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.029    0.146      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 14 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.866034942112666
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8660e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 727.319582 max= 19004.713885
+diag(all) min= 727.319582 max= 19004.713885
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0009719079033705758
+max(dx) = 0.0015430005804246338
+mean(dx)= 8.110764242205054e-05
+cc_prev_dx = 0.9999378596490345
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.863369217733032
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8634e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.943    0.377      2.412
+Bond angles, H                      14     0.744    0.306      1.803
+Torsion angles, period 2             1     0.223    0.045      5.000
+Torsion angles, period 6             1     1.070    0.054     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.029    0.145      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 15 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.863369217733032
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8634e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 727.477161 max= 19008.373082
+diag(all) min= 727.477161 max= 19008.373082
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0009298798570804868
+max(dx) = 0.0014867152263818397
+mean(dx)= 7.855053896560688e-05
+cc_prev_dx = 0.9999391571697509
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.8608506004113075
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8609e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.943    0.377      2.412
+Bond angles, H                      14     0.744    0.306      1.803
+Torsion angles, period 2             1     0.221    0.044      5.000
+Torsion angles, period 6             1     1.060    0.053     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.029    0.143      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 16 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.8608506004113075
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8609e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 727.628998 max= 19011.852387
+diag(all) min= 727.628998 max= 19011.852387
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0008902275966414136
+max(dx) = 0.0014325322512903605
+mean(dx)= 7.605251856071794e-05
+cc_prev_dx = 0.9999396991862926
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.858470259469802
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8585e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.943    0.377      2.412
+Bond angles, H                      14     0.743    0.306      1.803
+Torsion angles, period 2             1     0.219    0.044      5.000
+Torsion angles, period 6             1     1.050    0.052     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        1     0.028    0.142      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 17 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.858470259469802
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8585e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 727.775457 max= 19015.161879
+diag(all) min= 727.775457 max= 19015.161879
+Trying gamma equal 0.084000
+Convergence reached after 20 iterations with no gamma cycles
+min(dx) = -0.0008527344030090895
+max(dx) = 0.0013803338182182372
+mean(dx)= 7.36129712444646e-05
+cc_prev_dx = 0.9999396766373805
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.856289487907349
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8563e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.269      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.944    0.377      2.412
+Bond angles, H                      14     0.742    0.306      1.803
+Torsion angles, period 2             1     0.218    0.044      5.000
+Torsion angles, period 6             1     1.040    0.052     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.012      0.020
+VDW nonbonded                        2     0.020    0.099      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 18 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.856289487907349
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8563e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 825.596869 max= 19018.310843
+diag(all) min= 825.596869 max= 19018.310843
+Trying gamma equal 0.084000
+Not converging with gamma equal 0.084000
+Trying gamma equal 0.136500
+Gamma decreased to 0.126000
+min(dx) = -0.0004491940063246953
+max(dx) = 0.0004826836108962136
+mean(dx)= 2.794488390785647e-05
+cc_prev_dx = 0.9292362895982342
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.855215352912732
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8552e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.944    0.377      2.412
+Bond angles, H                      14     0.744    0.306      1.803
+Torsion angles, period 2             1     0.203    0.041      5.000
+Torsion angles, period 6             1     1.029    0.051     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.011      0.020
+VDW nonbonded                        2     0.020    0.098      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 19 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.855215352912732
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8552e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 825.303099 max= 19019.717789
+diag(all) min= 825.303099 max= 19019.717789
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.000422753930401801
+max(dx) = 0.00048509237115777103
+mean(dx)= 2.889012077397919e-05
+cc_prev_dx = 0.9972427770934814
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.854183440141475
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8542e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.064      0.015
+Bond angles, non H                  10     0.945    0.377      2.412
+Bond angles, H                      14     0.744    0.306      1.803
+Torsion angles, period 2             1     0.186    0.037      5.000
+Torsion angles, period 6             1     1.016    0.051     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.011      0.020
+VDW nonbonded                        2     0.020    0.098      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 20 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.854183440141475
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8542e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 825.028582 max= 19021.008250
+diag(all) min= 825.028582 max= 19021.008250
+Trying gamma equal 0.126000
+Convergence reached after 18 iterations with no gamma cycles
+min(dx) = -0.000369151914765852
+max(dx) = 0.0004400574935218006
+mean(dx)= 2.6563872886541883e-05
+cc_prev_dx = 0.9980937675948882
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.853256295317417
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8533e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.945    0.377      2.412
+Bond angles, H                      14     0.745    0.306      1.803
+Torsion angles, period 2             1     0.170    0.034      5.000
+Torsion angles, period 6             1     1.003    0.050     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.010      0.020
+VDW nonbonded                        2     0.020    0.098      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 21 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.853256295317417
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8533e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 824.779519 max= 19022.101844
+diag(all) min= 824.779519 max= 19022.101844
+Trying gamma equal 0.126000
+Convergence reached after 18 iterations with no gamma cycles
+min(dx) = -0.0003222571989749026
+max(dx) = 0.0004152291467621841
+mean(dx)= 2.428801656452653e-05
+cc_prev_dx = 0.998217428534969
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.852414392081236
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8524e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.946    0.378      2.412
+Bond angles, H                      14     0.745    0.306      1.803
+Torsion angles, period 2             1     0.155    0.031      5.000
+Torsion angles, period 6             1     0.988    0.049     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.010      0.020
+VDW nonbonded                        2     0.020    0.098      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 22 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.852414392081236
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8524e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 824.553405 max= 19023.020183
+diag(all) min= 824.553405 max= 19023.020183
+Trying gamma equal 0.126000
+Convergence reached after 18 iterations with no gamma cycles
+min(dx) = -0.00029817151145520974
+max(dx) = 0.0004069429650303579
+mean(dx)= 2.2196408166115316e-05
+cc_prev_dx = 0.9983450625021917
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.851645098503516
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8516e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.947    0.378      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.143    0.029      5.000
+Torsion angles, period 6             1     0.972    0.049     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.010      0.020
+VDW nonbonded                        3     0.016    0.080      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 23 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.851645098503516
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8516e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 824.349103 max= 19023.783131
+diag(all) min= 824.349103 max= 19023.783131
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.00029436434220325204
+max(dx) = 0.00039746745422739586
+mean(dx)= 1.8277563658762566e-05
+cc_prev_dx = 0.9944706716829138
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.850966806686597
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8510e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.948    0.378      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.131    0.026      5.000
+Torsion angles, period 6             1     0.953    0.048     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.010      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 24 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.850966806686597
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8510e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 824.178892 max= 19024.305387
+diag(all) min= 824.178892 max= 19024.305387
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.00029091877698145073
+max(dx) = 0.0003875556457830057
+mean(dx)= 1.5838641401258846e-05
+cc_prev_dx = 0.9970806129561569
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.850347897771339
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8503e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.948    0.378      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.121    0.024      5.000
+Torsion angles, period 6             1     0.931    0.047     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.010      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 25 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.850347897771339
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8503e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 824.037180 max= 19024.697670
+diag(all) min= 824.037180 max= 19024.697670
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.0002878352077559926
+max(dx) = 0.0003777052307595767
+mean(dx)= 1.387052015511302e-05
+cc_prev_dx = 0.9977022677401756
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.849773651652731
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8498e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.949    0.379      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.113    0.023      5.000
+Torsion angles, period 6             1     0.908    0.045     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 26 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.849773651652731
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8498e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 823.920340 max= 19024.977073
+diag(all) min= 823.920340 max= 19024.977073
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.0002850575914365175
+max(dx) = 0.0003773445000644338
+mean(dx)= 1.222726772261362e-05
+cc_prev_dx = 0.9981950512202268
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.849233718790971
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8492e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.950    0.379      2.412
+Bond angles, H                      14     0.745    0.307      1.803
+Torsion angles, period 2             1     0.107    0.021      5.000
+Torsion angles, period 6             1     0.883    0.044     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 27 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.849233718790971
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8492e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 823.824648 max= 19025.160921
+diag(all) min= 823.824648 max= 19025.160921
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.00028252377857538257
+max(dx) = 0.00038719864109408185
+mean(dx)= 1.0847174142338172e-05
+cc_prev_dx = 0.9986018255473974
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.848720741113492
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8487e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.951    0.379      2.412
+Bond angles, H                      14     0.746    0.307      1.803
+Torsion angles, period 2             1     0.101    0.020      5.000
+Torsion angles, period 6             1     0.858    0.043     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 28 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.848720741113492
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8487e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 823.746674 max= 19025.264017
+diag(all) min= 823.746674 max= 19025.264017
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.0002801809942571493
+max(dx) = 0.0003955080164042166
+mean(dx)= 9.685914332492036e-06
+cc_prev_dx = 0.9989284882637965
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.84822943551718
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8482e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.952    0.379      2.412
+Bond angles, H                      14     0.746    0.307      1.803
+Torsion angles, period 2             1     0.097    0.019      5.000
+Torsion angles, period 6             1     0.831    0.042     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.106    0.528      0.200
+
+
+
+====== CYCLE 29 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.84822943551718
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8482e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 823.683419 max= 19025.298881
+diag(all) min= 823.683419 max= 19025.298881
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.00027798698783349104
+max(dx) = 0.0004024745350897486
+mean(dx)= 8.707812771302641e-06
+cc_prev_dx = 0.999184084893497
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.8477559699038535
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8478e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.952    0.380      2.412
+Bond angles, H                      14     0.746    0.307      1.803
+Torsion angles, period 2             1     0.093    0.019      5.000
+Torsion angles, period 6             1     0.804    0.040     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.105    0.527      0.200
+
+
+
+====== CYCLE 30 ======
+
+ weight = 1.0000e+00
+ geom_x = 7.8477559699038535
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f0= 7.8478e+00
+using cgsolve in c++, ic=False
+diag(geom) min= 823.632323 max= 19025.276114
+diag(all) min= 823.632323 max= 19025.276114
+Trying gamma equal 0.126000
+Convergence reached after 19 iterations with no gamma cycles
+min(dx) = -0.00027590847071770077
+max(dx) = 0.00040827471913729477
+mean(dx)= 7.88341947401732e-06
+cc_prev_dx = 0.9993804005373075
+vdws = 55
+atoms = 16
+pairs = 94
+ geom_x = 7.84729753450524
+ geom_a = 0
+ geom_q = 0
+ geom_c = 0.0
+f1, 0= 7.8473e+00
+                          N restraints  r.m.s.d.  r.m.s.Z  Mn(sigma)
+Bond distances, non H                8     0.004    0.270      0.013
+Bond distances, H                    7     0.001    0.063      0.015
+Bond angles, non H                  10     0.953    0.380      2.412
+Bond angles, H                      14     0.746    0.307      1.803
+Torsion angles, period 2             1     0.090    0.018      5.000
+Torsion angles, period 6             1     0.776    0.039     20.000
+Chiral centres                       1     0.014    0.073      0.198
+Planar groups                       16     0.000    0.009      0.020
+VDW nonbonded                        3     0.016    0.079      0.200
+VDW torsion                         11     0.105    0.527      0.200
+
+
+$TABLE: stats vs cycle :
+$GRAPHS
+: Geometry :A:1,2,4:
+: Geometry Z :A:1,5,3:
+$$
+ Ncyc  rmsBOND  zBOND  rmsANGL  zANGL
+$$
+$$
+    0   0.0047 0.2854   0.8939 0.3669
+    1   0.0044 0.2700   0.9060 0.3696
+    2   0.0043 0.2685   0.9157 0.3717
+    3   0.0043 0.2685   0.9230 0.3733
+    4   0.0044 0.2685   0.9285 0.3745
+    5   0.0044 0.2688   0.9324 0.3754
+    6   0.0044 0.2689   0.9354 0.3761
+    7   0.0044 0.2690   0.9375 0.3765
+    8   0.0044 0.2690   0.9391 0.3768
+    9   0.0044 0.2690   0.9403 0.3769
+   10   0.0044 0.2690   0.9411 0.3770
+   11   0.0044 0.2691   0.9417 0.3770
+   12   0.0044 0.2692   0.9422 0.3770
+   13   0.0044 0.2692   0.9426 0.3769
+   14   0.0044 0.2693   0.9429 0.3769
+   15   0.0044 0.2694   0.9431 0.3768
+   16   0.0044 0.2694   0.9434 0.3767
+   17   0.0044 0.2695   0.9435 0.3767
+   18   0.0044 0.2696   0.9441 0.3769
+   19   0.0044 0.2697   0.9448 0.3772
+   20   0.0044 0.2698   0.9454 0.3774
+   21   0.0044 0.2699   0.9461 0.3776
+   22   0.0044 0.2699   0.9467 0.3778
+   23   0.0044 0.2700   0.9476 0.3781
+   24   0.0044 0.2701   0.9484 0.3784
+   25   0.0044 0.2701   0.9493 0.3787
+   26   0.0044 0.2702   0.9501 0.3790
+   27   0.0044 0.2702   0.9509 0.3792
+   28   0.0044 0.2703   0.9517 0.3794
+   29   0.0044 0.2703   0.9525 0.3797
+   30   0.0044 0.2703   0.9532 0.3799
+$$
+
+Updated dictionary saved: Test_asp_from_Mol2_TMP/mol_1_conf_19_updated.cif
+Refinement statistics saved: Test_asp_from_Mol2_TMP/mol_1_conf_19_stats.json
+
+# Finished on 2026-07-13 15:19:46.497835
+
+=========END OF PROCESS INFORMATION ==========
