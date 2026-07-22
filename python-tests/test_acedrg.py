@@ -229,7 +229,7 @@ def _metal_codes(n: int) -> list[str]:
 
 _metal_codes_list = _metal_codes(N_EXAMPLES)
 
-
+@pytest.mark.extra
 @pytest.mark.parametrize("code", _metal_codes_list)
 def test_metal(code, tmp_path):
     cif = f"{TESTS_DIR}/Tests_Metal/inFiles/{code}.cif"
