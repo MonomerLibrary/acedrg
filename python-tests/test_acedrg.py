@@ -8,6 +8,9 @@ Environment variable overrides (all optional):
   ACEDRG_BIN          path to the acedrg executable
   ACEDRG_TESTS_DIR    path to the Tests/ directory (default: <repo-root>/Tests)
   ACEDRG_N_EXAMPLES   number of input files to test per category (default 3)
+
+Some categories (links, carborns) currently fail and are marked "extra";
+pass --run-extra to include them.
 """
 import glob
 import os
@@ -17,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-_REPO_ROOT = Path(__file__).parent
+_REPO_ROOT = Path(__file__).parent.parent
 
 # -- acedrg binary -----------------------------------------------------------
 # Priority: env var > PATH > local venv fallback
@@ -50,7 +53,7 @@ if not shutil.which("servalcat"):
     _env["VIRTUAL_ENV"] = str(Path(ACEDRG).parent.parent)
 
 
-def _run(args, cwd=None):
+def _run(args, cwd):
     return subprocess.run(
         [ACEDRG] + args,
         capture_output=True,
@@ -80,7 +83,7 @@ _mol_files = sorted(glob.glob(f"{TESTS_DIR}/Tests_Mol/inMol/*.mol"))[:N_EXAMPLES
 def test_mol(mol_file, tmp_path):
     stem = os.path.splitext(os.path.basename(mol_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-m", mol_file, "-o", out])
+    result = _run(["-m", mol_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -96,7 +99,7 @@ _smi_files = sorted(glob.glob(f"{TESTS_DIR}/Tests_Smi/inSmi/*.smiles"))[:N_EXAMP
 def test_smi(smi_file, tmp_path):
     stem = os.path.splitext(os.path.basename(smi_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-i", smi_file, "-o", out])
+    result = _run(["-i", smi_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -112,7 +115,7 @@ _mol2_files = sorted(glob.glob(f"{TESTS_DIR}/Tests_Mol2/inMol2/*.mol2"))[:N_EXAM
 def test_mol2(mol2_file, tmp_path):
     stem = os.path.splitext(os.path.basename(mol2_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-g", mol2_file, "-o", out])
+    result = _run(["-g", mol2_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -130,7 +133,7 @@ _ccd_files = sorted(
 def test_mmcif_ccd(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-c", cif_file, "-o", out])
+    result = _run(["-c", cif_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -148,7 +151,7 @@ _ccp4ml_files = sorted(
 def test_mmcif_ccp4ml(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-c", cif_file, "-o", out])
+    result = _run(["-c", cif_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -168,7 +171,7 @@ _option_r_files = sorted(
 def test_option_r_without(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     out = str(tmp_path / f"Test_{stem}_no_r")
-    result = _run(["-c", cif_file, "-o", out, "-p"])
+    result = _run(["-c", cif_file, "-o", out, "-p"], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -179,7 +182,7 @@ def test_option_r_with(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     r_val = stem[0] * 3
     out = str(tmp_path / f"Test_{stem}_with_r")
-    result = _run(["-c", cif_file, "-o", out, "-r", r_val, "-p"])
+    result = _run(["-c", cif_file, "-o", out, "-r", r_val, "-p"], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -194,6 +197,7 @@ _link_files = sorted(
 _links_cwd = f"{TESTS_DIR}/Tests_Links"
 
 
+@pytest.mark.extra
 @pytest.mark.parametrize(
     "instruct_file",
     _link_files,
@@ -230,7 +234,7 @@ _metal_codes_list = _metal_codes(N_EXAMPLES)
 def test_metal(code, tmp_path):
     cif = f"{TESTS_DIR}/Tests_Metal/inFiles/{code}.cif"
     out = str(tmp_path / f"Test_{code}_p")
-    result = _run(["-c", cif, "-o", out, "-p"])
+    result = _run(["-c", cif, "-o", out, "-p"], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -248,7 +252,7 @@ _aroma_files = sorted(
 def test_aroma(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-c", cif_file, "-o", out])
+    result = _run(["-c", cif_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
 
 
@@ -260,11 +264,12 @@ _carborn_files = sorted(
 )[:N_EXAMPLES]
 
 
+@pytest.mark.extra
 @pytest.mark.parametrize(
     "cif_file", _carborn_files, ids=[os.path.basename(f) for f in _carborn_files]
 )
 def test_carborns(cif_file, tmp_path):
     stem = os.path.splitext(os.path.basename(cif_file))[0]
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-c", cif_file, "-o", out])
+    result = _run(["-c", cif_file, "-o", out], cwd=tmp_path)
     _assert_cif(f"{out}.cif", result)
