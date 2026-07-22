@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     name: Run pytest (${{ matrix.os }})
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
