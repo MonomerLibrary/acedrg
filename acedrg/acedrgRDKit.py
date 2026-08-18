@@ -47,6 +47,7 @@ from  . utility import BondOrderS2N
 from  . utility import getStrsPosDict
 from  . utility import modifyNAndBInSmiles
 
+from  . filetools import matchAtomNames2
 
 class AcedrgRDKit(object):
 
@@ -2472,7 +2473,7 @@ class AcedrgRDKit(object):
             else:
                 tDelAtomIdxs.append(aAt.GetIdx())
 
-    def MolToSimplifiedMmcif(self, tMol, tMmcifName, tChemCheck, tMonoName="LIG", tChiDes=None, tChiBo=None, tGroupName="non-polymer", tIdxConform=0):
+    def MolToSimplifiedMmcif(self, tMol, tMmcifName, tChemCheck, tMonoName="LIG", tChiDes=None, tChiBo=None, tNameFile=None, tGroupName="non-polymer", tIdxConform=0):
 
         # A simplified mmcif file contains:
         # (1) Header section
@@ -2481,9 +2482,9 @@ class AcedrgRDKit(object):
         # (4) Description of torsion angles in the molecules
         # (5) Description of chiral centers in the molecules
         # This file is mainly used as an input file for Acedrg
-        #print("cif_in name ", tMmcifName)
-        #print("Ligand ID ", tMonoName)
-        #print("Group Name ", tGroupName)
+        print("cif_in name ", tMmcifName)
+        print("Ligand ID ", tMonoName)
+        print("Group Name ", tGroupName)
 
         allAtoms = []
         allAtoms1 = tMol.GetAtoms()
@@ -2505,6 +2506,10 @@ class AcedrgRDKit(object):
         allBonds = tMol.GetBonds()
         nAt = len(allAtoms)
         nHAt = tMol.GetNumHeavyAtoms()
+   
+        if tNameFile:
+            print("tNameFile=", tNameFile)
+            matchAtomNames2(allAtoms, allBonds, tNameFile, tMonoName)    
 
         # print "number of atoms with pseudo-atoms is ", tMol.GetNumAtoms()
         #print("number of atoms  initially  ", len(allAtoms))

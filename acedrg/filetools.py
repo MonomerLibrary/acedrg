@@ -2869,7 +2869,7 @@ def outputAtomsInOneMol(tCif, tFileIdx, tAtoms):
         
         aL = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"%(aCId, aId, aAId, aElm, aEn, aC, 
                                            aX, aY, aZ, aX, aY, aZ, aN)
-        
+        print(aL)   
         tCif.write(aL)
         
 def addBondLengToBonds(tAtoms, tBonds):
@@ -3358,10 +3358,39 @@ def addAtomSeri(tAtoms, tBonds):
              aB["_chem_comp_bond.atom_serial_number_2"] = atIdMap[aId2]
         else:
              print("Bug. can not find atom ", aId2)    
+
+def setAtomAndBondDict(tInAtoms, tInBonds, tOutAtoms, tOutBonds):
+
+    nIdx =0
+    atIdMap = {}
+    for aAtm in tInAtoms:
+        aAtmD = {}
+        aId = aAtm.GetProp("Name") 
+        aAtmD["_chem_comp_atom.atom_id"]          =  aId
+        aAtmD["_chem_comp_atom.type_symbol"]      =  aAtm.GetSymbol()
+        aAtmD["_chem_comp_atom.atom_serial_number"] =  nIdx
+        tOutAtoms.append(aAtmD)
+        atIdMap[aId] = aAtmD["_chem_comp_atom.atom_serial_number"]
+        nIdx+=1
+        
+
+    for aBo in tInBonds:
+        aBD = {}
+        atom1 = aBo.GetBeginAtom()
+        id1   = atom1.GetProp("Name")
+        aBD["_chem_comp_bond.atom_id_1"] = id1
+        idx1 = atIdMap[id1] 
+        aBD["_chem_comp_bond.atom_serial_number_1"] = idx1 
+        atom2 = aBo.GetEndAtom()
+        id2 = atom2.GetProp("Name")
+        aBD["_chem_comp_bond.atom_id_2"] = id2
+        idx2 = atIdMap[id2]
+        aBD["_chem_comp_bond.atom_serial_number_2"] = idx2
+        tOutBonds.append(aBD)
+         
         
 def matchAtomNames(tInFN, tTargetFN, tMonoRoot):
     
-
     print("initial file %s "%tInFN)
     print("tTargetFile %s "%tTargetFN)  
     fileIdIn = os.path.basename(tInFN).strip().split(".")[0]
@@ -3403,4 +3432,53 @@ def matchAtomNames(tInFN, tTargetFN, tMonoRoot):
             #print("atom %s in %s ====== atom %s in %s "%(id1, fileIdIn, id2, fileIdTar))
             print("atom orig id ", inMols[0]["atoms"][aK]["_chem_comp_atom.atom_id"])   
             inMols[0]["atoms"][aK]["_chem_comp_atom.atom_id"]=id2
-            print("atom %s now becomes atom %s "%(id1, id2))   
+            print("atom %s now becomes atom %s "%(id1, id2))  
+
+def matchAtomNames2(tInAtoms, tInBonds,  tTargetFN, tMonoRoot):
+    
+    aSetDictAtoms = []
+    aSetDictBonds = []
+    setAtomAndBondDict(tInAtoms, tInBonds, aSetDictAtoms, aSetDictBonds)
+    
+    print("tTargetFile %s "%tTargetFN)  
+    inGraphs =[]
+    inGraphs.append(aMolToAGraph(aSetDictAtoms, aSetDictBonds, tMonoRoot))
+    print("Number of in-graphs  is ", len(inGraphs))
+    print("Node properties of in-graph:")
+    print(inGraphs[0].nodes.data())
+    print("Edge properties of in-graph:")
+    print(inGraphs[0].edges.data())
+
+    fileIdTar = os.path.basename(tTargetFN).strip().split(".")[0]
+    tarMols = []            #Only one mol
+    fromCifTorMolGemmi(tTargetFN, fileIdTar, tMonoRoot, tarMols)
+    print("Number of mols in tarFile : ", len(tarMols))
+    tarGraphs =[]
+    for aMol in tarMols:
+        addAtomSeri(aMol["atoms"], aMol["bonds"])
+        tarGraphs.append(aMolToAGraph(aMol["atoms"], aMol["bonds"], tMonoRoot))
+    print("Number of graphs for tarMol is ", len(tarGraphs))
+    print("Node properties of target graph:")
+    print(tarGraphs[0].nodes.data())
+    print("Edge properties of target graph:")
+    print(tarGraphs[0].edges.data())
+    aGM = nx.algorithms.isomorphism.GraphMatcher(inGraphs[0], tarGraphs[0], node_match= lambda n1,n2:n1['_chem_comp_atom.type_symbol']==n2['_chem_comp_atom.type_symbol'], edge_match= lambda e1,e2: e1['weight'] == e2['weight'])
+    aMapList = list(aGM.subgraph_isomorphisms_iter())
+    nFound = len(aMapList)
+    #print("nFound= ", nFound)
+    if nFound > 0:
+        #print(aMapList[0])
+        #for aM in aMapList:
+        #    print("aM=", aM)
+        #    print("%dth subgraph matching. %d nodes matched"%(aM, len(aMapList[aM].nodes)))
+        print("The first match : ") 
+        for aK in aMapList[0].keys():
+            id1 = inGraphs[0].nodes[aK]["_chem_comp_atom.atom_id"]
+            id2 = tarGraphs[0].nodes[aMapList[0][aK]]["_chem_comp_atom.atom_id"]
+            print("atom orig id ", tInAtoms[aK].GetProp("Name"))
+            tInAtoms[aK].SetProp("oriName", id1)    
+            tInAtoms[aK].SetProp("Name", id2)    
+            aSetDictAtoms[aK]["_chem_comp_atom.atom_id"]=id2
+            print("atom %s now becomes atom %s "%(id1, id2))  
+
+    sys.exit()         

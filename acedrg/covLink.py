@@ -2844,6 +2844,7 @@ class CovLinkGenerator(CExeCode):
             #self.runExitCode = os.system(self._cmdline)
             if not self.runExitCode :
                 if tMode !=4:
+                     print("self.runExitCode=", self.runExitCode)
                      aOutLigCif1 = self.subRoot + ".cif"
                      aOutLigCif2 = self.subRoot + "_final.cif"
                      if os.path.isfile(aOutLigCif1):
@@ -4774,13 +4775,16 @@ class CovLinkGenerator(CExeCode):
             if atmElm in self.chemCheck.orgVal and atmElm !="H":
                 print("default=", self.chemCheck.orgVal[atmElm][0])
                 if not nTotalVa in self.chemCheck.orgVal[atmElm]:
-                    
-                    self.errLevel    = 45
-                    if self.errLevel not in self.errMessage:
-                        self.errMessage[self.errLevel] = []
-                    self.errMessage[self.errLevel].append("atom %s in monomer %s has a total valence of %d, which is not allowed!\n"\
+                    nTotalVa = self.getTotalBondOrderInOneMmcifAtom(atmId, tMonomer["atoms"], aLABonds)
+                    if nTotalVa in self.chemCheck.orgVal[atmElm]:
+                        aAtom["charge"] = "0"
+                    else:
+                        self.errLevel    = 45
+                        if self.errLevel not in self.errMessage:
+                            self.errMessage[self.errLevel] = []
+                        self.errMessage[self.errLevel].append("atom %s in monomer %s has a total valence of %d, which is not allowed!\n"\
                                                           %(aAtom["atom_id"], aAtom["comp_id"], nTotalVa))
-                    break 
+                        break
 
     def comboLigToSimplifiedMmcif(self, tMonomer, tOutFName):
       

@@ -2885,9 +2885,15 @@ class ChemCheck(object):
         aLeng = 1.1
         for aAt in tCBMol["atoms"]:
             if aAt["_chem_comp_atom.type_symbol"] =="B" or aAt["_chem_comp_atom.type_symbol"] =="C":
+                nH = 0
                 nConn = len(aAt["_chem_comp_atom.atom_conn"])
-                print(aAt["_chem_comp_atom.atom_id"], " has connections ", aAt["_chem_comp_atom.atom_conn"])       
-                if (nConn==5 or nConn==6) and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds:
+                print(aAt["_chem_comp_atom.atom_id"], " has connections ", aAt["_chem_comp_atom.atom_conn"])
+                print("They are ")
+                for aNBA in aAt["_chem_comp_atom.atom_conn"]:
+                    print(tCBMol["atoms"][aNBA]["_chem_comp_atom.atom_id"])  
+                    if tCBMol["atoms"][aNBA]["_chem_comp_atom.type_symbol"]=="H":
+                        nH+=1         
+                if (nConn==5 or nConn==6) and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds and nH==0:
                     print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
                     print("it needs a H")
                     print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
