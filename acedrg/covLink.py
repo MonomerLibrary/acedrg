@@ -309,11 +309,11 @@ class CovLinkGenerator(CExeCode):
                                               # 2 generate a link
         self.lNoMeta = True
 
-        # TEMPO
-        if "CCP4" not in os.environ:
-            print("You need to install or setup CCP4 first ")
-            sys.exit() 
-       
+        if "CLIBD_MON" not in os.environ:
+            print("Could not find monomer library data (CLIBD_MON). Install acedrg via pip, or set "
+                  "LIBMOL_ROOT, or activate a CCP4 installation.")
+            sys.exit()
+
         self.allChemCombDir    = os.getenv("CLIBD_MON")
         #self.allChemCombDir   = "/Users/flong/DB/PDB_related/PDB_Ligands/Cif"
 

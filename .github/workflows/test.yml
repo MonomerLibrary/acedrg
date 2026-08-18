@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    name: Run pytest (${{ matrix.os }})
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Create venv and install acedrg
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install ".[tautomer]" pytest
+
+      - name: Run tests
+        run: .venv/bin/pytest -v python-tests

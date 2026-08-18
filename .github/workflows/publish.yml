@@ -1,10 +1,21 @@
-name: Build and publish to TestPyPI
+name: Build and publish to PyPI
 
 on:
   workflow_dispatch:
+    inputs:
+      repository:
+        description: "PyPI repository to publish to"
+        type: choice
+        options:
+          - testpypi
+          - pypi
+        default: testpypi
+        required: true
   push:
     tags:
       - "v*"
+  release:
+    types: [published]
 
 jobs:
   build_sdist:
@@ -52,10 +63,10 @@ jobs:
           path: ./wheelhouse/*.whl
 
   publish:
-    name: Publish to TestPyPI
+    name: Publish to ${{ inputs.repository || 'testpypi' }}
     needs: [build_sdist, build_wheels]
     runs-on: ubuntu-latest
-    environment: testpypi
+    environment: ${{ inputs.repository == 'pypi' && 'pypi' || 'testpypi' }}
     permissions:
       id-token: write
     steps:
@@ -65,8 +76,8 @@ jobs:
           merge-multiple: true
           path: dist
 
-      - name: Publish to TestPyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
+          repository-url: ${{ inputs.repository == 'pypi' && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}
           skip-existing: true
