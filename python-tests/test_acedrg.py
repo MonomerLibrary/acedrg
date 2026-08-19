@@ -9,7 +9,7 @@ Environment variable overrides (all optional):
   ACEDRG_TESTS_DIR    path to the Tests/ directory (default: <repo-root>/Tests)
   ACEDRG_N_EXAMPLES   number of input files to test per category (default 3)
 
-Some categories (links, carborns) currently fail and are marked "extra";
+Some categories (metal, carborns) currently fail and are marked "extra";
 pass --run-extra to include them.
 """
 import glob
@@ -53,13 +53,13 @@ if not shutil.which("servalcat"):
     _env["VIRTUAL_ENV"] = str(Path(ACEDRG).parent.parent)
 
 
-def _run(args, cwd):
+def _run(args, cwd, env=None):
     return subprocess.run(
         [ACEDRG] + args,
         capture_output=True,
         text=True,
         cwd=cwd,
-        env=_env,
+        env=env or _env,
     )
 
 
@@ -190,14 +190,25 @@ def test_option_r_with(cif_file, tmp_path):
 # Tests_Links  (acedrg -L <instruct_*.txt>)
 # Instruction files may contain FILE-1/FILE-2 paths relative to Tests_Links/,
 # so we set cwd there.
+#
+# Residues named without an explicit FILE-n entry are looked up in the CCP4
+# monomer library ($CLIBD_MON/<first letter, lowercase>/<CODE>.cif). CI has no
+# CCP4 installation, so Tests_Links/monomers/ vendors just the component cifs
+# the tested instruction files need. Only enough entries for the first few
+# instruction files are present — raising ACEDRG_N_EXAMPLES will need more
+# codes copied in from a real monomer library.
 # ---------------------------------------------------------------------------
 _link_files = sorted(
     glob.glob(f"{TESTS_DIR}/Tests_Links/inLink/instruct_*.txt")
 )[:N_EXAMPLES]
 _links_cwd = f"{TESTS_DIR}/Tests_Links"
+_links_mon_lib = f"{TESTS_DIR}/Tests_Links/monomers"
+
+# A real monomer library, if the caller has one, wins over the vendored subset.
+_links_env = dict(_env)
+_links_env.setdefault("CLIBD_MON", _links_mon_lib)
 
 
-@pytest.mark.extra
 @pytest.mark.parametrize(
     "instruct_file",
     _link_files,
@@ -206,7 +217,7 @@ _links_cwd = f"{TESTS_DIR}/Tests_Links"
 def test_links(instruct_file, tmp_path):
     stem = os.path.basename(instruct_file).removeprefix("instruct_").removesuffix(".txt")
     out = str(tmp_path / f"Test_{stem}")
-    result = _run(["-L", instruct_file, "-o", out], cwd=_links_cwd)
+    result = _run(["-L", instruct_file, "-o", out], cwd=_links_cwd, env=_links_env)
     _assert_cif(f"{out}_link.cif", result)
 
 
