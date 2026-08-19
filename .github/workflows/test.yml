@@ -5,6 +5,7 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -36,4 +37,4 @@ jobs:
           .venv/bin/pip install ".[tautomer]" pytest
 
       - name: Run tests
-        run: .venv/bin/pytest -v python-tests
+        run: .venv/bin/pytest -v python-tests --run-extra
