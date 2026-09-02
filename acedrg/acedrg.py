@@ -131,10 +131,10 @@ class Acedrg(CExeCode ):
         self.refmacMinFValueList = []
         #self.refmacMinFValueList["value"] =100000.00
         #self.refmacMinFValueList["fileName"] =""
-        if "CCP4" in os.environ:
-            self.exeAcedrg           = os.path.join(os.environ['CBIN'], "acedrg")
-        else :
-            self.exeAcedrg           = "acedrg"
+        #if "CCP4" in os.environ:
+        #    self.exeAcedrg           = os.path.join(os.environ['CBIN'], "acedrg")
+        #else :
+        self.exeAcedrg           = "acedrg"
         
         #self.exeAcedrg          = "/lmb/home/flong/workplace/LIBMOL/bin/acedrg"
             

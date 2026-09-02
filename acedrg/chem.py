@@ -2886,21 +2886,102 @@ class ChemCheck(object):
         for aAt in tCBMol["atoms"]:
             if aAt["_chem_comp_atom.type_symbol"] =="B" or aAt["_chem_comp_atom.type_symbol"] =="C":
                 nH = 0
+                lHCoords = True
                 nConn = len(aAt["_chem_comp_atom.atom_conn"])
                 print(aAt["_chem_comp_atom.atom_id"], " has connections ", aAt["_chem_comp_atom.atom_conn"])
                 print("They are ")
                 for aNBA in aAt["_chem_comp_atom.atom_conn"]:
                     print(tCBMol["atoms"][aNBA]["_chem_comp_atom.atom_id"])  
                     if tCBMol["atoms"][aNBA]["_chem_comp_atom.type_symbol"]=="H":
-                        nH+=1         
-                if (nConn==5 or nConn==6) and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds and nH==0:
-                    print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
-                    print("it needs a H")
-                    print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
-                    if not "angles" in tCBMol:
-                        tCBMol["angles"] = []
-                    tCurNumAtoms=self.addOneHAtomCoordsAndOneBondAndAllAngs(aAt, tCBMol, aLeng, tCurNumAtoms, tExcHs)
-           
+                        nH+=1  
+                        if "_chem_comp_atom.model_Cartn_x" in tCBMol["atoms"][aNBA]:
+                            if str(tCBMol["atoms"][aNBA]["_chem_comp_atom.model_Cartn_x"]).find("?") !=-1:
+                                lHCoords = False      
+                if (nConn==5 or nConn==6) and not aAt["_chem_comp_atom.atom_id"] in self.tmpBrokenBondIds :
+                    if nH==0:
+                        print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
+                        print("it needs a H")
+                        print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
+                        if not "angles" in tCBMol:
+                            tCBMol["angles"] = []
+                        tCurNumAtoms=self.addOneHAtomCoordsAndOneBondAndAllAngs(aAt, tCBMol, aLeng, tCurNumAtoms, tExcHs)
+                    elif not lHCoords:
+                        print("atom ", aAt["_chem_comp_atom.atom_id"], " conn ", len(aAt["_chem_comp_atom.atom_conn"]))
+                        print("its H needs coordinates")
+                        print("Confirm: its id is ", tCBMol["atoms"][aAt["_chem_comp_atom.atom_serial_number"]]["_chem_comp_atom.atom_id"])
+                        if not "angles" in tCBMol:
+                            tCBMol["angles"] = []
+                        tCurNumAtoms=self.addOneHAtomCoordsAndOneBondAndAllAngs(aAt, tCBMol, aLeng, tCurNumAtoms, tExcHs)
+                    
+        
+    def setAComboMol(self, tNonCBMols, tCBMols, tExtraBonds, tExtraAngs, tExtraTors, tExcHs, tComboMol):
+        
+        aTorIdxs = {}
+        aTorIdxs["const"]    = 0
+        aTorIdxs["sp1_sp1"]  = 1
+        aTorIdxs["sp1_sp2"]  = 1
+        aTorIdxs["sp1_sp3"]  = 1
+        aTorIdxs["sp2_sp2"]  = 1
+        aTorIdxs["sp2_sp3"]  = 1
+        aTorIdxs["sp3_sp3"]  = 1
+        
+        numChirs = 1
+        numPlans = 1
+        numRings = 1
+        
+        #print(self.tmpBrokenBondIds)
+        
+        allMols = []
+        for aMol in tNonCBMols:
+            allMols.append(aMol)
+            
+        for aMol in tNonCBMols:
+            
+            for aAt in aMol["atoms"]:
+                
+                if not aAt["_chem_comp_atom.atom_id"] in tExcHs:
+                    tComboMol["atoms"].append(aAt)
+                    
+            for aBo in aMol["bonds"]:
+                id1 = aBo["_chem_comp_bond.atom_id_1"]
+                id2 = aBo["_chem_comp_bond.atom_id_2"]
+                if not id1 in tExcHs and not id2 in tExcHs:
+                    tComboMol["bonds"].append(aBo)
+            #print("self.tmpHIdMap : ")
+            #print(self.tmpHIdMap)
+
+            #print("Check-Angles")       
+            if "angles" in aMol:
+                for aAng in aMol["angles"]:
+                    id1 = aAng["_chem_comp_angle.atom_id_1"]
+                    id2 = aAng["_chem_comp_angle.atom_id_2"]
+                    id3 = aAng["_chem_comp_angle.atom_id_3"]
+                    #print("id1=",id1, " id2=", id2, " id3=", id3)
+                    if id1 in self.tmpHIdMap:
+                        aAng["_chem_comp_angle.atom_id_1"] = self.tmpHIdMap[id1]
+                        tComboMol["angles"].append(aAng)
+                    elif id3 in self.tmpHIdMap:
+                        aAng["_chem_comp_angle.atom_id_3"] = self.tmpHIdMap[id3]
+                        tComboMol["angles"].append(aAng)
+                    else:
+                        tComboMol["angles"].append(aAng)
+                    #print(aAng)
+                        
+            if "torsions" in aMol:
+                for aTor in aMol["torsions"]:
+                    id1 = aTor["_chem_comp_tor.atom_id_1"]
+                    id2 = aTor["_chem_comp_tor.atom_id_2"]
+                    id3 = aTor["_chem_comp_tor.atom_id_3"]
+                    id4 = aTor["_chem_comp_tor.atom_id_4"]
+                    if id1 in self.tmpHIdMap :
+                        aTor["_chem_comp_tor.atom_id_1"] = self.tmpHIdMap[id1]
+                        aTor["_chem_comp_tor.id"]=self.reAdjustTorId(aTor["_chem_comp_tor.id"], aTorIdxs)
+                        tComboMol["torsions"].append(aTor)
+                    elif id4 in self.tmpHIdMap :
+                        aTor["_chem_comp_tor.atom_id_4"] = self.tmpHIdMap[id4]
+                        aTor["_chem_comp_tor.id"]=self.reAdjustTorId(aTor["_chem_comp_tor.id"], aTorIdxs)
+                        tComboMol["torsions"].append(aTor)
+                    
         
     def setAComboMol(self, tNonCBMols, tCBMols, tExtraBonds, tExtraAngs, tExtraTors, tExcHs, tComboMol):
         

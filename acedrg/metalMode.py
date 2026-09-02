@@ -106,6 +106,16 @@ class metalMode(CExeCode):
             print("Here passed 2")        
         elif nBonds==0:
             outInterMCifName = self.outRoot   + ".cif"
+            if len(tAtoms)==2:
+                # No non-metal bonds and number of atoms ==2
+                # reset atoms initial coords for future optimization
+                tAtoms[0]['_chem_comp_atom.model_Cartn_x']="0.0"
+                tAtoms[0]['_chem_comp_atom.model_Cartn_y']="0.0"
+                tAtoms[0]['_chem_comp_atom.model_Cartn_z']="0.0"
+                tAtoms[1]['_chem_comp_atom.model_Cartn_x']="2.0"
+                tAtoms[1]['_chem_comp_atom.model_Cartn_y']="0.0"
+                tAtoms[1]['_chem_comp_atom.model_Cartn_z']="0.0"
+
             self.outInterMCif(outInterMCifName, tAtoms, tBonds, tVersionInfo)
             print("==============================================")
             print("No non-metal related bonds exist in the molecule")
@@ -972,11 +982,17 @@ class metalMode(CExeCode):
                 
                 if not "_chem_comp_atom.type_energy" in aAtom.keys():
                     aAtom['_chem_comp_atom.type_energy'] = aAtom["_chem_comp_atom.type_symbol"]
-                   
+
+                aC = 0.0
+                try:
+                   aC = float(aAtom['_chem_comp_atom.charge']) 
+                except ValueError:
+                   pass 
+
                 aMmCif.write("%s%s%s%s%10.2f%10.4f%10.4f%10.4f\n"
                              % (self.monomRoot.ljust(8), aAtom['_chem_comp_atom.atom_id'].ljust(10),
                                 aAtom['_chem_comp_atom.type_symbol'].ljust(6), aAtom['_chem_comp_atom.type_energy'].ljust(6),
-                                float(aAtom['_chem_comp_atom.charge']), posX, posY, posZ))
+                                aC, posX, posY, posZ))
                 
             
             # Bond section
