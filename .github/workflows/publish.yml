@@ -11,13 +11,30 @@ on:
           - pypi
         default: testpypi
         required: true
-  push:
-    tags:
-      - "v*"
   release:
     types: [published]
 
 jobs:
+  target:
+    name: Resolve target repository
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.pick.outputs.name }}
+      url: ${{ steps.pick.outputs.url }}
+    steps:
+      - id: pick
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ inputs.repository }}
+        run: |
+          if [ "$EVENT_NAME" = "release" ] || [ "$REPOSITORY" = "pypi" ]; then
+            echo "name=pypi" >> "$GITHUB_OUTPUT"
+            echo "url=https://upload.pypi.org/legacy/" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=testpypi" >> "$GITHUB_OUTPUT"
+            echo "url=https://test.pypi.org/legacy/" >> "$GITHUB_OUTPUT"
+          fi
+
   build_sdist:
     name: Build sdist
     runs-on: ubuntu-latest
@@ -63,10 +80,10 @@ jobs:
           path: ./wheelhouse/*.whl
 
   publish:
-    name: Publish to ${{ inputs.repository || 'testpypi' }}
-    needs: [build_sdist, build_wheels]
+    name: Publish to ${{ needs.target.outputs.name }}
+    needs: [target, build_sdist, build_wheels]
     runs-on: ubuntu-latest
-    environment: ${{ inputs.repository == 'pypi' && 'pypi' || 'testpypi' }}
+    environment: ${{ needs.target.outputs.name }}
     permissions:
       id-token: write
     steps:
@@ -79,5 +96,5 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: ${{ inputs.repository == 'pypi' && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}
+          repository-url: ${{ needs.target.outputs.url }}
           skip-existing: true
