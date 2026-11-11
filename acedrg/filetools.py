@@ -1592,7 +1592,7 @@ class FileTransformer(object) :
                            aName = tName
                     
                     atmL  = "%s%s%s%s%s%s%s%s%s%s%s%s%s\n"\
-                            %(strs[0].ljust(8), strs[1].ljust(8), strs[2].ljust(8),
+                            %(strs[0].ljust(12), strs[1].ljust(8), strs[2].ljust(8),
                               strs[3].ljust(6), strs[4].ljust(6), strs[5].ljust(6),
                               atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12),
                               atomPOS[aName][0].ljust(12), atomPOS[aName][1].ljust(12), atomPOS[aName][2].ljust(12), strs[12])
@@ -3130,6 +3130,7 @@ def fromACrysToMolCifsGemmi(tInCifFN, tFileIdx, tMols):
 def getMonomRootFromCifGemmi(tInCifFN):
     
     aMono = ""
+    print(tInCifFN)
     try:                        
         aInCif = cif.read_file(tInCifFN) 
     except IOError:                 

@@ -71,7 +71,7 @@ class metalMode(CExeCode):
         aRet = ""
         self.monomRoot = tMonomRoot
         self.outRoot   = tOutRoot 
-        
+        print("tMonomRoot =", tMonomRoot)
         print("Stage 1 ")
         
         
@@ -86,6 +86,7 @@ class metalMode(CExeCode):
         nBonds = len(self.remainBonds) 
         
         if os.path.isfile(tmpMmcifName) and nBonds:
+            print("self.monomRoot =", self.monomRoot)
             print("Stage 2 ")
             print("acedrg is running")
             outTmpRootName = self.outRoot + "_tmp"
@@ -109,12 +110,12 @@ class metalMode(CExeCode):
             if len(tAtoms)==2:
                 # No non-metal bonds and number of atoms ==2
                 # reset atoms initial coords for future optimization
-                tAtoms[0]['_chem_comp_atom.model_Cartn_x']="0.0"
-                tAtoms[0]['_chem_comp_atom.model_Cartn_y']="0.0"
-                tAtoms[0]['_chem_comp_atom.model_Cartn_z']="0.0"
-                tAtoms[1]['_chem_comp_atom.model_Cartn_x']="2.0"
-                tAtoms[1]['_chem_comp_atom.model_Cartn_y']="0.0"
-                tAtoms[1]['_chem_comp_atom.model_Cartn_z']="0.0"
+                tAtoms[0]['_chem_comp_atom.pdbx_model_Cartn_x_ideal']="0.0"
+                tAtoms[0]['_chem_comp_atom.pdbx_model_Cartn_y_ideal']="0.0"
+                tAtoms[0]['_chem_comp_atom.pdbx_model_Cartn_z_ideal']="0.0"
+                tAtoms[1]['_chem_comp_atom.pdbx_model_Cartn_x_ideal']="2.0"
+                tAtoms[1]['_chem_comp_atom.pdbx_model_Cartn_y_ideal']="0.0"
+                tAtoms[1]['_chem_comp_atom.pdbx_model_Cartn_z_ideal']="0.0"
 
             self.outInterMCif(outInterMCifName, tAtoms, tBonds, tVersionInfo)
             print("==============================================")
@@ -958,27 +959,36 @@ class metalMode(CExeCode):
             aMmCif.write("loop_\n")
             aMmCif.write("_chem_comp_atom.comp_id\n")
             aMmCif.write("_chem_comp_atom.atom_id\n")
+            aMmCif.write("_chem_comp_atom.alt_atom_id\n")
             aMmCif.write("_chem_comp_atom.type_symbol\n")
             aMmCif.write("_chem_comp_atom.type_energy\n")
             aMmCif.write("_chem_comp_atom.charge\n")
-            aMmCif.write("_chem_comp_atom.model_Cartn_x\n")
-            aMmCif.write("_chem_comp_atom.model_Cartn_y\n")
-            aMmCif.write("_chem_comp_atom.model_Cartn_z\n")
+            aMmCif.write("_chem_comp_atom.x\n")
+            aMmCif.write("_chem_comp_atom.y\n")
+            aMmCif.write("_chem_comp_atom.z\n")
+            aMmCif.write("_chem_comp_atom.pdbx_model_Cartn_x_ideal\n")
+            aMmCif.write("_chem_comp_atom.pdbx_model_Cartn_y_ideal\n")
+            aMmCif.write("_chem_comp_atom.pdbx_model_Cartn_z_ideal\n")
             
             for aAtom in tAtoms:
                 posX =0.0
                 posY =0.0
                 posZ =0.0
-                
-                if "_chem_comp_atom.model_Cartn_x" in aAtom.keys() and \
-                    aAtom['_chem_comp_atom.model_Cartn_x'].find("?")==-1:
-                    posX = float(aAtom['_chem_comp_atom.model_Cartn_x'])
-                    posY = float(aAtom['_chem_comp_atom.model_Cartn_y'])
-                    posZ = float(aAtom['_chem_comp_atom.model_Cartn_z'])
-                elif '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
+                alt_id = ""
+                if "_chem_comp_atom.alt_atom_id" in aAtom.keys():
+                    alt_id = aAtom["_chem_comp_atom.alt_atom_id"]
+                else:
+                    alt_id = aAtom["_chem_comp_atom.atom_id"]
+
+                if '_chem_comp_atom.x' in aAtom.keys() and aAtom['_chem_comp_atom.x'].find("?")==-1:
                     posX = float(aAtom['_chem_comp_atom.x'])
                     posY = float(aAtom['_chem_comp_atom.y'])
                     posZ = float(aAtom['_chem_comp_atom.z'])
+                elif "_chem_comp_atom.pdbx_model_Cartn_x_ideal" in aAtom.keys() and \
+                    aAtom['_chem_comp_atom.pdbx_model_Cartn_x_ideal'].find("?")==-1:
+                    posX = float(aAtom['_chem_comp_atom.pdbx_model_Cartn_x_ideal'])
+                    posY = float(aAtom['_chem_comp_atom.pdbx_model_Cartn_y_ideal'])
+                    posZ = float(aAtom['_chem_comp_atom.pdbx_model_Cartn_z_ideal'])
                 
                 if not "_chem_comp_atom.type_energy" in aAtom.keys():
                     aAtom['_chem_comp_atom.type_energy'] = aAtom["_chem_comp_atom.type_symbol"]
@@ -988,13 +998,18 @@ class metalMode(CExeCode):
                    aC = float(aAtom['_chem_comp_atom.charge']) 
                 except ValueError:
                    pass 
-
-                aMmCif.write("%s%s%s%s%10.2f%10.4f%10.4f%10.4f\n"
+                print("%s%s%s%s%s%10.2f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f\n"
                              % (self.monomRoot.ljust(8), aAtom['_chem_comp_atom.atom_id'].ljust(10),
+                                aAtom["_chem_comp_atom.alt_atom_id"].ljust(10),
                                 aAtom['_chem_comp_atom.type_symbol'].ljust(6), aAtom['_chem_comp_atom.type_energy'].ljust(6),
-                                aC, posX, posY, posZ))
+                                aC, posX, posY, posZ, posX, posY, posZ))
+                aMmCif.write("%s%s%s%s%s%10.2f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f\n"
+                             % (self.monomRoot.ljust(8), aAtom['_chem_comp_atom.atom_id'].ljust(10),
+                                aAtom["_chem_comp_atom.alt_atom_id"].ljust(10),
+                                aAtom['_chem_comp_atom.type_symbol'].ljust(6), aAtom['_chem_comp_atom.type_energy'].ljust(6),
+                                aC, posX, posY, posZ, posX, posY, posZ))
                 
-            
+               
             # Bond section
         
             if len(tBonds):
@@ -1500,6 +1515,7 @@ class metalMode(CExeCode):
     
     
     def runAcedrg(self, tInCif, tOutRoot, tProcParas):
+        
         
         if not os.path.isdir(tOutRoot+"_TMP"):
             os.mkdir(tOutRoot+"_TMP")

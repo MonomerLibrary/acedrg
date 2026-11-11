@@ -2482,9 +2482,9 @@ class AcedrgRDKit(object):
         # (4) Description of torsion angles in the molecules
         # (5) Description of chiral centers in the molecules
         # This file is mainly used as an input file for Acedrg
-        print("cif_in name ", tMmcifName)
-        print("Ligand ID ", tMonoName)
-        print("Group Name ", tGroupName)
+        #print("cif_in name ", tMmcifName)
+        #print("Ligand ID ", tMonoName)
+        #print("Group Name ", tGroupName)
 
         allAtoms = []
         allAtoms1 = tMol.GetAtoms()
@@ -3392,14 +3392,15 @@ class AcedrgRDKit(object):
 
         #print("Is the molecule contains peptides ? %s " % self.isPEP)
         self.getAllFuncGroupAtoms(tMol)
+        #print(self.funcGroups)
         if len(self.funcGroups):
             for aFuncG in list(self.funcGroups.keys()):
-                print("check ", aFuncG)
+                #print("1. check ", aFuncG)
                 if aFuncG.find("CARBOXY-AMINO-TERS") != -1:
-                    #print("Doing ", aFuncG)
+                    #print("2. Doing ", aFuncG)
                     self.setFormalChargeC_A_T(
                         tMol, aFuncG,  self.funcGroups[aFuncG], tPH)
-                if aFuncG.find("CARBOXY-ARO") != -1:
+                elif aFuncG.find("CARBOXY-ARO") != -1:
                     #print("Doing ", aFuncG)
                     self.setFormalChargeC_A_T(
                         tMol, aFuncG,  self.funcGroups[aFuncG], tPH)
@@ -3408,11 +3409,16 @@ class AcedrgRDKit(object):
                     self.setFormalChargeC_T(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("CARBOXY-ASP") != -1:
-                    print("Doing ", aFuncG)
+                    #print("Doing ", aFuncG)
+                    self.setFormalChargeC_ASP(
+                        tMol, aFuncG, self.funcGroups[aFuncG], tPH)
+                elif aFuncG.find("CARBOXY-A2") != -1:
+                    #print("Doing ", aFuncG)
                     self.setFormalChargeC_ASP(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("AMINO-TER") != -1:
                     #print("Doing ", aFuncG)
+                    print("Here")
                     self.setFormalChargeA_T(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("CARBOXY-AMINO-GLY") != -1:
@@ -3433,31 +3439,31 @@ class AcedrgRDKit(object):
                     self.setFormalChargeNH_HIS(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("NH-PRO") != -1:
-                    print("Doing ", aFuncG)
+                    #print("Doing ", aFuncG)
                     self.setFormalChargeNH_PRO(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("NH-ARG") != -1:
-                    print("Doing ", aFuncG)
+                    #print("Doing ", aFuncG)
                     self.setFormalChargeNH_ARG(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("SH-CYS") != -1:
-                    print("Doing ", aFuncG)
+                    #print("Doing ", aFuncG)
                     self.setFormalChargeSH_CYS(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("BZ-TYR") != -1:
-                    #print("Doing ", aFuncG)
+                    print("Doing ", aFuncG)
                     self.setFormalChargeBZ_TYR(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("BZ-NH") != -1:
-                    #print("Doing ", aFuncG)
+                    print("Doing ", aFuncG)
                     self.setFormalChargeBZ_NH(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("BZ-NHA") != -1:
-                    #print("Doing ", aFuncG)
+                    print("Doing ", aFuncG)
                     self.setFormalChargeBZ_NHA(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("SO3") != -1:
-                    #print("Doing ", aFuncG)
+                    print("Doing ", aFuncG)
                     self.setFormalChargeSO3(
                         tMol, aFuncG, self.funcGroups[aFuncG], tPH)
                 elif aFuncG.find("SO4") != -1:
@@ -3492,8 +3498,8 @@ class AcedrgRDKit(object):
     def setFormalChargeC_T(self, tMol, tFunG, tAtomIdxs, tPH):
 
         tPka = self.funcGroupTab[tFunG][1]
-        # print "Pka ", tPka
-        # print "PH  ", tPH
+        print("PH  ", tPH)
+        print("Pka ", tPka)
         if tPH > tPka:
             for aSetIdxs in tAtomIdxs:
                 for aIdx in aSetIdxs:
@@ -3509,8 +3515,9 @@ class AcedrgRDKit(object):
                             #                                    tMol.GetAtomWithIdx(aIdx).GetFormalCharge()))
 
     def setFormalChargeC_A_T(self, tMol, tFunG, tAtomIdxs, tPH):
-
         tPka = self.funcGroupTab[tFunG][1]
+        print("PH  ", tPH)
+        print("Pka ", tPka)
         if tPH > tPka:
             for aSetIdxs in tAtomIdxs:
                 for aIdx in aSetIdxs:
@@ -3529,12 +3536,14 @@ class AcedrgRDKit(object):
                             tMol.GetAtomWithIdx(aIdx).UpdatePropertyCache()
                             #print("atom %s has a charge %d " % (tMol.GetAtomWithIdx(aIdx).GetProp("Name"),
                             #                                    tMol.GetAtomWithIdx(aIdx).GetFormalCharge()))
+        else:
+            print("do nothing")
 
     def setFormalChargeC_ASP(self, tMol, tFunG, tAtomIdxs, tPH):
 
         tPka = self.funcGroupTab[tFunG][1]
-        # print "Pka ", tPka
-        # print "PH  ", tPH
+        #print("PH  ", tPH)
+        #print("Pka ", tPka)
         if tPH > tPka:
             for aSetIdxs in tAtomIdxs:
                 # print "a set of atoms: "
@@ -3567,18 +3576,23 @@ class AcedrgRDKit(object):
                                             OSet.append(aNNB)
                                     if len(OSet)==2:
                                         lO = True
-                                        print("It should be deprotonated ")
+                                        #print("It should be deprotonated ")
                                         break
                             if lO:
                                 tMol.GetAtomWithIdx(aIdx).SetFormalCharge(-1)
                                 tMol.GetAtomWithIdx(aIdx).SetNumExplicitHs(0)
                                 tMol.GetAtomWithIdx(aIdx).SetNoImplicit(True)
-                                print("atom %s has a charge %d " % (tMol.GetAtomWithIdx(aIdx).GetProp("Name"),
-                                                                    tMol.GetAtomWithIdx(aIdx).GetFormalCharge()))
+                                #print("atom %s has a charge %d " % (tMol.GetAtomWithIdx(aIdx).GetProp("Name"),
+                                #                                    tMol.GetAtomWithIdx(aIdx).GetFormalCharge()))
+        else:
+            print("do nothing")
 
     def setFormalChargeA_T(self, tMol, tFunG, tAtomIdxs, tPH):
-
+        
         tPka = self.funcGroupTab[tFunG][1]
+        print("PH  ", tPH)
+        print("Pka ", tPka)
+
         if tPH < tPka:
             for aSetIdxs in tAtomIdxs:
                 for aIdx in aSetIdxs:
@@ -3591,10 +3605,14 @@ class AcedrgRDKit(object):
                             # print "atom %s has a charge %d "%(tMol.GetAtomWithIdx(aIdx).GetProp("Name"), \
                             #       tMol.GetAtomWithIdx(aIdx).GetFormalCharge())
                             # print "Its total valence is ", tMol.GetAtomWithIdx(aIdx).GetTotalValence()
+        else:
+            print("do nothing")
 
     def setFormalChargeV_A_T(self, tMol, tFunG, tAtomIdxs, tPH):
 
         tPka = self.funcGroupTab[tFunG][1]
+        print("PH  ", tPH)
+        print("Pka ", tPka)
         if tPH < tPka:
             for aSetIdxs in tAtomIdxs:
                 for aIdx in aSetIdxs:
@@ -3606,10 +3624,15 @@ class AcedrgRDKit(object):
                             # print "atom %s has a charge %d "%(tMol.GetAtomWithIdx(aIdx).GetProp("Name"), \
                             #       tMol.GetAtomWithIdx(aIdx).GetFormalCharge())
                             # print "Its total valence is ", tMol.GetAtomWithIdx(aIdx).GetTotalValence()
+        else:
+            print("do nothing")
 
     def setFormalChargeGLY(self, tMol, tFunG, tAtomIdxs, tPH):
 
         # This is for GLY only
+        tPka = self.funcGroupTab[tFunG][1]
+        print("PH  ", tPH)
+        print("Pka ", tPka)
         nNonHAtoms = tMol.GetNumHeavyAtoms()
         for aSetIdxs in tAtomIdxs:
             if len(aSetIdxs) == nNonHAtoms:
@@ -3628,6 +3651,8 @@ class AcedrgRDKit(object):
                             tMol.GetAtomWithIdx(aIdx).UpdatePropertyCache()
                             print("atom %s has a charge %d " % (tMol.GetAtomWithIdx(aIdx).GetProp("Name"),
                                                                 tMol.GetAtomWithIdx(aIdx).GetFormalCharge()))
+        else:
+            print("do nothing")
 
     def setFormalChargeNH_LYS(self, tMol, tFunG, tAtomIdxs, tPH):
 
@@ -3645,6 +3670,8 @@ class AcedrgRDKit(object):
                         # print "atom %s has a charge %d "%(tMol.GetAtomWithIdx(aIdx).GetProp("Name"), \
                         #       tMol.GetAtomWithIdx(aIdx).GetFormalCharge())
                         # print "Its total valence is ", tMol.GetAtomWithIdx(aIdx).GetTotalValence()
+        else:
+            print("do nothing")
 
     def setFormalChargeNH_HIS(self, tMol, tFunG, tAtomIdxs, tPH):
 
@@ -3696,6 +3723,8 @@ class AcedrgRDKit(object):
                             tMol.GetAtomWithIdx(aIdx).SetFormalCharge(
                                 0)       # de-protonation
                             tMol.GetAtomWithIdx(aIdx).UpdatePropertyCache()
+        else:
+            print("do nothing")
 
     def setFormalChargeNH_PRO(self, tMol, tFunG, tAtomIdxs, tPH):
 

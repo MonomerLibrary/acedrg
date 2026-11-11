@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# Python script
 #
 #
 #     Copyright (C) 2014 --- 2020 Fei Long,  G. Murshudov
@@ -226,7 +224,7 @@ class Acedrg(CExeCode ):
         self.runExitCode      = 0 
         
         self.setWorkMode(inputOptionsP)
-        
+
         self.setInputProcPara(inputOptionsP)
 
         self.checkDependency()
@@ -244,7 +242,7 @@ class Acedrg(CExeCode ):
 
         #print "input RDKit: userExistCoords ? ", self.rdKit.useExistCoords
         #print "input RDKit: number of optimization iters ", self.rdKit.numRDKitOptmSteps
-        print("input RDKit: number of initial conformers ", self.rdKit.numInitConformers)
+        #print("input RDKit: number of initial conformers ", self.rdKit.numInitConformers)
         #print "input RDKit: number of output conformers ", self.rdKit.numConformers
 
         if os.path.isfile(self.inMtConnFile):
@@ -647,7 +645,7 @@ class Acedrg(CExeCode ):
                          break
                 
     def setMonoRoot(self, tDataDesc=None):
-   
+        
         if len(self.monomRoot) !=0 and self.monomRoot.find("LIG")==-1:
             
             return
@@ -678,6 +676,8 @@ class Acedrg(CExeCode ):
                         self.monomRoot= tL[:4]
                 
         elif self.inMmCifName != "":
+            self.monomRoot = getMonomRootFromCifGemmi(self.inMmCifName)
+            """
             try:
                 tF =open(self.inMmCifName, "r")
             except IOError:
@@ -693,10 +693,10 @@ class Acedrg(CExeCode ):
                             if len(strs[2]) ==3:
                                 self.monomRoot = strs[2]
                                 break
+            """
         
         if len(self.monomRoot) ==0 and self.nameFile!="": 
             self.monomRoot = getMonomRootFromCifGemmi(self.nameFile)
-        print("2 monoRoot is ", self.monomRoot)    
         if len(self.monomRoot) ==0:
             self.monomRoot = "LIG"
         
@@ -1013,7 +1013,6 @@ class Acedrg(CExeCode ):
             #print self.monomRoot
             self.setMonoRoot()
             # self.monomRoot   = "LIG"
-        #print "monomRoot: ", self.monomRoot
         if t_inputOptionsP.outRoot:
             self.outRoot   = t_inputOptionsP.outRoot
             self.baseRoot  = os.path.basename(t_inputOptionsP.outRoot)
@@ -1077,9 +1076,7 @@ class Acedrg(CExeCode ):
         if t_inputOptionsP.addTree:
             self.addTree = t_inputOptionsP.addTree 
         
-        
-         
-            
+
     def checkStdCif(self, tInCif):
         
         aRet = False
@@ -1170,6 +1167,8 @@ class Acedrg(CExeCode ):
                             self.upperSigForAngles = float(strs[1])
                         if strs[0].find("ASL") !=-1:
                             self.lowSigForAngles = float(strs[1])
+                        if strs[0].find("PH") !=-1:
+                            self.inputPara["PH"] = [True, float(strs[1])]
                     else:
                         print("Wrong format in the paramet file ",self.inParamFile)
                         print("Problem line at : ")
@@ -1178,10 +1177,11 @@ class Acedrg(CExeCode ):
         else:
             print("Input paramet file %s does not exist"%self.inParamFile)
             sys.exit()        
-        print("Upper bound for sigma of bonds ", self.upperSigForBonds)
-        print("Lower bound for sigma of bonds ", self.lowSigForBonds)
-        print("Upper bound for sigma of angles ", self.upperSigForAngles)
-        print("Lower bound for sigma of angles ", self.lowSigForAngles)
+        #print("Upper bound for sigma of bonds ", self.upperSigForBonds)
+        #print("Lower bound for sigma of bonds ", self.lowSigForBonds)
+        #print("Upper bound for sigma of angles ", self.upperSigForAngles)
+        #print("Lower bound for sigma of angles ", self.lowSigForAngles)
+        print("Input PH value is ", self.inputPara["PH"])
 
     def printJobs(self):
 
@@ -2069,7 +2069,6 @@ class Acedrg(CExeCode ):
                     self.runGeoOpt(aCifRoot, aConfCif) 
                     if  self.runExitCode :
                         print("Geometrical optimization fails to produce the final coordinates for %s"%aCifRoot)
-            #print("Here3: ", self.refmacMinFValueList)
             if len(self.refmacMinFValueList) > 0 :
                 #self.refmacMinFValueList.sort(listComp2)
                 self.refmacMinFValueList=sorted(self.refmacMinFValueList, key=cmp_to_key(listComp2))
@@ -3414,6 +3413,7 @@ class Acedrg(CExeCode ):
         #    print("One of output conformers will using input coordinates as the initial one")
         
         print("workMode : ", self.workMode)
+        print("self.monomRoot = ", self.monomRoot)
 
         # Stage 1: initiate a mol file for RDKit obj
         if self.workMode == 11 or self.workMode == 111 or self.workMode == 114:
@@ -3436,14 +3436,12 @@ class Acedrg(CExeCode ):
                 #                  %(aB["_chem_comp_bond.atom_id_1"],
                 #                    aB["_chem_comp_bond.atom_id_2"], aB["_chem_comp_bond.value_order"]))
                         
-                #print(self.fileConv.dataDescriptor)
-
-                
-                if len(self.fileConv.dataDescriptor):
-                    self.setMonoRoot(self.fileConv.dataDescriptor)
-                else:
-                    self.monomRoot = "LIG"
-                
+                 
+                if len(self.monomRoot)==0:
+                    if len(self.fileConv.dataDescriptor) :
+                        self.setMonoRoot(self.fileConv.dataDescriptor)
+                    if len(self.monomRoot)==0:
+                        self.monomRoot = "LIG"
                 
                 #print(self.fileConv.atoms[0])
                 if len(self.fileConv.atoms) > 0:
@@ -3667,7 +3665,6 @@ class Acedrg(CExeCode ):
                 if self.workMode != 111:    
                     self.workMode =11    
                 if len(self.fileConv.dataDescriptor):
-                    
                     #self.setMonoRoot(self.fileConv.dataDescriptor)
                     
                     self.isNA=self.checkNAFromMmcif(self.fileConv.dataDescriptor)
@@ -4377,14 +4374,10 @@ class Acedrg(CExeCode ):
                 self.initMmcifMolMap[iMol] = self.inMmCifName
                 if len(self.fileConv.leaAtmMap):
                     self.addAtmMap(self.rdKit.molecules[iMol], self.fileConv.leaAtmMap)
-                print("Here")
-                print(self.nameFile)
                 if not os.path.isfile(self.nameFile):
-                    print("here2")
                     self.rdKit.MolToSimplifiedMmcif(self.rdKit.molecules[iMol], self.inMmCifName, self.chemCheck, 
                                                     self.monomRoot, self.fileConv.chiralPre, self.fileConv.chiralBoth)
                 else:
-                    print("here3")
                     self.rdKit.MolToSimplifiedMmcif(self.rdKit.molecules[iMol], self.inMmCifName, self.chemCheck, 
                                                     self.monomRoot, self.fileConv.chiralPre, self.fileConv.chiralBoth, 
                                                     self.nameFile)
@@ -4410,6 +4403,7 @@ class Acedrg(CExeCode ):
                 if self.workMode == 11 or self.workMode== 112:
                     if  not self.runExitCode :
                         # Stage 2: optimization
+            
                         print("===================================================================") 
                         print("| Geometrical Optimization                                        |")
                         print("===================================================================") 
